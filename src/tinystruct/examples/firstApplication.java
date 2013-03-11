@@ -1,3 +1,4 @@
+package tinystruct.examples;
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.Application;
 import org.tinystruct.ApplicationException;
