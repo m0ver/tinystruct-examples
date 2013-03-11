@@ -9,21 +9,22 @@ public class firstApplication extends AbstractApplication {
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		this.setAction("hello", "sayHello");
+		this.setAction("praise", "praise");
 		this.setAction("say", "say");
 		this.setAction("youhappy", "happy");
 	}
 	
-	public String sayHello(){
-		return "Hello, World!";
+	public String praise(){
+		return "Praise to the Lord!";
 	}
 	
 	public boolean happy(){
 		return true;
 	}
 	
-	public void say(String words){
+	public String say(String words){
 		System.out.println(words);
+		return "<h1>"+words+"</h1>";
 	}
 
 	@Override
@@ -35,15 +36,14 @@ public class firstApplication extends AbstractApplication {
 	public static void main(String[]args) throws ApplicationException {
 		ApplicationManager.install(new firstApplication());
 		
-		System.out.println(ApplicationManager.call("hello", null));
-		
-		System.out.println(ApplicationManager.call("say/hello world", null));
-		
+		System.out.println(ApplicationManager.call("praise", null));
 		System.out.println("I am "+ApplicationManager.call("youhappy", null)+"ly happy");
-
+		
+		ApplicationManager.call("say/Hello World", null);
+		
 		Application app=ApplicationManager.get( firstApplication.class.getName());
-		app.invoke("say", new Object[]{"Praise to the Lord!"});
-		app.invoke("say", new Object[]{"Amen!"});
+		app.invoke("say", new Object[]{"<h1>Hello, World!</h1>"});
+		app.invoke("say", new Object[]{"<h2>Bye!</h2>"});
 	}
 
 }
