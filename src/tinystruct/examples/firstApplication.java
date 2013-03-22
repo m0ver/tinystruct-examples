@@ -39,20 +39,20 @@ public class firstApplication extends AbstractApplication {
 	public static void main(String[]args) throws ApplicationException {
 		ApplicationManager.install(new firstApplication());
 		
-		System.out.println(ApplicationManager.call("praise", null));
-		System.out.println("I am "+ApplicationManager.call("youhappy", null)+"ly happy");
+		System.out.println(ApplicationManager.call("praise", null)); // Praise to the Lord!
+		System.out.println("I am "+ApplicationManager.call("youhappy", null)+"ly happy"); // I am truely happy
 		
-		ApplicationManager.call("say/Hello World", null);
+		ApplicationManager.call("say/Hello World", null); 			// Hello World
 		
-		Application app=ApplicationManager.get( firstApplication.class.getName());
-		app.invoke("say", new Object[]{"<h1>Hello, World!</h1>"});
-		app.invoke("say", new Object[]{"<h2>Bye!</h2>"});
+		Application app=ApplicationManager.get( firstApplication.class.getName()); 
+		app.invoke("say", new Object[]{"<h1>Hello, World!</h1>"});	// <h1>Hello, World!</h1>
+		app.invoke("say", new Object[]{"<h2>Bye!</h2>"});			// <h2>Bye!</h2>
 		
 		ApplicationContext context=new ApplicationContext();
 		context.setAttribute("name", "struct");
 		context.setAttribute("number", 2.0);
 		
-		System.out.println("Current version: "+ApplicationManager.call("version", context));
+		System.out.println("Current version: "+ApplicationManager.call("version", context)); // Current version: struct2.0
 	}
 
 }
