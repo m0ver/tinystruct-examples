@@ -1,6 +1,7 @@
 package tinystruct.examples;
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.Application;
+import org.tinystruct.ApplicationContext;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.system.ApplicationManager;
 
@@ -12,6 +13,8 @@ public class firstApplication extends AbstractApplication {
 		this.setAction("praise", "praise");
 		this.setAction("say", "say");
 		this.setAction("youhappy", "happy");
+		
+		this.setAction("version", "version");
 	}
 	
 	public String praise(){
@@ -30,7 +33,7 @@ public class firstApplication extends AbstractApplication {
 	@Override
 	public String version() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.context.getAttribute("name") + this.context.getAttribute("number").toString();
 	}
 	
 	public static void main(String[]args) throws ApplicationException {
@@ -44,6 +47,12 @@ public class firstApplication extends AbstractApplication {
 		Application app=ApplicationManager.get( firstApplication.class.getName());
 		app.invoke("say", new Object[]{"<h1>Hello, World!</h1>"});
 		app.invoke("say", new Object[]{"<h2>Bye!</h2>"});
+		
+		ApplicationContext context=new ApplicationContext();
+		context.setAttribute("name", "struct");
+		context.setAttribute("number", 2.0);
+		
+		System.out.println("Current version: "+ApplicationManager.call("version", context));
 	}
 
 }
