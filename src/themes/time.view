@@ -14,6 +14,6 @@ function update($time) {
 </head>
 <body>
 <span id="time"></span>
-<iframe id="activator" src="?q=time/start"></iframe>
+<iframe id="activator" src="?q=time/update"></iframe>
 </body>
 </html>

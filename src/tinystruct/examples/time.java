@@ -15,6 +15,7 @@ public class time extends AbstractApplication {
 	public void init() {
 		// TODO Auto-generated method stub
 		this.setAction("time", "index");
+		this.setAction("time/update", "update");
 		this.setAction("time/start", "start");
 		this.setAction("time/stop", "stop");
 	}
@@ -22,12 +23,16 @@ public class time extends AbstractApplication {
 	public time index() {
 		return this;
 	}
+	
+	public void start() {
+		stop=false;
+	}
 
-	public void start() throws IOException, InterruptedException {
+	public void update() throws IOException, InterruptedException {
 
 		HttpServletResponse response = (HttpServletResponse) this.context
 				.getAttribute("HTTP_RESPONSE");
-			stop = false;
+			
 		while(true)
 			if (!stop) {
 				response.getWriter().println(
@@ -42,7 +47,7 @@ public class time extends AbstractApplication {
 	}
 
 	public String stop() {
-			stop = true;
+		stop = true;
 		
 		return "stopped!";
 	}
