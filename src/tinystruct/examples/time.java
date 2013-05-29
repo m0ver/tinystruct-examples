@@ -32,11 +32,6 @@ public class time extends AbstractApplication {
 
 		HttpServletResponse response = (HttpServletResponse) this.context
 				.getAttribute("HTTP_RESPONSE");
-<<<<<<< HEAD
-			
-=======
-		stop = false;
->>>>>>> 9fde9b7de85679615b578e32c2d6b11f5cc3dcb4
 		while(true)
 			if (!stop) {
 				response.getWriter().println(
@@ -52,10 +47,6 @@ public class time extends AbstractApplication {
 
 	public String stop() {
 		stop = true;
-<<<<<<< HEAD
-		
-=======
->>>>>>> 9fde9b7de85679615b578e32c2d6b11f5cc3dcb4
 		return "stopped!";
 	}
 
