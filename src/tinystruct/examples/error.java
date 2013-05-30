@@ -29,7 +29,7 @@ public class error extends AbstractApplication {
 		return null;
 	}
 
-	public void process()
+	public Object process()
 			throws ApplicationException {
 		this.request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 		this.response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
@@ -54,6 +54,8 @@ public class error extends AbstractApplication {
 		{
 			this.reforward.forward();
 		}
+		
+		return this.getVariable("exception.message").getValue().toString()+this.getVariable("exception.details").getValue();
 	}
 	
 	private Element getDetail(ApplicationException exception)

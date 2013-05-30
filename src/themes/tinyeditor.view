@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=GB18030">
+<title>Tinyeditor</title>
+<style type="text/css">
+iframe { position:absolute;left:-10000px;top:-10000px;display:block;height:1px;width:1px;}
+</style>
+<script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
+<script type="text/javascript">
+function update($text) {
+	$('#text').html($text);
+}
+
+$(function(){
+	
+	$("#text").change(function(){
+		
+		$.ajax({
+			type: "POST",
+			url: "[%LINK:tinyeditor/save%]",
+			data: { text: $("#text").val() }
+			}).done(function( msg ) {
+			 //alert( "Data Saved: " + msg );
+			});
+	});
+	
+});
+</script>
+</head>
+<body>
+<textarea id="text" name="text">
+</textarea>
+<iframe id="activator" src="?q=tinyeditor/update"></iframe>
+</body>
+</html>
