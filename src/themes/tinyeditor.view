@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=GB18030">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Tinyeditor</title>
 <style type="text/css">
 iframe { position:absolute;left:-10000px;top:-10000px;display:block;height:1px;width:1px;}
@@ -9,20 +9,27 @@ iframe { position:absolute;left:-10000px;top:-10000px;display:block;height:1px;w
 <script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
 <script type="text/javascript">
 function update($text) {
-	$('#text').html($text);
+	$('#text').val($text);
 }
 
-$(function(){
-	
-	$("#text").change(function(){
-		
-		$.ajax({
+function save(){
+	$.ajax({
 			type: "POST",
 			url: "[%LINK:tinyeditor/save%]",
 			data: { text: $("#text").val() }
 			}).done(function( msg ) {
 			 //alert( "Data Saved: " + msg );
-			});
+	});
+}
+
+$(function(){
+	
+	$("#text").keyup(function(){
+		save();
+	});
+	
+	$("#text").change(function(){
+		save();
 	});
 	
 });
