@@ -21,6 +21,8 @@ public class tinyeditor extends AbstractApplication {
 		this.setAction("tinyeditor", "index");
 		this.setAction("tinyeditor/update", "update");
 		this.setAction("tinyeditor/save", "save");
+		
+		System.out.println("Tinyeditor:Thread["+Thread.currentThread().getId()+"]"+Thread.currentThread().getName());
 	}
 	
 	public tinyeditor index(){
