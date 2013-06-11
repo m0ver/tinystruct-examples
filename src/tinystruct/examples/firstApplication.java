@@ -3,6 +3,7 @@ import org.tinystruct.AbstractApplication;
 import org.tinystruct.Application;
 import org.tinystruct.ApplicationContext;
 import org.tinystruct.ApplicationException;
+import org.tinystruct.handle.Report;
 import org.tinystruct.system.ApplicationManager;
 
 public class firstApplication extends AbstractApplication {
@@ -53,7 +54,10 @@ public class firstApplication extends AbstractApplication {
 		context.setAttribute("number", 2.0);
 		
 		System.out.println("Current version: "+ApplicationManager.call("version", context)); // Current version: struct2.0
+		
+		String message = "Welcome to use tinystruct 2.0";
+		Report report = Report.getInstance();
+		report.println(message);
 	}
-
 }
 

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.tinystruct.AbstractApplication;
+import org.tinystruct.handle.Report;
 import org.tinystruct.system.util.StringUtilities;
 
 public class tinyeditor extends AbstractApplication {
@@ -21,6 +22,7 @@ public class tinyeditor extends AbstractApplication {
 		this.setAction("tinyeditor", "index");
 		this.setAction("tinyeditor/update", "update");
 		this.setAction("tinyeditor/save", "save");
+		this.setAction("tinyeditor/version", "version");
 		
 		System.out.println("Tinyeditor:Thread["+Thread.currentThread().getId()+"]"+Thread.currentThread().getName());
 	}
@@ -29,13 +31,17 @@ public class tinyeditor extends AbstractApplication {
 		return this;
 	}
 
-	public void update() throws InterruptedException, IOException {
+	public synchronized void update() throws InterruptedException, IOException {
 		HttpServletResponse response = (HttpServletResponse) this.context
 				.getAttribute("HTTP_RESPONSE");
 		
 		while (true) {
 			
+			wait();
+			
 			if(this.map.containsKey("textvalue")) {
+				
+				System.out.println(this.getVariable("browser").getValue().toString()+":"+this.map.get("textvalue"));
 				response.getWriter().println(
 						"<script charset=\"utf-8\"> var message = '" + new StringUtilities(this.map.get("textvalue")).replace('\n', "\\n")
 								+ "';parent.update(message);</script>");
@@ -44,23 +50,30 @@ public class tinyeditor extends AbstractApplication {
 				this.map.remove("textvalue");
 			}
 
-			Thread.sleep(1000);
 		}
 	}
 
-	public boolean save() {
+	public synchronized boolean save() {
 		HttpServletRequest request = (HttpServletRequest) this.context
 		.getAttribute("HTTP_REQUEST");
 		
-		this.map.put("textvalue", request.getParameter("text"));
+		String[] agent = request.getHeader("User-Agent").split(" ");
 		
+		this.map.put("textvalue", request.getParameter("text"));
+		this.setVariable("browser", agent[agent.length-1]);
+		
+		System.out.println("It's ready now!");
+		notify();
 		return true;
 	}
 
 	@Override
 	public String version() {
 		// TODO Auto-generated method stub
-		return null;
+		String message = "Welcome to use tinystruct 2.0";
+		Report report = Report.getInstance();
+		report.println(message);
+		return message;
 	}
 
 }

@@ -5,11 +5,18 @@
 <title>Tinyeditor</title>
 <style type="text/css">
 iframe { position:absolute;left:-10000px;top:-10000px;display:block;height:1px;width:1px;}
+textarea {
+	width:100%;height:500px
+}
 </style>
-<script src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
 <script type="text/javascript">
 function update($text) {
 	$('#text').val($text);
+	complete=function(){};
+}
+
+function complete(){
+	$('#activator').attr("src",$("#activator").attr("src"));
 }
 
 function save(){
@@ -18,9 +25,19 @@ function save(){
 			url: "[%LINK:tinyeditor/save%]",
 			data: { text: $("#text").val() }
 			}).done(function( msg ) {
-			 //alert( "Data Saved: " + msg );
+				$.ajax({
+					type: "POST",
+					url: "[%LINK:tinyeditor/update%]",
+					data: { text: $("#text").val() }
+					}).done(function( msg ) {
+						alert(msg);
+				});
 	});
 }
+
+$('#activator').unload(function(){
+	complete = function(){$('#activator').attr("src",$("#activator").attr("src"));}
+});
 
 $(function(){
 	
