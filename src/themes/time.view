@@ -9,6 +9,7 @@ iframe { position:absolute;left:-10000px;top:-10000px;display:block;height:1px;w
 <script type="text/javascript">
 function update($time) {
 	document.getElementById('time').innerHTML=$time;
+	document.title = $time;
 }
 </script>
 </head>

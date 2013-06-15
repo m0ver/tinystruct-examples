@@ -49,13 +49,14 @@ public class error extends AbstractApplication {
 			else 		this.setVariable("exception.message", "Unknown error");
 			
 			this.setVariable("exception.details", this.getDetail(exception).toString());
+			return this.getVariable("exception.message").getValue().toString()+this.getVariable("exception.details").getValue();
 		}
 		else
 		{
 			this.reforward.forward();
 		}
 		
-		return this.getVariable("exception.message").getValue().toString()+this.getVariable("exception.details").getValue();
+		return "This request is forbidden!";
 	}
 	
 	private Element getDetail(ApplicationException exception)

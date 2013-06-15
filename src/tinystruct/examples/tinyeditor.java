@@ -63,7 +63,7 @@ public class tinyeditor extends AbstractApplication {
 		this.setVariable("browser", agent[agent.length-1]);
 		
 		System.out.println("It's ready now!");
-		notify();
+		notifyAll();
 		return true;
 	}
 
