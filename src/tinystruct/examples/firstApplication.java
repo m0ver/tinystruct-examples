@@ -15,7 +15,8 @@ public class firstApplication extends AbstractApplication {
 		this.setAction("say", "say");
 		this.setAction("youhappy", "happy");
 		
-		this.setAction("version", "version");
+		this.setAction("version", "version", "GET");
+		this.setAction("version", "setVersion","POST");
 	}
 	
 	public String praise(){
@@ -37,6 +38,10 @@ public class firstApplication extends AbstractApplication {
 		return this.context.getAttribute("name") + this.context.getAttribute("number").toString();
 	}
 	
+	public void setVersion(float number){
+		this.context.setAttribute("number", number);
+	}
+	
 	public static void main(String[]args) throws ApplicationException {
 		ApplicationManager.install(new firstApplication());
 		
@@ -53,8 +58,15 @@ public class firstApplication extends AbstractApplication {
 		context.setAttribute("name", "struct");
 		context.setAttribute("number", 2.0);
 		
+		context.setAttribute("METHOD", "GET");
 		System.out.println("Current version: "+ApplicationManager.call("version", context)); // Current version: struct2.0
 		
+		context.setAttribute("METHOD", "POST");
+		System.out.println(ApplicationManager.call("version/3", context));
+		
+		context.setAttribute("METHOD", "GET");
+		System.out.println("Current version: "+ApplicationManager.call("version", context)); // Current version: struct2.0
+
 		String message = "Welcome to use tinystruct 2.0";
 		Report report = Report.getInstance();
 		report.println(message);
