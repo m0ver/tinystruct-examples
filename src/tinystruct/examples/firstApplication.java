@@ -72,4 +72,3 @@ public class firstApplication extends AbstractApplication {
 		report.println(message);
 	}
 }
-
