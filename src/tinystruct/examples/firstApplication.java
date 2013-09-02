@@ -39,6 +39,7 @@ public class firstApplication extends AbstractApplication {
 	}
 	
 	public void setVersion(float number){
+		this.context.setAttribute("name", "struct");
 		this.context.setAttribute("number", number);
 	}
 	
