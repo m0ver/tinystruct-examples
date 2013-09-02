@@ -42,6 +42,11 @@ public class firstApplication extends AbstractApplication {
 		this.context.setAttribute("number", number);
 	}
 	
+	/**
+	 * The following example code only for you to reference. 
+	 * @param args
+	 * @throws ApplicationException
+	 */
 	public static void main(String[]args) throws ApplicationException {
 		ApplicationManager.install(new firstApplication());
 		
@@ -62,13 +67,10 @@ public class firstApplication extends AbstractApplication {
 		System.out.println("Current version: "+ApplicationManager.call("version", context)); // Current version: struct2.0
 		
 		context.setAttribute("METHOD", "POST");
-		System.out.println(ApplicationManager.call("version/3", context));
+		ApplicationManager.call("version/3", context);
 		
 		context.setAttribute("METHOD", "GET");
-		System.out.println("Current version: "+ApplicationManager.call("version", context)); // Current version: struct2.0
+		System.out.println("Current version: "+ApplicationManager.call("version", context)); // Current version: struct3.0
 
-		String message = "Welcome to use tinystruct 2.0";
-		Report report = Report.getInstance();
-		report.println(message);
 	}
 }
