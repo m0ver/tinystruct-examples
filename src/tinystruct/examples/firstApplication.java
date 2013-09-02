@@ -71,6 +71,5 @@ public class firstApplication extends AbstractApplication {
 		
 		context.setAttribute("METHOD", "GET");
 		System.out.println("Current version: "+ApplicationManager.call("version", context)); // Current version: struct3.0
-
 	}
 }
