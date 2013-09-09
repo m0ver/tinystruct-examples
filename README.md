@@ -1,7 +1,7 @@
-Tinystruct2.0
+tinystruct2.0
 =========
 
-This is an example project based on Tinystruct2.0, it can work for both C/S application and B/S web application. 
+This is an example project based on tinystruct2.0, it can work for both C/S application and B/S web application. 
 
 Please check the example source codes to get more for right now.
 
