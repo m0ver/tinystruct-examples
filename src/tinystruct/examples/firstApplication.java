@@ -3,6 +3,7 @@ import org.tinystruct.AbstractApplication;
 import org.tinystruct.Application;
 import org.tinystruct.ApplicationContext;
 import org.tinystruct.ApplicationException;
+import org.tinystruct.data.component.Builder;
 import org.tinystruct.handle.Report;
 import org.tinystruct.system.ApplicationManager;
 
@@ -17,6 +18,8 @@ public class firstApplication extends AbstractApplication {
 		
 		this.setAction("version", "version", "GET");
 		this.setAction("version", "setVersion","POST");
+		
+		this.setAction("read", "read");
 	}
 	
 	public String praise(){
@@ -25,6 +28,18 @@ public class firstApplication extends AbstractApplication {
 	
 	public boolean happy(){
 		return true;
+	}
+	
+	public Object read(String json,String name){
+		Builder builder = new Builder();
+		try {
+			builder.parse(json);
+		} catch (ApplicationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return builder.get(name);
 	}
 	
 	public String say(String words){
@@ -72,5 +87,8 @@ public class firstApplication extends AbstractApplication {
 		
 		context.setAttribute("METHOD", "GET");
 		System.out.println("Current version: "+ApplicationManager.call("version", context)); // Current version: struct3.0
+	
+		Object name = app.invoke("read", new Object[]{"{\"name\":\"Mover\",\"age\":30}","name"});
+		System.out.println(name);
 	}
 }
