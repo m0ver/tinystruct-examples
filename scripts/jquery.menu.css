@@ -2,10 +2,9 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	
 	background: #000;
-	width:100%;
-	border-bottom:1px solid;
+	width: 100%;
+	border-bottom: 1px solid;
 }
 
 body {
@@ -13,14 +12,14 @@ body {
 }
 
 ul.tinystruct_menu {
-	margin:0;
+	margin: 0;
 }
 
 ul.tinystruct_menu ul {
-	margin:0;
+	margin: 0;
 }
 
-ul.tinystruct_menu > li {
+ul.tinystruct_menu>li {
 	display: block;
 	margin: 0;
 	padding: 0;
@@ -28,15 +27,15 @@ ul.tinystruct_menu > li {
 }
 
 ul.tinystruct_menu li a {
-	padding:5px 10px;
+	padding: 5px 10px;
 	color: #ccc
 }
 
-ul.tinystruct_menu ul li a:hover, ul.tinystruct_menu ul li a.selected {
+ul.tinystruct_menu ul li a:hover,ul.tinystruct_menu ul li a.selected {
 	
 }
 
-ul.tinystruct_menu li.hover > a {
+ul.tinystruct_menu li.hover>a {
 	color: #b32018;
 }
 
@@ -44,8 +43,8 @@ ul.tinystruct_menu ul.tinystruct_menu {
 	position: absolute;
 	background: #000;
 	z-index: 999;
-	margin:0;
-	border:1px solid #ccc
+	margin: 0;
+	border: 1px solid #ccc
 }
 
 ul.tinystruct_menu ul.tinystruct_menu li {
@@ -57,10 +56,11 @@ ul.tinystruct_menu ul.tinystruct_menu li {
 }
 
 ul.tinystruct_menu ul.tinystruct_menu li a {
-	padding:5px 15px;
+	padding: 5px 15px;
 }
 
-ul.tinystruct_menu ul.tinystruct_menu li a:hover,ul.tinystruct_menu ul.tinystruct_menu li.hover > a {
+ul.tinystruct_menu ul.tinystruct_menu li a:hover,ul.tinystruct_menu ul.tinystruct_menu li.hover>a
+	{
 	background: #b32018;
 	color: #ffffff;
 	text-decoration: none;

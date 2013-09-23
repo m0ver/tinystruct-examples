@@ -332,9 +332,9 @@ var Menu=function(){
 		}
 		else
 		{
-			element = currentElement=event.target;
+			element = currentElement = event.target;
 			
-			if(struct.getStyle("."+currentElement.offsetParent.className,"position")=="absolute")
+			if(currentElement.offsetParent!=null && struct.getStyle("."+currentElement.offsetParent.className,"position")=="absolute")
 			{
 				do
 				{
@@ -347,6 +347,7 @@ var Menu=function(){
 				top=currentElement.offsetTop;
 				left=currentElement.offsetLeft;
 			}
+			
 		}
 
 		var text="";
