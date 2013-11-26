@@ -4,6 +4,8 @@ import org.tinystruct.Application;
 import org.tinystruct.ApplicationContext;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.data.component.Builder;
+import org.tinystruct.data.tools.Generator;
+import org.tinystruct.data.tools.MySQLGenerator;
 import org.tinystruct.handle.Report;
 import org.tinystruct.system.ApplicationManager;
 
@@ -20,6 +22,8 @@ public class firstApplication extends AbstractApplication {
 		this.setAction("version", "setVersion","POST");
 		
 		this.setAction("read", "read");
+		
+		this.setAction("generate", "generate_with_user_table");
 	}
 	
 	public String praise(){
@@ -58,6 +62,25 @@ public class firstApplication extends AbstractApplication {
 		this.context.setAttribute("number", number);
 	}
 	
+	public void generate_with_user_table(){
+		try {
+			String[] list=new String[]{"User"};
+			for(String className:list)
+			{
+				Generator generator=new MySQLGenerator();
+				generator.setFileName("src/custom/objects/");
+				generator.setPackageName("custom.objects");
+				generator.importPackages("java.util.Date");
+				generator.create(className,className);
+				System.out.println("class:"+className+" table:"+className);
+				System.out.println("Done!");
+			}
+		} catch (ApplicationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * The following example code only for you to reference. 
 	 * @param args
@@ -90,5 +113,7 @@ public class firstApplication extends AbstractApplication {
 	
 		Object name = app.invoke("read", new Object[]{"{\"name\":\"Mover\",\"age\":30}","name"});
 		System.out.println(name);
+		
+		ApplicationManager.call("generate", null);
 	}
 }
