@@ -1,12 +1,18 @@
 package tinystruct.examples;
+import java.util.List;
+
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.Application;
 import org.tinystruct.ApplicationContext;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.data.component.Builder;
+import org.tinystruct.data.component.Row;
+import org.tinystruct.data.component.Table;
 import org.tinystruct.data.tools.Generator;
 import org.tinystruct.data.tools.MySQLGenerator;
 import org.tinystruct.system.ApplicationManager;
+
+import custom.objects.User;
 
 public class firstApplication extends AbstractApplication {
 
@@ -78,6 +84,20 @@ public class firstApplication extends AbstractApplication {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public User findUser(Object userId) throws ApplicationException{
+		User user = new User();
+		if(userId!=null){
+			user.setId(userId);
+			user.findOneById();
+		}
+		
+		return user;
+	}
+	
+	public Table findUsers() throws ApplicationException{
+		return new User().findAll();
 	}
 	
 	/**
