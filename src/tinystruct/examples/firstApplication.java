@@ -20,6 +20,9 @@ public class firstApplication extends AbstractApplication {
 		this.setAction("say", "say");
 		this.setAction("youhappy", "happy");
 		
+		this.setAction("user", "findUser");
+		this.setAction("users", "findUsers");
+		
 		this.setAction("version", "version", "GET");
 		this.setAction("version", "setVersion","POST");
 		
@@ -131,5 +134,8 @@ public class firstApplication extends AbstractApplication {
 		System.out.println(name);
 		
 		ApplicationManager.call("generate", null);
+		
+		System.out.println(ApplicationManager.call("user/1", null)); 	// http://localhost:8080/user/1
+		System.out.println(ApplicationManager.call("users", null));		// http://localhost:8080/users
 	}
 }
