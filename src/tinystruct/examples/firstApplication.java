@@ -1,12 +1,9 @@
 package tinystruct.examples;
-import java.util.List;
-
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.Application;
 import org.tinystruct.ApplicationContext;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.data.component.Builder;
-import org.tinystruct.data.component.Row;
 import org.tinystruct.data.component.Table;
 import org.tinystruct.data.tools.Generator;
 import org.tinystruct.data.tools.MySQLGenerator;
@@ -70,9 +67,9 @@ public class firstApplication extends AbstractApplication {
 	public void generate_with_user_table(){
 		try {
 			String[] list=new String[]{"User"};
+			Generator generator=new MySQLGenerator();
 			for(String className:list)
 			{
-				Generator generator=new MySQLGenerator();
 				generator.setFileName("src/custom/objects/");
 				generator.setPackageName("custom.objects");
 				generator.importPackages("java.util.Date");
