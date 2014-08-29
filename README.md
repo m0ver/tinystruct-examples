@@ -174,6 +174,29 @@ Praise to the Lord!
 <h1>你知道全世界最畅销的书是哪一本书吗？</h1>
 </blockquote>
 
+-------------------------
+
+Please check the example in hello.java to get how does the template to be rendered?
+<javascript>
+for(var i=1;i<10;i++) {
+	println((i>5?Array(i).join('  '): Array(10 - i).join('  ')) + String.fromCharCode(96+i));
+}
+</javascript>
+
+Result:
+------------------
+                a
+              b
+            c
+          d
+        e
+          f
+            g
+              h
+                i
+------------------
+
+
 <pre>
                                                          ####          ####
             ##                                  ##      ##  ##        ##  ##
