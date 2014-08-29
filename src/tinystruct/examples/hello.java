@@ -11,6 +11,7 @@ public class hello extends AbstractApplication {
 	public void init() {
 		// TODO Auto-generated method stub
 		this.setAction("say", "say");
+		this.setAction("run", "run");
 	}
 
 	@Override
@@ -23,13 +24,16 @@ public class hello extends AbstractApplication {
 		System.out.println(words);
 		return "<h1>"+words+"</h1>";
 	}
+	
+	public void run() throws ApplicationException{
+		System.out.println("**********************");
+	}
 
 	/**
 	 * @param args
 	 * @throws ApplicationException 
 	 */
 	public static void main(String[] args) throws ApplicationException {
-		// TODO Auto-generated method stub
 		// Praise to the Lord!
 		ApplicationManager.install(new hello());
 		
@@ -43,6 +47,12 @@ public class hello extends AbstractApplication {
 		
 		// or...
 		// http://localhost:8080/?q=say/Hello World
+		
+		// to run nothing
+		ApplicationManager.call("run", null);	// Looks nothing
+		
+		// What will be happened?
+		System.out.println(ApplicationManager.call("run", null));	// Will render the default template
 	}
 
 }
