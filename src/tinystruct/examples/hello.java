@@ -26,7 +26,7 @@ public class hello extends AbstractApplication {
 	}
 	
 	public void smile() throws ApplicationException{
-		System.out.println("**********************");
+		System.out.println(":)");
 	}
 
 	/**
