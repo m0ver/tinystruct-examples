@@ -3,9 +3,9 @@ tinystruct2.0
 
 This is an example project based on tinystruct2.0, it can work for both C/S application and B/S web application. 
 
-Please check the example source codes to get more for right now.
+Please check the example source code to get more.
 
-If you install this code in Tomcat 6.0+, You just access these urls:
+If you've installed this code in Tomcat 6.0+, You can access the below urls:
 
 <a href="http://localhost:8080/?q=say/Praise%20to%20the%20Lord!">http://localhost:8080/?q=say/Praise%20to%20the%20Lord! </a><br />
 <a href="http://localhost:8080/?q=praise">http://localhost:8080/?q=praise </a><br />
@@ -13,7 +13,7 @@ If you install this code in Tomcat 6.0+, You just access these urls:
 <a href="http://localhost:8080/?q=youhappy">http://localhost:8080/?q=youhappy</a><br />
 <a href="http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F">http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F</a>
 
-The following example is funny, because it support more than one people to edit it in the same time.
+The following example is funny, because it supports more than one people to edit a textarea in the same time.
 so the functionality can be used for <strong>chat</strong>, or <strong>online collaboration</strong>. Just try it for a second.
 
 <a href="http://localhost:8080/?q=tinyeditor">http://localhost:8080/?q=tinyeditor</a><br />
