@@ -178,13 +178,14 @@ Praise to the Lord!
 
 Please check the example in hello.java to get how does the template to be rendered?
 ------------------
-<javascript>
 ```javascript
+<javascript>
+
 for(var i=1;i<10;i++) {
 	println((i>5?Array(i).join('  '): Array(10 - i).join('  ')) + String.fromCharCode(96+i));
 }
-```
 </javascript>
+```
 ------------------
 Result:
 ------------------
