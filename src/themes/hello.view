@@ -6,6 +6,10 @@
 <body>
 <javascript>
 //<![CDATA[
+if(typeof println == 'undefined') {
+	println = function(str){ print(str);};
+}
+
 println("Java class '"+self.getName()+"' will execute the JavaScript code:\n\
 \
 for(var i=1;i<10;i++) {\
