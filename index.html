@@ -22,24 +22,24 @@
 
 
         <ul>
-          <li><a href="https://github.com/m0ver/tinystruct2.0/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/m0ver/tinystruct2.0/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/m0ver/tinystruct2.0">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/m0ver/tinystruct2.0">Download <strong>TAR Ball</strong></a></li>
           <li><a href="https://github.com/m0ver/tinystruct2.0">View On <strong>GitHub</strong></a></li>
         </ul>
       </header>
       <section>
-        <h1>
-<a name="tinystruct20" class="anchor" href="#tinystruct20"><span class="octicon octicon-link"></span></a>tinystruct2.0</h1>
+<h1>
+<a name="user-content-tinystruct20" class="anchor" href="#tinystruct20" aria-hidden="true"><span class="octicon octicon-link"></span></a>tinystruct2.0</h1>
 
 <p>This is an example project based on tinystruct2.0, it can work for both C/S application and B/S web application. </p>
 
-<p>Please check the example source codes to get more for right now.</p>
+<p>Please check the example source code to get more.</p>
 
-<p>If you install this code in Tomcat 6.0+, You just access these urls:</p>
+<p>If you've installed this code in Tomcat 6.0+, You can access the below urls:</p>
 
 <p><a href="http://localhost:8080/?q=say/Praise%20to%20the%20Lord!">http://localhost:8080/?q=say/Praise%20to%20the%20Lord! </a><br><a href="http://localhost:8080/?q=praise">http://localhost:8080/?q=praise </a><br><a href="http://localhost:8080/?q=say/Hello%20World">http://localhost:8080/?q=say/Hello%20World </a><br><a href="http://localhost:8080/?q=youhappy">http://localhost:8080/?q=youhappy</a><br><a href="http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F">http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F</a></p>
 
-<p>The following example is funny, because it support more than one people to edit it in the same time.
+<p>The following example is funny, because it supports more than one people to edit a textarea in the same time.
 so the functionality can be used for <strong>chat</strong>, or <strong>online collaboration</strong>. Just try it for a second.</p>
 
 <p><a href="http://localhost:8080/?q=tinyeditor">http://localhost:8080/?q=tinyeditor</a><br></p>
@@ -86,7 +86,7 @@ so the functionality can be used for <strong>chat</strong>, or <strong>online co
     <span class="o">}</span>
 
     <span class="kd">public</span> <span class="n">Object</span> <span class="nf">read</span><span class="o">(</span><span class="n">String</span> <span class="n">json</span><span class="o">,</span><span class="n">String</span> <span class="n">name</span><span class="o">){</span>
-        <span class="n">Builder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Builder</span><span class="o">();</span>
+        <span class="n">Builder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Builder</span><span class="o">();</span>
         <span class="k">try</span> <span class="o">{</span>
             <span class="n">builder</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">json</span><span class="o">);</span>
         <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ApplicationException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
@@ -116,7 +116,7 @@ so the functionality can be used for <strong>chat</strong>, or <strong>online co
     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">generate_with_user_table</span><span class="o">(){</span>
         <span class="k">try</span> <span class="o">{</span>
             <span class="n">String</span><span class="o">[]</span> <span class="n">list</span><span class="o">=</span><span class="k">new</span> <span class="n">String</span><span class="o">[]{</span><span class="s">"User"</span><span class="o">};</span>
-            <span class="n">Generator</span> <span class="n">generator</span><span class="o">=</span><span class="k">new</span> <span class="n">MySQLGenerator</span><span class="o">();</span>
+            <span class="n">Generator</span> <span class="n">generator</span><span class="o">=</span><span class="k">new</span> <span class="nf">MySQLGenerator</span><span class="o">();</span>
             <span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="nl">className:</span><span class="n">list</span><span class="o">)</span>
             <span class="o">{</span>
                 <span class="n">generator</span><span class="o">.</span><span class="na">setFileName</span><span class="o">(</span><span class="s">"src/custom/objects/"</span><span class="o">);</span>
@@ -133,7 +133,7 @@ so the functionality can be used for <strong>chat</strong>, or <strong>online co
     <span class="o">}</span>
 
     <span class="kd">public</span> <span class="n">User</span> <span class="nf">findUser</span><span class="o">(</span><span class="n">Object</span> <span class="n">userId</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ApplicationException</span><span class="o">{</span>
-        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="n">User</span><span class="o">();</span>
+        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">User</span><span class="o">();</span>
         <span class="k">if</span><span class="o">(</span><span class="n">userId</span><span class="o">!=</span><span class="kc">null</span><span class="o">){</span>
             <span class="n">user</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">userId</span><span class="o">);</span>
             <span class="n">user</span><span class="o">.</span><span class="na">findOneById</span><span class="o">();</span>
@@ -152,7 +152,7 @@ so the functionality can be used for <strong>chat</strong>, or <strong>online co
 <span class="cm">     * @throws ApplicationException</span>
 <span class="cm">     */</span>
     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span><span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ApplicationException</span> <span class="o">{</span>
-        <span class="n">ApplicationManager</span><span class="o">.</span><span class="na">install</span><span class="o">(</span><span class="k">new</span> <span class="n">firstApplication</span><span class="o">());</span>
+        <span class="n">ApplicationManager</span><span class="o">.</span><span class="na">install</span><span class="o">(</span><span class="k">new</span> <span class="nf">firstApplication</span><span class="o">());</span>
 
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ApplicationManager</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="s">"praise"</span><span class="o">,</span> <span class="kc">null</span><span class="o">));</span> <span class="c1">// Praise to the Lord!</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"I am "</span><span class="o">+</span><span class="n">ApplicationManager</span><span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="s">"youhappy"</span><span class="o">,</span> <span class="kc">null</span><span class="o">)+</span><span class="s">"ly happy"</span><span class="o">);</span> <span class="c1">// I am truely happy</span>
@@ -163,7 +163,7 @@ so the functionality can be used for <strong>chat</strong>, or <strong>online co
         <span class="n">app</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="s">"say"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">"&lt;h1&gt;Hello, World!&lt;/h1&gt;"</span><span class="o">});</span>  <span class="c1">// &lt;h1&gt;Hello, World!&lt;/h1&gt;</span>
         <span class="n">app</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="s">"say"</span><span class="o">,</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[]{</span><span class="s">"&lt;h2&gt;Bye!&lt;/h2&gt;"</span><span class="o">});</span>           <span class="c1">// &lt;h2&gt;Bye!&lt;/h2&gt;</span>
 
-        <span class="n">ApplicationContext</span> <span class="n">context</span><span class="o">=</span><span class="k">new</span> <span class="n">ApplicationContext</span><span class="o">();</span>
+        <span class="n">ApplicationContext</span> <span class="n">context</span><span class="o">=</span><span class="k">new</span> <span class="nf">ApplicationContext</span><span class="o">();</span>
         <span class="n">context</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="s">"struct"</span><span class="o">);</span>
         <span class="n">context</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="s">"number"</span><span class="o">,</span> <span class="mf">2.0</span><span class="o">);</span>
 
@@ -191,14 +191,51 @@ so the functionality can be used for <strong>chat</strong>, or <strong>online co
 
 <blockquote>
 <h1>
-<a name="praise-to-the-lord" class="anchor" href="#praise-to-the-lord"><span class="octicon octicon-link"></span></a>Praise to the Lord!</h1>
+<a name="user-content-praise-to-the-lord" class="anchor" href="#praise-to-the-lord" aria-hidden="true"><span class="octicon octicon-link"></span></a>Praise to the Lord!</h1>
 Praise to the Lord! 
 <h1>
-<a name="hello-world" class="anchor" href="#hello-world"><span class="octicon octicon-link"></span></a>Hello World</h1>
+<a name="user-content-hello-world" class="anchor" href="#hello-world" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hello World</h1>
 <i>true</i>
 <h1>
-<a name="%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97" class="anchor" href="#%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97"><span class="octicon octicon-link"></span></a>你知道全世界最畅销的书是哪一本书吗？</h1>
+<a name="user-content-你知道全世界最畅销的书是哪一本书吗" class="anchor" href="#%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97" aria-hidden="true"><span class="octicon octicon-link"></span></a>你知道全世界最畅销的书是哪一本书吗？</h1>
 </blockquote>
+
+<hr><h2>
+<a name="user-content-please-check-the-example-in-hellojava-to-get-how-does-the-template-to-be-rendered" class="anchor" href="#please-check-the-example-in-hellojava-to-get-how-does-the-template-to-be-rendered" aria-hidden="true"><span class="octicon octicon-link"></span></a>Please check the example in hello.java to get how does the template to be rendered?</h2>
+
+<div class="highlight highlight-javascript"><pre><span class="o">&lt;</span><span class="nx">javascript</span><span class="o">&gt;</span>
+
+<span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="mi">10</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">println</span><span class="p">((</span><span class="nx">i</span><span class="o">&gt;</span><span class="mi">5</span><span class="o">?</span><span class="nb">Array</span><span class="p">(</span><span class="nx">i</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">'  '</span><span class="p">)</span><span class="o">:</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">10</span> <span class="o">-</span> <span class="nx">i</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">'  '</span><span class="p">))</span> <span class="o">+</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="mi">96</span><span class="o">+</span><span class="nx">i</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="o">&lt;</span><span class="err">/javascript&gt;</span>
+</pre></div>
+
+<hr><h2>
+<a name="user-content-result" class="anchor" href="#result" aria-hidden="true"><span class="octicon octicon-link"></span></a>Result:</h2>
+
+<pre><code>            a
+          b
+        c
+      d
+    e
+      f
+        g
+          h
+            i
+</code></pre>
+
+<hr><pre>                                                         ####          ####
+            ##                                  ##      ##  ##        ##  ##
+            ##                                  ##          ##        ##  ##
+  ######   #####   #######  ### ###   ######   #####        ##        ##  ##
+ ##    ##   ##       ### ##  ##  ##  ##    ##   ##         ##         ##  ##
+  ####      ##       ##      ##  ##  ##         ##        ##          ##  ##
+     ###    ##       ##      ##  ##  ##         ##       ##           ##  ##
+ ##    ##   ## ##    ##      ## ###  ##    ##   ## ##   ##            ##  ##
+  ######     ###   ######     ######  ######     ###    ######  ##     ####
+
+</pre>
 
 <hr><p>Also please see this project: 
 <a href="https://github.com/m0ver/mobile1.0">https://github.com/m0ver/mobile1.0</a>
