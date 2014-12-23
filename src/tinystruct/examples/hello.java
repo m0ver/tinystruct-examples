@@ -53,6 +53,18 @@ public class hello extends AbstractApplication {
 		
 		// What will be happened?
 		System.out.println(ApplicationManager.call("smile", null));	// Will render the default template
+		
+		// Use ClassFileLoader to load Java class
+		ClassFileLoader loader = ClassFileLoader.getInstance();
+		
+	        Configuration config = new Settings("/application.properties");
+	        config.set("default.apps.path", "WEB-INF/classes");
+        
+		Class<Application> clz = loader.findClass("hello");
+		if(clz!=null) {
+			ApplicationManager.install(clz.newInstance());
+			ApplicationManager.call("say/Merry Christmas!", null);
+		}
 	}
 
 }
