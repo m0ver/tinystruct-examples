@@ -4,6 +4,9 @@ import org.tinystruct.AbstractApplication;
 import org.tinystruct.Application;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.system.ApplicationManager;
+import org.tinystruct.system.ClassFileLoader;
+import org.tinystruct.system.Configuration;
+import org.tinystruct.system.Settings;
 
 public class hello extends AbstractApplication {
 
@@ -32,8 +35,10 @@ public class hello extends AbstractApplication {
 	/**
 	 * @param args
 	 * @throws ApplicationException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public static void main(String[] args) throws ApplicationException {
+	public static void main(String[] args) throws ApplicationException, InstantiationException, IllegalAccessException {
 		// Praise to the Lord!
 		ApplicationManager.install(new hello());
 		
@@ -57,12 +62,13 @@ public class hello extends AbstractApplication {
 		// Use ClassFileLoader to load Java class
 		ClassFileLoader loader = ClassFileLoader.getInstance();
 		
-	        Configuration config = new Settings("/application.properties");
-	        config.set("default.apps.path", "WEB-INF/classes");
-        
-		Class<Application> clz = loader.findClass("hello");
-		if(clz!=null) {
-			ApplicationManager.install(clz.newInstance());
+        Configuration config = new Settings("/application.properties");
+        config.set("default.apps.path", "WEB-INF/classes");
+        config.set("default.apps.package", "tinystruct.examples");
+
+		Class<?> clz = loader.findClass("hello");
+		if(clz!=null && clz.getSuperclass().equals(AbstractApplication.class)) {
+			ApplicationManager.install((Application) clz.newInstance());
 			ApplicationManager.call("say/Merry Christmas!", null);
 		}
 	}
