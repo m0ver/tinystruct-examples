@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.tinystruct.AbstractApplication;
-import org.tinystruct.handle.Report;
 import org.tinystruct.system.util.StringUtilities;
 
 public class tinyeditor extends AbstractApplication {
@@ -23,8 +22,6 @@ public class tinyeditor extends AbstractApplication {
 		this.setAction("tinyeditor/update", "update");
 		this.setAction("tinyeditor/save", "save");
 		this.setAction("tinyeditor/version", "version");
-		
-		System.out.println("Tinyeditor:Thread["+Thread.currentThread().getId()+"]"+Thread.currentThread().getName());
 	}
 	
 	public tinyeditor index(){
@@ -70,10 +67,7 @@ public class tinyeditor extends AbstractApplication {
 	@Override
 	public String version() {
 		// TODO Auto-generated method stub
-		String message = "Welcome to use tinystruct 2.0";
-		Report report = Report.getInstance();
-		report.println(message);
-		return message;
+		return "Welcome to use tinystruct 2.0";
 	}
 
 }
