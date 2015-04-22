@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/struct-2.0.jar" sourcepath="/struct2.0/src"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/mysql-connector-java-5.0.4-bin.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/struct2.0"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
