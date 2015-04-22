@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+ROOT="`pwd`"
+cd "`dirname "$0"`"
+cd "../"
+cd "$ROOT"
+java -cp "$ROOT/WEB-INF/lib/*:$ROOT/WEB-INF/classes" dispatcher "$@"
