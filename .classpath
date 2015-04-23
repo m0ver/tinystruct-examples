@@ -5,13 +5,7 @@
 	<classpathentry kind="lib" path="WEB-INF/lib/servlet-api.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/mysql-connector-java-5.0.4-bin.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/htmlparser.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/jsoup-1.8.1.jar" sourcepath="WEB-INF/lib/jsoup-1.8.1-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/D:/Mover/workspace/tinystruct2.0/WEB-INF/lib/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.6.0"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
