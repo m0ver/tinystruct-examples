@@ -52,8 +52,7 @@ public class firstApplication extends AbstractApplication {
 	}
 	
 	public String say(String words){
-		System.out.println(words);
-		return "<h1>"+words+"</h1>";
+		return words;
 	}
 
 	@Override

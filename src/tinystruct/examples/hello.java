@@ -15,8 +15,7 @@ public class hello extends AbstractApplication {
 		// TODO Auto-generated method stub
 		this.setAction("say", "say");
 		this.setAction("smile", "smile");
-		this.setAction("--logo", "logo");
-		this.setAction("--version", "version");
+		this.setAction("render", "render");
 	}
 
 	@Override
@@ -26,26 +25,17 @@ public class hello extends AbstractApplication {
 	}
 	
 	public String say(String words){
-		System.out.println(words);
-		return "<h1>"+words+"</h1>";
+		return words;
 	}
 	
-	public void smile() throws ApplicationException{
-		System.out.println(":)");
+	public String smile() throws ApplicationException{
+		return ":)";
 	}
 	
-	public void logo() {
-		String logo ="\n"+
-		"  _/  '         _ _/  _     _ _/   \n"+
-		"  /  /  /) (/ _)  /  /  (/ (  /  "+this.color(2.0, FORECOLOR.green)+"  \n"+
-		"           /                       \n";
-		System.out.println(logo);
+	public hello render() {
+		return this;
 	}
 	
-	public String color(Object s, int color){
-		return (char)27+"["+color+"m"+s+(char)27 + "[0m";
-	}
-
 	/**
 	 * @param args
 	 * @throws ApplicationException 
@@ -87,28 +77,4 @@ public class hello extends AbstractApplication {
 		}
 	}
 	
-	public class FORECOLOR {
-		public static final int black = 30;
-		public static final int red = 31;
-		
-		public static final int green = 32;
-		public static final int yellow = 33;
-		
-		public static final int blue = 34;
-		public static final int magenta = 35;
-		public static final int cyan = 36;
-		public static final int white = 37;
-	}
-	
-	public class BACKGROUND_COLOR {
-		public static final int black = 40;
-		public static final int red = 41;
-		public static final int green = 42;
-		public static final int yellow = 43;
-		public static final int blue = 44;
-		public static final int magenta = 45;
-		public static final int cyan = 46;
-		public static final int white = 47;
-	}
-
 }
