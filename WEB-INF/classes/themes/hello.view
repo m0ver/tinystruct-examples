@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hello</title>
+</head>
+<body>
+<p>
+:)
+</p>
+<pre>
+<javascript>
+//<![CDATA[
+if(typeof println == 'undefined') {
+	println = function(s){ print(s+"\n");};
+}
+
+println("Java class '"+self.getName()+"' will execute the JavaScript code:\n\
+\n\
+for(var i=1;i<10;i++) {\n\
+	println((i>5?Array(i).join('  '): Array(10 - i).join('  ')) + String.fromCharCode(96+i));\n\
+}\n\
+");
+
+println('What the result will be? see the below result.');
+println(Array(10).join('--'));
+for(var i=1;i<10;i++) {
+	println((i>5?Array(i).join('  '): Array(10 - i).join('  ')) + String.fromCharCode(96+i));
+}
+println(Array(10).join('--'));
+
+ //]]>
+</javascript>
+</pre>
+</body>
+</html>

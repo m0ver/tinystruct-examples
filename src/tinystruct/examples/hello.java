@@ -15,12 +15,13 @@ public class hello extends AbstractApplication {
 		// TODO Auto-generated method stub
 		this.setAction("say", "say");
 		this.setAction("smile", "smile");
-		this.setAction("logo", "logo");
+		this.setAction("--logo", "logo");
+		this.setAction("--version", "version");
 	}
 
 	@Override
 	public String version() {
-		// TODO Auto-generated method stub
+		System.out.println("tinystruct version 2.0.1");
 		return null;
 	}
 	
@@ -35,11 +36,10 @@ public class hello extends AbstractApplication {
 	
 	public void logo() {
 		String logo ="\n"+
-"  _/  '         _ _/  _     _ _/   \n"+
-"  /  /  /) (/ _)  /  /  (/ (  /  "+this.color(2.0, FORECOLOR.green)+"  \n"+
-"           /                                  \n";
-		
-		System.out.print(logo);
+		"  _/  '         _ _/  _     _ _/   \n"+
+		"  /  /  /) (/ _)  /  /  (/ (  /  "+this.color(2.0, FORECOLOR.green)+"  \n"+
+		"           /                       \n";
+		System.out.println(logo);
 	}
 	
 	public String color(Object s, int color){
