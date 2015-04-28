@@ -8,6 +8,7 @@ $ bin/dispatcher --version
   _/  '         _ _/  _     _ _/
   /  /  /) (/ _)  /  /  (/ (  /  2.0
            /
+
 $ bin/dispatcher say/'Hello'
 Hello
 
