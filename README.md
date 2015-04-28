@@ -212,14 +212,6 @@ Result:
                 i
 ------------------
 
-<pre>
-<strong>
-                                  
-_/  '         _ _/  _     _ _/   
-/  /  /) (/ _)  /  /  (/ (  /  2.0  
-         /                                  
-</strong>
-</pre>
 ---
 
 Also please see this project: 
