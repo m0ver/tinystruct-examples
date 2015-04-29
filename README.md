@@ -8,17 +8,22 @@ $ bin/dispatcher --version
   _/  '         _ _/  _     _ _/
   /  /  /) (/ _)  /  /  (/ (  /  2.0
            /
-
-$ bin/dispatcher say/'Hello'
-Hello
-
+```
+```tcsh
+$ bin/dispatcher --help
+Usage:	dispatcher [--attributes] [actions[/args...]...]
+	where attributes include any custom attributes you defined in context 
+	or keypair parameters are going to be passed by context,
+ 	such as: 
+	--http.proxyHost=127.0.0.1 or --http.proxyPort=3128 or --param=value
+	
+$ bin/dispatcher say/"Praise to the Lord"
+Praise to the Lord
 ```
 
-This is an example project based on tinystruct2.0, it supports both C/S application and B/S web application. 
+This is an example project based on tinystruct2.0, it supports both C/S application and B/S web application development. 
 
-Please check the example source code to get more.
-
-If you've installed this code in Tomcat 6.0+, You can access the below urls:
+You can access the below urls after deployed this code in Tomcat 6.0+ :
 
 <a href="http://localhost:8080/?q=say/Praise%20to%20the%20Lord!">http://localhost:8080/?q=say/Praise%20to%20the%20Lord! </a><br />
 <a href="http://localhost:8080/?q=praise">http://localhost:8080/?q=praise </a><br />
@@ -31,6 +36,7 @@ so the functionality can be used for <strong>chat</strong>, or <strong>online co
 
 <a href="http://localhost:8080/?q=tinyeditor">http://localhost:8080/?q=tinyeditor</a><br />
 
+Please check all of the above examples source code to get more details for usage.
 -------------------------
 ```java
 package tinystruct.examples;
