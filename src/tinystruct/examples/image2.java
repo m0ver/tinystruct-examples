@@ -1,6 +1,7 @@
 package tinystruct.examples;
 
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,19 +9,22 @@ import java.io.IOException;
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
 
+/**
+ * Image to Base64 conversion
+ * Usage: dispatcher --image-path=/path/to/image image2base64
+ * @author m0ver
+ */
 public class image2 extends AbstractApplication {
 
 	private String imagePath;
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
 		this.setAction("image2base64", "image2base64");
 	}
 
 	@Override
 	public String version() {
-		// TODO Auto-generated method stub
-		return null;
+		return "1.0";
 	}
 	
 	public String image2base64() throws ApplicationException  {
