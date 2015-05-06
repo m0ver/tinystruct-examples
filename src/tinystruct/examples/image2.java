@@ -2,12 +2,15 @@ package tinystruct.examples;
 
 import java.io.ByteArrayOutputStream;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.tinystruct.AbstractApplication;
+import org.tinystruct.ApplicationContext;
 import org.tinystruct.ApplicationException;
+import org.tinystruct.system.ApplicationManager;
 
 /**
  * Image to Base64 conversion
@@ -36,7 +39,14 @@ public class image2 extends AbstractApplication {
 		return this.image2base64(this.imagePath);
 	}
 	
-	public String image2base64(String f)  {
+	public String image2base64(String f) throws ApplicationException  {
+		File file = new File(f);
+		String name = file.getName();
+		if(!name.endsWith(".jpeg") && !name.endsWith(".jpg")&& !name.endsWith(".png")&& !name.endsWith(".gif")&& !name.endsWith(".bmp"))
+		{
+			throw new ApplicationException("Invalid file");
+		}
+
 		ByteArrayOutputStream ous = null;
 		FileInputStream fs = null;
 		byte[] data = new byte[]{};
@@ -44,7 +54,7 @@ public class image2 extends AbstractApplication {
 			byte[] buffer = new byte[4096];
 			ous = new ByteArrayOutputStream();
 			int read = 0;
-			fs = new FileInputStream(f);
+			fs = new FileInputStream(file);
 			while ((read = fs.read(buffer)) != -1) {
 				ous.write(buffer, 0, read);
 			}
@@ -52,11 +62,10 @@ public class image2 extends AbstractApplication {
 			data = ous.toByteArray();
 			if(data.length > 0)
 				return "data:image/png;base64," + org.tinystruct.system.util.Base64.encode(data);
-			
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			throw new ApplicationException(e.getMessage(), e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new ApplicationException(e.getMessage(), e);
 		} finally {
 			try {
 				if (ous != null)
@@ -70,6 +79,15 @@ public class image2 extends AbstractApplication {
 		}
 		
 		return null;
+	}
+	
+	public static void main(String[]args) throws ApplicationException {
+		ApplicationContext ctx = new ApplicationContext();
+		
+		ApplicationManager.install(new image2());
+		
+		ApplicationManager.call("image2base64", ctx);
+		
 	}
 
 
