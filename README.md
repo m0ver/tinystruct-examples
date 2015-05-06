@@ -1,37 +1,41 @@
 tinystruct2.0
 =========
+This is an example project based on tinystruct2.0, it supports both C/S application and B/S web application development. 
 
-CLI Mode:
+To execute it in CLI Mode
+---
 ```tcsh
 $ bin/dispatcher --version
 
   _/  '         _ _/  _     _ _/
   /  /  /) (/ _)  /  /  (/ (  /  2.0
            /
-
-$ bin/dispatcher say/'Hello'
-Hello
-
+```
+```tcsh
+$ bin/dispatcher --help
+Usage:	dispatcher [--attributes] [actions[/args...]...]
+	where attributes include any custom attributes you defined in context 
+	or keypair parameters are going to be passed by context,
+ 	such as: 
+	--http.proxyHost=127.0.0.1 or --http.proxyPort=3128 or --param=value
+	
+$ bin/dispatcher say/"Praise to the Lord"
+Praise to the Lord
 ```
 
-This is an example project based on tinystruct2.0, it supports both C/S application and B/S web application. 
+To execute it in web server
+---
+You can access the below urls after deployed this code in Tomcat 6.0+ :
 
-Please check the example source code to get more.
+* <a href="http://localhost:8080/?q=say/Praise%20to%20the%20Lord!">http://localhost:8080/?q=say/Praise%20to%20the%20Lord! </a><br />
+* <a href="http://localhost:8080/?q=praise">http://localhost:8080/?q=praise </a><br />
+* <a href="http://localhost:8080/?q=say/Hello%20World">http://localhost:8080/?q=say/Hello%20World </a><br />
+* <a href="http://localhost:8080/?q=youhappy">http://localhost:8080/?q=youhappy</a><br />
+* <a href="http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F">http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F</a>
+* <a href="http://localhost:8080/?q=tinyeditor">http://localhost:8080/?q=tinyeditor</a><br />
 
-If you've installed this code in Tomcat 6.0+, You can access the below urls:
-
-<a href="http://localhost:8080/?q=say/Praise%20to%20the%20Lord!">http://localhost:8080/?q=say/Praise%20to%20the%20Lord! </a><br />
-<a href="http://localhost:8080/?q=praise">http://localhost:8080/?q=praise </a><br />
-<a href="http://localhost:8080/?q=say/Hello%20World">http://localhost:8080/?q=say/Hello%20World </a><br />
-<a href="http://localhost:8080/?q=youhappy">http://localhost:8080/?q=youhappy</a><br />
-<a href="http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F">http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F</a>
-
-The following example is funny, because it supports more than one people to edit a textarea in the same time.
-so the functionality can be used for <strong>chat</strong>, or <strong>online collaboration</strong>. Just try it for a second.
-
-<a href="http://localhost:8080/?q=tinyeditor">http://localhost:8080/?q=tinyeditor</a><br />
-
--------------------------
+Please check all of the above examples source code to get more details for usage.
+-
 ```java
 package tinystruct.examples;
 import org.tinystruct.AbstractApplication;
