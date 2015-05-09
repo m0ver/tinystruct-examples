@@ -205,7 +205,7 @@ for(var i=1;i<10;i++) {
 ```
 ------------------
 Result:
-------------------
+--
                 a
               b
             c
@@ -215,9 +215,7 @@ Result:
             g
               h
                 i
-------------------
 
----
 
 Also please see this project: 
 https://github.com/m0ver/mobile1.0
