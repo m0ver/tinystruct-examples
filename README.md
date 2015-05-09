@@ -179,7 +179,7 @@ public class firstApplication extends AbstractApplication {
 	}
 }
 ```
--------------------------
+
 
 You will see them in your browser.
 
@@ -191,10 +191,10 @@ Praise to the Lord!
 <h1>你知道全世界最畅销的书是哪一本书吗？</h1>
 </blockquote>
 
--------------------------
+
 
 Please check the example in hello.java to get how does the template to be rendered?
-------------------
+--
 ```javascript
 <javascript>
 
@@ -203,7 +203,7 @@ for(var i=1;i<10;i++) {
 }
 </javascript>
 ```
-------------------
+
 Result:
 --
                 a
