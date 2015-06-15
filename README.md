@@ -23,8 +23,12 @@ $ bin/dispatcher say/"Praise to the Lord"
 Praise to the Lord
 ```
 
-To execute it in web server
+Running it in a servlet container
 ---
+```tcsh
+$ bin\dispatcher --start-server --import-applications=org.tinystruct.system.TomcatServer
+```
+
 You can access the below urls after deployed this code in Tomcat 6.0+ :
 
 * <a href="http://localhost:8080/?q=say/Praise%20to%20the%20Lord!">http://localhost:8080/?q=say/Praise%20to%20the%20Lord! </a><br />
