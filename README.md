@@ -26,7 +26,7 @@ Praise to the Lord
 Running it in a servlet container
 ---
 ```tcsh
-$ bin\dispatcher --start-server --import-applications=org.tinystruct.system.TomcatServer
+$ bin/dispatcher --start-server --import-applications=org.tinystruct.system.TomcatServer
 ```
 
 You can access the below urls after deployed this code in Tomcat 6.0+ :
