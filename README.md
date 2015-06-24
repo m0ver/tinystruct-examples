@@ -2,7 +2,7 @@ tinystruct2.0
 =========
 This is an example project based on tinystruct2.0, it supports both C/S application and B/S web application development. 
 
-To execute it in CLI Mode
+To execute it in CLI mode
 ---
 ```tcsh
 $ bin/dispatcher --version
@@ -14,7 +14,7 @@ $ bin/dispatcher --version
 ```tcsh
 $ bin/dispatcher --help
 Usage:	dispatcher [--attributes] [actions[/args...]...]
-	where attributes include any custom attributes you defined in context 
+	where attributes include any custom attributes those defined in context 
 	or keypair parameters are going to be passed by context,
  	such as: 
 	--http.proxyHost=127.0.0.1 or --http.proxyPort=3128 or --param=value
