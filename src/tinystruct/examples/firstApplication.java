@@ -86,13 +86,16 @@ public class firstApplication extends AbstractApplication {
 	}
 	
 	public User findUser(Object userId) throws ApplicationException{
-		User user = new User();
+		
 		if(userId!=null){
+			User user = new User();
 			user.setId(userId);
 			user.findOneById();
+			
+			return user;
 		}
 		
-		return user;
+		return null;
 	}
 	
 	public Table findUsers() throws ApplicationException{
