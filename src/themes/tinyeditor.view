@@ -1,7 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Tinyeditor</title>
 <style type="text/css">
 iframe { position:absolute;left:-10000px;top:-10000px;display:block;height:1px;width:1px;}
@@ -9,7 +9,7 @@ textarea {
 	width:100%;height:500px
 }
 </style>
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script type="text/javascript">
 function update($text) {
 	$('#text').val($text);
