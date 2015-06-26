@@ -32,20 +32,16 @@ public class tinyeditor extends AbstractApplication {
 		HttpServletResponse response = (HttpServletResponse) this.context
 				.getAttribute("HTTP_RESPONSE");
 		
-		while (true) {
-			
-			synchronized(this.map) {
+		synchronized(this.map) {
+			while (true) {
 				this.map.wait();
 				
 				if(this.map.containsKey("textvalue")) {
-					
 					System.out.println(this.getVariable("browser").getValue().toString()+":"+this.map.get("textvalue"));
 					response.getWriter().println(
 							"<script charset=\"utf-8\"> var message = '" + new StringUtilities(this.map.get("textvalue")).replace('\n', "\\n")
 									+ "';parent.update(message);</script>");
 					response.getWriter().flush();
-					
-					this.map.remove("textvalue");
 				}
 			}
 		}
@@ -57,11 +53,10 @@ public class tinyeditor extends AbstractApplication {
 		
 		synchronized(this.map){
 			String[] agent = request.getHeader("User-Agent").split(" ");
-			
-			this.map.put("textvalue", request.getParameter("text"));
 			this.setVariable("browser", agent[agent.length-1]);
-			
-			System.out.println("It's ready now!");
+
+			this.map.put("textvalue", request.getParameter("text"));
+			if(this.map.containsKey("textvalue")) this.map.remove("textvalue");
 			this.map.notify();
 		}
 		return true;
