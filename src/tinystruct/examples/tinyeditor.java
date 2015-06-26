@@ -13,7 +13,7 @@ import org.tinystruct.system.util.StringUtilities;
 
 public class tinyeditor extends AbstractApplication {
 
-	Map<String, String> map = Collections.synchronizedMap(new HashMap<String, String>());
+	private final Map<String, String> map = Collections.synchronizedMap(new HashMap<String, String>());
 	
 	@Override
 	public void init() {
@@ -28,39 +28,42 @@ public class tinyeditor extends AbstractApplication {
 		return this;
 	}
 
-	public synchronized void update() throws InterruptedException, IOException {
+	public void update() throws InterruptedException, IOException {
 		HttpServletResponse response = (HttpServletResponse) this.context
 				.getAttribute("HTTP_RESPONSE");
 		
 		while (true) {
 			
-			wait();
-			
-			if(this.map.containsKey("textvalue")) {
+			synchronized(this.map) {
+				this.map.wait();
 				
-				System.out.println(this.getVariable("browser").getValue().toString()+":"+this.map.get("textvalue"));
-				response.getWriter().println(
-						"<script charset=\"utf-8\"> var message = '" + new StringUtilities(this.map.get("textvalue")).replace('\n', "\\n")
-								+ "';parent.update(message);</script>");
-				response.getWriter().flush();
-				
-				this.map.remove("textvalue");
+				if(this.map.containsKey("textvalue")) {
+					
+					System.out.println(this.getVariable("browser").getValue().toString()+":"+this.map.get("textvalue"));
+					response.getWriter().println(
+							"<script charset=\"utf-8\"> var message = '" + new StringUtilities(this.map.get("textvalue")).replace('\n', "\\n")
+									+ "';parent.update(message);</script>");
+					response.getWriter().flush();
+					
+					this.map.remove("textvalue");
+				}
 			}
-
 		}
 	}
 
-	public synchronized boolean save() {
+	public boolean save() {
 		HttpServletRequest request = (HttpServletRequest) this.context
 		.getAttribute("HTTP_REQUEST");
 		
-		String[] agent = request.getHeader("User-Agent").split(" ");
-		
-		this.map.put("textvalue", request.getParameter("text"));
-		this.setVariable("browser", agent[agent.length-1]);
-		
-		System.out.println("It's ready now!");
-		notifyAll();
+		synchronized(this.map){
+			String[] agent = request.getHeader("User-Agent").split(" ");
+			
+			this.map.put("textvalue", request.getParameter("text"));
+			this.setVariable("browser", agent[agent.length-1]);
+			
+			System.out.println("It's ready now!");
+			this.map.notify();
+		}
 		return true;
 	}
 
