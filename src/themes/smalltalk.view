@@ -4,7 +4,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Small Talk</title>
 <style type="text/css">
-iframe { position:absolute;left:-10000px;top:-10000px;display:block;height:1px;width:1px;}
 textarea {
 	width:100%;height:20px
 }
@@ -23,9 +22,9 @@ function complete(){
 
 function save(){
 	$.ajax({
-			type: "POST",
-			url: "[%LINK:talk/save%]",
-			data: { text: $("#text").val() }
+		type: "POST",
+		url: "[%LINK:talk/save%]",
+		data: { text: $("#text").val() }
 	}).done(function( msg ) {
 	    $("#text").val('');
 	});
@@ -33,8 +32,8 @@ function save(){
 
 function autoupdate(){
 	$.ajax({
-			type: "POST",
-			url: "[%LINK:talk/update%]",
+		type: "POST",
+		url: "[%LINK:talk/update%]",
 	}).done(function( msg ) {
     	update(msg);
     	autoupdate();
@@ -53,7 +52,7 @@ $(function(){
 	
 	$("#text").keyup(function(event){
 	  if(event.which == 13) save();
-  });
+  	});
 	
 	$("#sender").submit(function(event){
 	  event.preventDefault();
@@ -70,6 +69,5 @@ $(function(){
 <textarea id="text" name="text"></textarea>
 <input type="button" id="button" value="Send"/>
 </form>
-<!-- <iframe id="activator" src="?q=talk/update"></iframe> -->
 </body>
 </html>
