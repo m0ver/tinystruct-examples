@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Small Talk</title>
+<style type="text/css">
+iframe { position:absolute;left:-10000px;top:-10000px;display:block;height:1px;width:1px;}
+textarea {
+	width:100%;height:20px
+}
+</style>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript">
+function update($text) {
+  $li = $("<li />");
+  $li.html($text);
+	$('#list').append($li);
+}
+
+function complete(){
+	$('#activator').attr("src",$("#activator").attr("src"));
+}
+
+function save(){
+	$.ajax({
+			type: "POST",
+			url: "[%LINK:talk/save%]",
+			data: { text: $("#text").val() }
+	}).done(function( msg ) {
+    $("#text").val('');;
+	});
+}
+
+$('#activator').unload(function(){
+	complete = function(){$('#activator').attr("src",$("#activator").attr("src"));}
+});
+
+$(function(){
+	
+	$("#button").click(function(){
+		save();
+	});
+	
+	$("#text").keyup(function(event){
+	  if(event.which == 13) save();
+  });
+	
+	$("#sender").submit(function(event){
+	  event.preventDefault();
+	  save();
+	});
+});
+</script>
+</head>
+<body>
+<ul id="list"><li>Welcome to use smalltalk application!</li></ul>
+<form id="sender">
+<textarea id="text" name="text"></textarea>
+<input type="button" id="button" value="Send"/>
+</form>
+<iframe id="activator" src="?q=talk/update"></iframe>
+</body>
+</html>
