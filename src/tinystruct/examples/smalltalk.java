@@ -40,14 +40,12 @@ public class smalltalk extends AbstractApplication {
 		HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
 		
 		synchronized(this.map) {
-			while (true) {
-				this.map.wait();
-				
-				if(this.map.containsKey("textvalue")) {
-					System.out.println(this.getVariable("browser").getValue().toString()+":"+this.map.get("textvalue"));
-					response.getWriter().println("<script charset=\"utf-8\"> var message = '" + new StringUtilities(this.map.get("textvalue")).replace('\n', "\\n") + "';parent.update(message);</script>");
-					response.getWriter().flush();
-				}
+			this.map.wait();
+			if(this.map.containsKey("textvalue")) {
+				System.out.println(this.getVariable("browser").getValue().toString()+":"+this.map.get("textvalue"));
+				response.getWriter().println(new StringUtilities(this.map.get("textvalue")).replace('\n', ""));
+				response.getWriter().flush();
+				response.getWriter().close();
 			}
 		}
 	}

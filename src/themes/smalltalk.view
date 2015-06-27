@@ -27,7 +27,17 @@ function save(){
 			url: "[%LINK:talk/save%]",
 			data: { text: $("#text").val() }
 	}).done(function( msg ) {
-    $("#text").val('');;
+	    $("#text").val('');
+	});
+}
+
+function autoupdate(){
+	$.ajax({
+			type: "POST",
+			url: "[%LINK:talk/update%]",
+	}).done(function( msg ) {
+    	update(msg);
+    	autoupdate();
 	});
 }
 
@@ -49,6 +59,8 @@ $(function(){
 	  event.preventDefault();
 	  save();
 	});
+	
+    autoupdate();
 });
 </script>
 </head>
@@ -58,6 +70,6 @@ $(function(){
 <textarea id="text" name="text"></textarea>
 <input type="button" id="button" value="Send"/>
 </form>
-<iframe id="activator" src="?q=talk/update"></iframe>
+<!-- <iframe id="activator" src="?q=talk/update"></iframe> -->
 </body>
 </html>
