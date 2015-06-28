@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.tinystruct.AbstractApplication;
+import org.tinystruct.ApplicationException;
 import org.tinystruct.system.util.StringUtilities;
 
 public class smalltalk extends AbstractApplication {
@@ -36,16 +37,25 @@ public class smalltalk extends AbstractApplication {
 		return this;
 	}
 
-	public void update() throws InterruptedException, IOException {
+	public void update() throws ApplicationException {
 		HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
 		
 		synchronized(this.map) {
-			this.map.wait();
+			try {
+				this.map.wait();
+			} catch (InterruptedException e) {
+				throw new ApplicationException(e.getMessage(),e);
+			}
 			if(this.map.containsKey("textvalue")) {
 				System.out.println(this.getVariable("browser").getValue().toString()+":"+this.map.get("textvalue"));
-				response.getWriter().println(new StringUtilities(this.map.get("textvalue")).replace('\n', ""));
-				response.getWriter().flush();
-				response.getWriter().close();
+				try {
+					response.getWriter().println(new StringUtilities(this.map.get("textvalue")).replace('\n', ""));
+					response.getWriter().flush();
+					response.getWriter().close();
+				} catch (IOException e) {
+					throw new ApplicationException(e.getMessage(),e);
+				}
+
 			}
 		}
 	}
