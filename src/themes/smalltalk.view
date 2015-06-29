@@ -33,7 +33,7 @@ function save(){
 function autoupdate(){
 	$.ajax({
 		type: "POST",
-		url: "[%LINK:talk/update%]",
+		url: "[%LINK:talk/update%]"
 	}).done(function( msg ) {
     	update(msg);
     	autoupdate();
