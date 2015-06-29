@@ -9,15 +9,43 @@ textarea {
 }
 </style>
 <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="//ingod.asia/themes/scripts/timer.js"></script>
 <script type="text/javascript">
-function update($text) {
-  $li = $("<li />");
-  $li.html($text);
-	$('#list').append($li);
+//<![CDATA[
+var timer = new Timer(.2,function(){});
+var old_title = document.title;
+function update($data) {
+	if(typeof($data.message)!='undefined') {
+	  $li = $("<li />");
+	  $li.html($data.time + "\t" + $data.user + ": " + $data.message);
+		$('#list').append($li);
+		
+    timer.setAction(function() {
+        if(document.title == '') {
+        	document.title = 'New Message(s) Received!';
+        }
+        else {
+        	document.title = '';
+        }
+    });
+	}
+	else {
+    $user = $data.user;
+    document.title = $user + " is typing";
+    timer.setAction(function() {
+       document.title += '.';
+    });
+  }
+	
+	timer.start().complete(function(){ timer.start();});
 }
 
-function complete(){
-	$('#activator').attr("src",$("#activator").attr("src"));
+function command(cmd){
+  $.ajax({
+    type: "POST",
+    url: "[%LINK:talk/command%]",
+    data: { cmd: cmd }
+  }).done(function( msg ) {});
 }
 
 function save(){
@@ -26,41 +54,40 @@ function save(){
 		url: "[%LINK:talk/save%]",
 		data: { text: $("#text").val() }
 	}).done(function( msg ) {
-	    $("#text").val('');
+	  $("#text").val('');
 	});
 }
 
 function autoupdate(){
-	$.ajax({
-		type: "POST",
-		url: "[%LINK:talk/update%]"
-	}).done(function( msg ) {
-    	update(msg);
-    	autoupdate();
+	$.getJSON( "[%LINK:talk/update%]", function(data) {
+		  update(data);
+	}).done(function() {
+      autoupdate();
 	});
 }
 
-$('#activator').unload(function(){
-	complete = function(){$('#activator').attr("src",$("#activator").attr("src"));}
-});
-
 $(function(){
-	
 	$("#button").click(function(){
 		save();
 	});
 	
 	$("#text").keyup(function(event){
 	  if(event.which == 13) save();
-  	});
+	  timer.stop(3);
+	 });
+	
+	$("#text").focus(function(event){
+		command("kepress");
+	});
 	
 	$("#sender").submit(function(event){
 	  event.preventDefault();
 	  save();
 	});
 	
-    autoupdate();
+	autoupdate();
 });
+//]]>
 </script>
 </head>
 <body>
