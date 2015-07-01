@@ -70,7 +70,7 @@ public class smalltalk extends AbstractApplication {
 			if(this.map.containsKey("textvalue")) this.map.remove("textvalue");
 			
 			Builder builder = new Builder();
-			builder.put("user", request.getSession().getAttribute("user"));
+			builder.put("user", request.getSession(true).getAttribute("user"));
 			builder.put("time", format.format(new Date()));
 			builder.put("message", request.getParameter("text"));
 			
@@ -88,7 +88,7 @@ public class smalltalk extends AbstractApplication {
 			if(this.map.containsKey("textvalue")) this.map.remove("textvalue");
 			
 			Builder builder = new Builder();
-			builder.put("user", request.getSession().getAttribute("user"));
+			builder.put("user", request.getSession(true).getAttribute("user"));
 			builder.put("cmd", request.getParameter("cmd"));
 			
 			this.map.put("command", builder);

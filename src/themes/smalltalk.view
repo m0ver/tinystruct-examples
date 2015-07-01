@@ -4,6 +4,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Small Talk</title>
 <style type="text/css">
+#list {
+	overflow-x:hidden;
+	max-height:300px;
+	padding:10px 0;
+}
+
 ul {
   list-style: none;padding-left:0
 }
@@ -21,34 +27,35 @@ function update($data) {
 	if(typeof($data.message)!='undefined') {
 	  $li = $("<li />");
 	  $li.html($data.time + "\t" + $data.user + ": " + $data.message);
-		$('#list').append($li);
-		
-    timer.setAction(function() {
-       if(document.title == '') {
-       	document.title = 'New Message(s) Received!';
-       }
-       else {
-       	document.title = '';
-       }
-    });
+	  $('#messages').append($li);
+	  $('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
+	  
+	  timer.setAction(function() {
+	   if(document.title == '') {
+	   	document.title = 'New Message(s) Received!';
+	   }
+	   else {
+	   	document.title = '';
+	   }
+	  });
 	}
 	else {
-    $user = $data.user;
-    document.title = $user + " is typing";
-    timer.setAction(function() {
-       document.title += '.';
-    });
-  }
+	   $user = $data.user;
+	   document.title = $user + " is typing";
+	   timer.setAction(function() {
+	      document.title += '.';
+	   });
+	}
 	
 	timer.start().complete(function(){ timer.start();});
 }
 
 function command(cmd){
-  $.ajax({
-    type: "POST",
-    url: "[%LINK:talk/command%]",
-    data: { cmd: cmd }
-  }).done(function( msg ) {});
+	$.ajax({
+	  type: "POST",
+	  url: "[%LINK:talk/command%]",
+	  data: { cmd: cmd }
+	}).done(function( msg ) {});
 }
 
 function save(){
@@ -61,14 +68,21 @@ function save(){
 	});
 }
 
+var is_running = false;
 function autoupdate(){
-	$.getJSON( "[%LINK:talk/update%]", function(data) {
-		update(data);
-	}).done(function() {
-		autoupdate();
-	}).always(function( msg ) {
-		autoupdate();
-	});
+	if(!is_running) {
+		is_running = true;
+		$.getJSON( "[%LINK:talk/update%]", function(data) {
+			update(data);
+			is_running = false;
+		}).done(function() {
+			autoupdate();
+			is_running = false;
+		}).fail(function( msg ) {
+			autoupdate();
+			is_running = false;
+		});
+	}
 }
 
 $(function(){
@@ -82,7 +96,7 @@ $(function(){
 	});
 	
 	$("#text").focus(function(event){
-		command("kepress");
+		command("keypress");
 	});
 	
 	$("#sender").submit(function(event){
@@ -96,10 +110,12 @@ $(function(){
 </script>
 </head>
 <body>
-<ul id="list"><li>Welcome to use smalltalk application!</li></ul>
-<form id="sender">
-<textarea id="text" name="text"></textarea>
-<input type="button" id="button" value="Send"/>
-</form>
+	<div id="list">
+		<ul id="messages"><li>Welcome to use smalltalk application!</li></ul>
+	</div>
+	<form id="sender">
+		<textarea id="text" name="text"></textarea>
+		<input type="button" id="button" value="Send"/>
+	</form>
 </body>
 </html>
