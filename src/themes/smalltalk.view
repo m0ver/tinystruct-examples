@@ -21,12 +21,12 @@ function update($data) {
 		$('#list').append($li);
 		
     timer.setAction(function() {
-        if(document.title == '') {
-        	document.title = 'New Message(s) Received!';
-        }
-        else {
-        	document.title = '';
-        }
+       if(document.title == '') {
+       	document.title = 'New Message(s) Received!';
+       }
+       else {
+       	document.title = '';
+       }
     });
 	}
 	else {
@@ -54,15 +54,17 @@ function save(){
 		url: "[%LINK:talk/save%]",
 		data: { text: $("#text").val() }
 	}).done(function( msg ) {
-	  $("#text").val('');
+		$("#text").val('');
 	});
 }
 
 function autoupdate(){
 	$.getJSON( "[%LINK:talk/update%]", function(data) {
-		  update(data);
+		update(data);
 	}).done(function() {
-      autoupdate();
+		autoupdate();
+	}).error(function( msg ) {
+		autoupdate();
 	});
 }
 
@@ -72,17 +74,17 @@ $(function(){
 	});
 	
 	$("#text").keyup(function(event){
-	  if(event.which == 13) save();
-	  timer.stop(3);
-	 });
+		if(event.which == 13) save();
+		timer.stop(3);
+	});
 	
 	$("#text").focus(function(event){
 		command("kepress");
 	});
 	
 	$("#sender").submit(function(event){
-	  event.preventDefault();
-	  save();
+		event.preventDefault();
+		save();
 	});
 	
 	autoupdate();
