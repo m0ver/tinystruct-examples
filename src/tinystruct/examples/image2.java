@@ -61,7 +61,7 @@ public class image2 extends AbstractApplication {
 			
 			data = ous.toByteArray();
 			if(data.length > 0)
-				return "data:image/png;base64," + org.tinystruct.system.util.Base64.encode(data);
+				return "<img src=\"data:image/png;base64," + org.tinystruct.system.util.Base64.encode(data) + "\" />";
 		} catch (FileNotFoundException e) {
 			throw new ApplicationException(e.getMessage(), e);
 		} catch (IOException e) {
