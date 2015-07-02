@@ -40,11 +40,16 @@ function update($data) {
 	  });
 	}
 	else {
+		if(typeof($data.cmd)!='undefined' && $data.cmd != 'onblur') {
 	   $user = $data.user;
 	   document.title = $user + " is typing";
 	   timer.setAction(function() {
 	      document.title += '.';
 	   });
+		}
+		else {
+	      document.title = old_title;
+		}
 	}
 	
 	timer.start().complete(function(){ timer.start();});
@@ -99,10 +104,15 @@ $(function(){
 	});
 	
 	$("#text").focus(function(event){
-		command("keypress");
+		command("onfocus");
 		document.title = old_title;
 	});
 	
+	$("#text").blur(function(event){
+		command("onblur");
+		document.title = old_title;
+	});
+	 
 	$("#sender").submit(function(event){
 		event.preventDefault();
 		save();
