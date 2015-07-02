@@ -31,12 +31,12 @@ function update($data) {
 	  $('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
 	  
 	  timer.setAction(function() {
-	   if(document.title == '') {
-	   	document.title = 'New Message(s) Received!';
-	   }
-	   else {
-	   	document.title = '';
-	   }
+		  if(document.title == old_title) {
+		  	document.title = 'New Message(s) Received!';
+		  }
+		  else {
+		  	document.title = old_title;
+		  }
 	  });
 	}
 	else {
@@ -88,15 +88,19 @@ function autoupdate(){
 $(function(){
 	$("#button").click(function(){
 		save();
+		timer.stop(3);
 	});
 	
 	$("#text").keyup(function(event){
-		if(event.which == 13) save();
-		timer.stop(3);
+		if(event.which == 13) {
+			save();
+			timer.stop(3);
+		}
 	});
 	
 	$("#text").focus(function(event){
 		command("keypress");
+		document.title = old_title;
 	});
 	
 	$("#sender").submit(function(event){
