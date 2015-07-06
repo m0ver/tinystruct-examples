@@ -21,8 +21,9 @@ textarea {
 <script type="text/javascript" src="//ingod.asia/themes/scripts/timer.js"></script>
 <script type="text/javascript">
 //<![CDATA[
-var timer = new Timer(.2,function(){});
+var timer = new Timer(.5,function(){});
 var old_title = document.title;
+var dotted = '';
 function update($data) {
 	if(typeof($data.message)!='undefined') {
 	  $li = $("<li />");
@@ -40,15 +41,19 @@ function update($data) {
 	else {
 	  if(typeof($data.cmd) != 'undefined' && $data.cmd != 'onblur') {
 	      $user = $data.user;
-	      document.title = $user + " is typing";
 	      timer.setAction(function() {    
-	          document.title += '.';
+	    	  document.title = $user + " is typing" + dotted;
+	    	  if(dotted.length>3) this.complete();
+	    	  
+	    	  dotted += '.';
+	    	  this.start();
 	      });
 	      
-	      timer.start().complete(function(){ timer.start();});
+	      timer.start().complete(function(){ dotted = ''; });//.stop(4);
 		}
 		else {
 		    document.title = old_title;
+		    timer.stop();
 		}
 	}
 	
@@ -92,13 +97,13 @@ function autoupdate(){
 $(function(){
 	$("#button").click(function(){
 		save();
-		timer.stop(3);
+		timer.stop();
 	});
 	
 	$("#text").keyup(function(event){
 		if(event.which == 13) {
 			save();
-			timer.stop(3);
+			timer.stop();
 		}
 	});
 	
