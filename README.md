@@ -1,5 +1,7 @@
 tinystruct2.0
 =========
+[![Build Status](https://travis-ci.org/m0ver/tinystruct2.0.svg?branch=master)](https://travis-ci.org/m0ver/tinystruct2.0)
+
 This is an example project based on tinystruct2.0, it supports both C/S application and B/S web application development. 
 
 To execute it in CLI mode
