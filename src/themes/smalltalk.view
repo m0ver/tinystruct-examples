@@ -17,7 +17,7 @@ textarea {
 	width:100%;height:20px
 }
 </style>
-<script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="//ingod.asia/themes/scripts/jquery-1.5.1.js"></script>
 <script type="text/javascript" src="//ingod.asia/themes/scripts/timer.js"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -30,29 +30,28 @@ function update($data) {
 	  $('#messages').append($li);
 	  $('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
 	  
-	  timer.setAction(function() {
-		  if(document.title == old_title) {
-		  	document.title = 'New Message(s) Received!';
-		  }
-		  else {
-		  	document.title = old_title;
-		  }
-	  });
+	  if(document.title == old_title) {
+	  	document.title = 'New Message(s) Received!';
+	  }
+	  else {
+	  	document.title = old_title;
+	  }
 	}
 	else {
-		if(typeof($data.cmd)!='undefined' && $data.cmd != 'onblur') {
-	   $user = $data.user;
-	   document.title = $user + " is typing";
-	   timer.setAction(function() {
-	      document.title += '.';
-	   });
+	  if(typeof($data.cmd) != 'undefined' && $data.cmd != 'onblur') {
+	      $user = $data.user;
+	      document.title = $user + " is typing";
+	      timer.setAction(function() {    
+	          document.title += '.';
+	      });
+	      
+	      timer.start().complete(function(){ timer.start();});
 		}
 		else {
-	      document.title = old_title;
+		    document.title = old_title;
 		}
 	}
 	
-	timer.start().complete(function(){ timer.start();});
 }
 
 function command(cmd){
