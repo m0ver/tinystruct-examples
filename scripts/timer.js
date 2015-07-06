@@ -19,71 +19,72 @@
  * limitations under the License.
  **/
 var Timer = function() {
-	if (arguments.length > 1) {
-		this.limit = arguments[0];
-		this.action = typeof (arguments[1]) == 'undefined' ? function() {
-		} : arguments[1];
-	} else {
-		this.limit = 1;
-		this.action = arguments[0];
-	}
+  if (arguments.length > 1) {
+    this.limit = arguments[0];
+    this.action = typeof (arguments[1]) == 'undefined' ? function() {
+    } : arguments[1];
+  } else {
+    this.limit = 1;
+    this.action = arguments[0];
+  }
 
-	list = [ 'started', 'running', 'stopped', 'completed' ];
-	this.timer = null;
-	this.times = 0;
-	this.end = 0;
-	this.done = null;
-	this.status = list[0];
+  list = [ 'started', 'running', 'stopped', 'completed' ];
+  this.timer = null;
+  this.times = 0;
+  this.end = 0;
+  this.done = null;
+  this.status = list[0];
 
-	this.setAction = function() {
-		this.action = arguments[0];
-	};
+  this.setAction = function() {
+    this.action = arguments[0];
+  };
 
-	this.start = function() {
+  this.start = function() {
+    if (this.timer) {
+      this.stop();
+    }
 
-		if (this.timer) {
-			this.stop();
-		}
+    if (this.status != list[3]) {
+      this.timer = setTimeout(this.action.bind(this), this.limit * 1000);
+      this.times++;
+      this.status = list[1];
+    }
 
-		if (this.status != list[3]) {
-			this.timer = setTimeout(this.action, this.limit * 1000);
-			this.times++;
-			this.status = list[1];
-		}
+    return this;
+  };
 
-		return this;
-	};
+  this.stop = function() {
+    if (typeof (arguments[0]) == 'number') {
+      this.end = arguments[0];
+      return this;
+    }
+    
+    clearTimeout(this.timer);
+    this.timer = null;
+    this.status = list[2];
+    
+    if (this.times > 0 && this.times === this.end) {
+    	this.times = 0;
+      this.complete();
+    }
 
-	this.stop = function() {
-		clearTimeout(this.timer);
-		this.timer = null;
-		this.status = list[2];
-		
-		if (typeof (arguments[0]) == 'number') {
-			this.end = arguments[0];
-		}
-		
-		if (this.times > 0 && this.times === this.end) {
-			this.complete();
-		}
+    return this;
+  };
 
-		return this;
-	};
+  this.complete = function() {
+    if (typeof (arguments[0]) == 'function') {
+      this.done = arguments[0];
+      return this;
+    }
 
-	this.complete = function() {
-		if (typeof (arguments[0]) == 'function') {
-			this.done = arguments[0];
-			return this;
-		}
+    if (typeof (this.done) == 'function') {
+      this.done();
+      this.status = list[3];
+    }
+  };
 
-		if (typeof (this.done) == 'function') {
-			this.done();
-			this.status = list[3];
-		}
-	};
-
-	this.status = function() {
-		return this.status;
-	};
+  this.status = function() {
+    return this.status;
+  };
 
 }
