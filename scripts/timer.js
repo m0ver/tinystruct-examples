@@ -43,7 +43,7 @@ if (!Function.prototype.bind) {
     return fBound;
   };
 }
-// Above code copied from mozilla community.
+// Above code was copied from mozilla community.
 var Timer = function() {
   if (arguments.length > 1) {
     this.limit = arguments[0];
