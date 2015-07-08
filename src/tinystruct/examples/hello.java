@@ -66,9 +66,9 @@ public class hello extends AbstractApplication {
 		// Use ClassFileLoader to load Java class
 		ClassFileLoader loader = ClassFileLoader.getInstance();
 		
-        Configuration config = new Settings("/application.properties");
-        config.set("default.apps.path", "WEB-INF/classes");
-        config.set("default.apps.package", "tinystruct.examples");
+		Configuration config = new Settings("/application.properties");
+		config.set("default.apps.path", "WEB-INF/classes");
+		config.set("default.apps.package", "tinystruct.examples");
 
 		Class<?> clz = loader.findClass("hello");
 		if(clz!=null && clz.getSuperclass().equals(AbstractApplication.class)) {
