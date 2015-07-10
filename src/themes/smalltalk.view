@@ -43,9 +43,9 @@ function update($data) {
 	      $user = $data.user;
 	      timer.setAction(function() {    
 	    	  document.title = $user + " is typing" + dotted;
-	    	  if(dotted.length>3) this.complete();
-	    	  
 	    	  dotted += '.';
+	    	  if(dotted.length>3) this.complete();
+
 	    	  this.start();
 	      });
 	      
