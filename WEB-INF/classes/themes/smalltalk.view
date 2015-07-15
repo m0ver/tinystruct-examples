@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Small Talk</title>
+<style type="text/css">
+#list {
+	overflow-x:hidden;
+	max-height:300px;
+	padding:10px 0;
+}
+
+ul {
+  list-style: none;padding-left:0
+}
+textarea {
+	width:100%;height:20px
+}
+</style>
+<script type="text/javascript" src="//ingod.asia/themes/scripts/jquery-1.5.1.js"></script>
+<script type="text/javascript" src="//ingod.asia/themes/scripts/timer.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+var timer = new Timer(.5,function(){});
+var old_title = document.title;
+var dotted = '';
+function update($data) {
+	if(typeof($data.message)!='undefined') {
+	  $li = $("<li />");
+	  $li.html($data.time + "\t" + $data.user + ": " + $data.message);
+	  $('#messages').append($li);
+	  $('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
+	  
+	  if(document.title == old_title) {
+	  	document.title = 'New Message(s) Received!';
+	  }
+	  else {
+	  	document.title = old_title;
+	  }
+	}
+	else {
+	  if(typeof($data.cmd) != 'undefined' && $data.cmd != 'onblur') {
+	      $user = $data.user;
+	      timer.setAction(function() {    
+	    	  document.title = $user + " is typing" + dotted;
+	    	  dotted += '.';
+	    	  if(dotted.length>3) this.complete();
+
+	    	  this.start();
+	      });
+	      
+	      timer.start().complete(function(){ dotted = ''; });//.stop(4);
+		}
+		else {
+		    document.title = old_title;
+		    timer.stop();
+		}
+	}
+	
+}
+
+function command(cmd){
+	$.ajax({
+	  type: "POST",
+	  url: "[%LINK:talk/command%]",
+	  data: { cmd: cmd }
+	}).done(function( msg ) {});
+}
+
+function save(){
+	$.ajax({
+		type: "POST",
+		url: "[%LINK:talk/save%]",
+		data: { text: $("#text").val() }
+	}).done(function( msg ) {
+		$("#text").val('');
+	});
+}
+
+var is_running = false;
+function autoupdate(){
+	if(!is_running) {
+		is_running = true;
+		$.getJSON( "[%LINK:talk/update%]", function(data) {
+			update(data);
+			is_running = false;
+		}).done(function() {
+			autoupdate();
+			is_running = false;
+		}).fail(function( msg ) {
+			autoupdate();
+			is_running = false;
+		});
+	}
+}
+
+$(function(){
+	$("#button").click(function(){
+		save();
+		timer.stop();
+	});
+	
+	$("#text").keyup(function(event){
+		if(event.which == 13) {
+			save();
+			timer.stop();
+		}
+	});
+	
+	$("#text").focus(function(event){
+		command("onfocus");
+		document.title = old_title;
+	});
+	
+	$("#text").blur(function(event){
+		command("onblur");
+		document.title = old_title;
+	});
+	 
+	$("#sender").submit(function(event){
+		event.preventDefault();
+		save();
+	});
+	
+	autoupdate();
+});
+//]]>
+</script>
+</head>
+<body>
+	<div id="list">
+		<ul id="messages"><li>Welcome to use smalltalk application!</li></ul>
+	</div>
+	<form id="sender">
+		<textarea id="text" name="text"></textarea>
+		<input type="button" id="button" value="Send"/>
+	</form>
+</body>
+</html>
