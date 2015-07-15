@@ -59,7 +59,7 @@ public class smalltalk extends AbstractApplication {
 
 	public boolean save() {
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-		SimpleDateFormat format = new SimpleDateFormat("Y-M-d h:m:s");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
 		
 		synchronized(this.list){
 			String[] agent = request.getHeader("User-Agent").split(" ");
