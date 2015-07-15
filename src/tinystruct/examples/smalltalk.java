@@ -1,10 +1,9 @@
 package tinystruct.examples;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,7 +14,7 @@ import org.tinystruct.system.util.StringUtilities;
 
 public class smalltalk extends AbstractApplication {
 
-	private final Map<String, Object> map = Collections.synchronizedMap(new HashMap<String, Object>());
+	private final Queue<Builder> list = new ConcurrentLinkedQueue<Builder>();
 	
 	@Override
 	public void init() {
@@ -39,22 +38,20 @@ public class smalltalk extends AbstractApplication {
 	}
 	
 	public String update() throws ApplicationException {
-		synchronized(this.map) {
+		String message;
+		synchronized(this.list) {
 			try {
-				this.map.wait();
+				this.list.wait();
 			} catch (InterruptedException e) {
 				throw new ApplicationException(e.getMessage(),e);
 			}
 			
-			if(this.map.containsKey("textvalue")) {
-				System.out.println(this.getVariable("browser").getValue().toString()+":"+this.map.get("textvalue"));
-				return new StringUtilities(this.map.get("textvalue").toString().trim()).replace('\n', "");
+			if(!this.list.isEmpty()) {
+				message = this.list.peek().toString();
+				System.out.println(message);
+				return new StringUtilities(message.trim()).replace('\n', "");
 			}
 			
-			if(this.map.containsKey("command")) {
-				System.out.println(this.map.get("command"));
-				return new StringUtilities(this.map.get("command").toString().trim()).replace('\n', "");
-			}
 		}
 		
 		return "";
@@ -64,18 +61,18 @@ public class smalltalk extends AbstractApplication {
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 		SimpleDateFormat format = new SimpleDateFormat("Y-M-d h:m:s");
 		
-		synchronized(this.map){
+		synchronized(this.list){
 			String[] agent = request.getHeader("User-Agent").split(" ");
 			this.setVariable("browser", agent[agent.length-1]);
-			if(this.map.containsKey("textvalue")) this.map.remove("textvalue");
+			this.list.poll();
 			
 			Builder builder = new Builder();
 			builder.put("user", request.getSession(true).getAttribute("user"));
 			builder.put("time", format.format(new Date()));
 			builder.put("message", request.getParameter("text"));
 			
-			this.map.put("textvalue", builder);
-			this.map.notifyAll();
+			this.list.add(builder);
+			this.list.notifyAll();
 			return true;
 		}
 	}
@@ -83,16 +80,15 @@ public class smalltalk extends AbstractApplication {
 	public boolean command() {
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 		
-		synchronized(this.map){
-			if(this.map.containsKey("command")) this.map.remove("command");
-			if(this.map.containsKey("textvalue")) this.map.remove("textvalue");
+		synchronized(this.list){
+			this.list.poll();
 			
 			Builder builder = new Builder();
 			builder.put("user", request.getSession(true).getAttribute("user"));
 			builder.put("cmd", request.getParameter("cmd"));
 			
-			this.map.put("command", builder);
-			this.map.notifyAll();
+			this.list.add(builder);
+			this.list.notifyAll();
 			return true;
 		}
 	}
