@@ -163,18 +163,5 @@ public class smalltalk extends AbstractApplication {
 	public String version() {
 		return "Welcome to use tinystruct 2.0";
 	}
-	
-	public static void main(String[] args) {
-		final Map<Object, Queue<Builder>> map = Collections.synchronizedMap(new HashMap<Object, Queue<Builder>>());
-		Queue<Builder> list = new ConcurrentLinkedQueue<Builder>();
-
-		map.put("a", list);
-		
-		System.out.println(map.get("a").size());
-		
-		list.add(new Builder());
-		
-		System.out.println(map.get("a").size());
-	}
 
 }
