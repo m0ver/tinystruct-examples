@@ -14,7 +14,10 @@ ul {
   list-style: none;padding-left:0
 }
 textarea {
-	width:100%;height:20px
+	width:100%; height:20px;
+}
+.link {
+  color: blue; text-decoration: underline;
 }
 </style>
 <script type="text/javascript" src="//ingod.asia/themes/scripts/jquery-1.5.1.js"></script>
@@ -132,6 +135,7 @@ $(function(){
 		<ul id="messages"><li>Welcome to use smalltalk application!</li></ul>
 	</div>
 	<form id="sender">
+		<div class="note">Share the link to invite others join this conversation: <a class="link" href="javascript:void(0)">[%LINK:talk/join%]/{%meeting_code%}</a></div>
 		<textarea id="text" name="text"></textarea>
 		<input type="button" id="button" value="Send"/>
 	</form>
