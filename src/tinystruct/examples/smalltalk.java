@@ -47,7 +47,7 @@ public class smalltalk extends AbstractApplication {
 			System.out.println("New meeting generated:" + key);
 		}
 
-		this.setVariable("meeting_code", request.getSession(true).getAttribute("meeting_code").toString(), true);
+		this.setVariable("meeting_code", request.getSession(true).getAttribute("meeting_code").toString());
 		
 		return "Please start the conversation with your name: " + this.config.get("default.base_url") + "talk/start/+YOUR-NAME";
 	}
@@ -58,7 +58,7 @@ public class smalltalk extends AbstractApplication {
 			HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 			request.getSession(true).setAttribute("meeting_code", meeting_code);
 			
-			this.setVariable("meeting_code", meeting_code, true);
+			this.setVariable("meeting_code", meeting_code);
 		}
 		else {
 			return "Invalid meeting code.";
@@ -77,7 +77,7 @@ public class smalltalk extends AbstractApplication {
 			reforward.forward();
 		}
 		else {
-			this.setVariable("meeting_code", request.getSession(true).getAttribute("meeting_code").toString(), true);
+			this.setVariable("meeting_code", request.getSession(true).getAttribute("meeting_code").toString());
 		}
 		request.getSession(true).setAttribute("user", name);
 
