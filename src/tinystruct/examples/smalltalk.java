@@ -98,7 +98,7 @@ public class smalltalk extends AbstractApplication {
 				
 				if(!this.list.isEmpty()) {
 					String message = this.list.peek().toString();
-					System.out.println(message);
+					System.out.println("[" + request.getSession(true).getAttribute("meeting_code") + "]:"+message);
 					return new StringUtilities(message.trim()).replace('\n', "");
 				}
 				
