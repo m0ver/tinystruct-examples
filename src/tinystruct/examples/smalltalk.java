@@ -49,7 +49,7 @@ public class smalltalk extends AbstractApplication {
 
 		this.setVariable("meeting_code", request.getSession(true).getAttribute("meeting_code").toString());
 		
-		return "Please start the conversation with your name: " + this.config.get("default.base_url") + "talk/start/+YOUR-NAME";
+		return "Please start the conversation with your name: " + this.config.get("default.base_url") + "talk/start/YOUR NAME";
 	}
 	
 	public String join(String meeting_code){
@@ -64,7 +64,7 @@ public class smalltalk extends AbstractApplication {
 			return "Invalid meeting code.";
 		}
 		
-		return "Please start the conversation with your name: " + this.config.get("default.base_url") + "talk/start/+YOUR-NAME";
+		return "Please start the conversation with your name: " + this.config.get("default.base_url") + "talk/start/YOUR NAME";
 	}
 	
 	public smalltalk start(String name) throws ApplicationException{
