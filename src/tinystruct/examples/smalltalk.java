@@ -35,7 +35,7 @@ public class smalltalk extends AbstractApplication {
 		this.setVariable("message","");
 	}
 	
-	public String index(){
+	public smalltalk index(){
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 		if(request.getSession().getAttribute("meeting_code")==null) {
 			request.getSession(true).setAttribute("meeting_code", java.util.UUID.randomUUID());
@@ -49,16 +49,22 @@ public class smalltalk extends AbstractApplication {
 
 		this.setVariable("meeting_code", request.getSession(true).getAttribute("meeting_code").toString());
 		
-		return "Please start the conversation with your name: " + this.config.get("default.base_url") + "talk/start/YOUR NAME";
+		return this;
 	}
 	
-	public String join(String meeting_code){
+	public String join(String meeting_code) throws ApplicationException{
 		
 		if(map.containsKey(meeting_code)) {
 			HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
+			HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
+
 			request.getSession(true).setAttribute("meeting_code", meeting_code);
 			
 			this.setVariable("meeting_code", meeting_code);
+			
+			Reforward reforward = new Reforward(request, response);
+			reforward.setDefault("/?q=talk");
+			reforward.forward();
 		}
 		else {
 			return "Invalid meeting code.";
@@ -99,7 +105,7 @@ public class smalltalk extends AbstractApplication {
 				if(!this.list.isEmpty()) {
 					String message = this.list.peek().toString();
 					System.out.println("[" + request.getSession(true).getAttribute("meeting_code") + "]:"+message);
-					return new StringUtilities(message.trim()).replace('\n', "");
+					return new StringUtilities(message.trim()).replace('\n', "").replaceAll("<br><br>", "<br />");
 				}
 				
 			}

@@ -52,21 +52,21 @@
 	}
 	
 	.pad { margin: 10px 0;position:relative; }
-	.text { min-height:60px; _height:60px; padding:10px; font-size:12px; color:#a7a7a7; border:1px solid #d9d9d9; outline:0; background:#fff; }
-	.texthover .text { border-color:#337ab7; }
-	.texthover .arrowline { border-color:transparent transparent #337ab7 transparent; }
+	.text { min-height:60px; _height:60px; padding:10px; font-size:12px; color:#777; border:1px solid #d9d9d9; outline:0; background:#fff; }
+	.text:hover, .hover .text { border-color:#337ab7; }
+	.arrowline:hover, .hover .arrowline { border-color:transparent transparent #337ab7 transparent; }
 	.arrowbox { width:20px; height:20px; position:absolute; left:52px; top:-9px; }
 	.arrow { width:0; height:0; font-size:0; line-height:0; position:absolute; overflow:hidden; }
 	.arrowline { top:-1px; border-style:dashed dashed solid; border-width:5px; border-color:transparent transparent #d9d9d9 transparent; }
 	.arrowbg { top:0; border-style:dashed dashed solid; border-width:5px; border-color:transparent transparent #fff transparent; }
 	</style>
-	<script type="text/javascript" src="//ingod.asia/themes/scripts/jquery-1.5.1.js"></script>
+	<script type="text/javascript" src="//jquery.com/jquery-wp-content/themes/jquery/js/jquery-1.11.2.min.js"></script>
 	<script type="text/javascript" src="//ingod.asia/themes/scripts/timer.js"></script>
 	<script type="text/javascript">
 	//<![CDATA[
 	var timer = new Timer(.5,function(){});
 	var old_title = document.title;
-	var dotted = '';
+	var dotted = '', $user;
 	function update($data) {
 		if(typeof($data.message)!='undefined') {
 		  $li = $("<li />");
@@ -83,6 +83,10 @@
 		}
 		else {
 		  if(typeof($data.cmd) != 'undefined' && $data.cmd != 'onblur') {
+			if(!$data.user && !$user) {
+		      $("#modal").modal();
+		      return false;
+			}
 		      $user = $data.user;
 		      timer.setAction(function() {    
 		    	  document.title = $user + " is typing" + dotted;
@@ -107,7 +111,9 @@
 		  type: "POST",
 		  url: "[%LINK:talk/command%]",
 		  data: { cmd: cmd }
-		}).done(function( msg ) {});
+		}).done(function( msg ) {
+
+		});
 	}
 	
 	function save(){
@@ -121,6 +127,7 @@
 	}
 	
 	var is_running = false;
+	var connection_timer = new Timer(5, function(){ autoupdate()});
 	function autoupdate(){
 		if(!is_running) {
 			is_running = true;
@@ -131,7 +138,7 @@
 				autoupdate();
 				is_running = false;
 			}).fail(function( msg ) {
-				autoupdate();
+				connection_timer.start();
 				is_running = false;
 			});
 		}
@@ -168,10 +175,20 @@
 		autoupdate();
 		
 		$(".pad").hover(function(){
-			$(this).addClass("texthover");	
+			$(this).addClass("hover");	
 		},function(){
-			$(this).removeClass("texthover");	
+			$(this).removeClass("hover");	
 		});
+		
+		$("#dialog_submit").click(function(){
+			$.ajax({
+				type: "POST",
+				url: "[%LINK:talk/start%]/"+ $("#nickname").val()
+			}).done(function( msg ) {
+				$("#modal").modal('hide');
+			});
+		});
+		
 	});
 	//]]>
 	</script>
@@ -193,15 +210,13 @@
           <ul class="nav navbar-nav">
             <li class="active"><a href="#">Home</a></li>
             <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Help <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="#">Action</a></li>
                 <li><a href="#">Another action</a></li>
                 <li><a href="#">Something else here</a></li>
                 <li role="separator" class="divider"></li>
-                <li class="dropdown-header">Nav header</li>
                 <li><a href="#">Separated link</a></li>
                 <li><a href="#">One more separated link</a></li>
               </ul>
@@ -232,6 +247,24 @@
 		</form>
 	</div>
 
+	<!-- Modal -->
+	<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+	        <h4 class="modal-title" id="myModalLabel">Dialog</h4>
+	      </div>
+	      <div class="modal-body">
+	        <label for="nickname">Your Name:</label><input type="text" class="form-control" name="nickname" id="nickname"/>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-primary" id="dialog_submit">Save changes</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
     <footer class="footer">
       <div class="container">
         <p class="text-muted"> © 2015 tinystruct.org</p>
