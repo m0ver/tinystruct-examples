@@ -114,19 +114,21 @@ public class smalltalk extends AbstractApplication {
 		if(request.getSession().getAttribute("meeting_code")!=null) {
 			this.list = map.get(request.getSession(true).getAttribute("meeting_code").toString());
 			
-			synchronized(this.list){
-				String[] agent = request.getHeader("User-Agent").split(" ");
-				this.setVariable("browser", agent[agent.length-1]);
-				this.list.poll();
-				
-				Builder builder = new Builder();
-				builder.put("user", request.getSession(true).getAttribute("user"));
-				builder.put("time", format.format(new Date()));
-				builder.put("message", request.getParameter("text"));
-				
-				this.list.add(builder);
-				this.list.notifyAll();
-				return true;
+			if(!request.getParameter("text").isEmpty()) {
+				synchronized(this.list){
+					String[] agent = request.getHeader("User-Agent").split(" ");
+					this.setVariable("browser", agent[agent.length-1]);
+					this.list.poll();
+					
+					Builder builder = new Builder();
+					builder.put("user", request.getSession(true).getAttribute("user"));
+					builder.put("time", format.format(new Date()));
+					builder.put("message", request.getParameter("text"));
+					
+					this.list.add(builder);
+					this.list.notifyAll();
+					return true;
+				}
 			}
 		}
 		
