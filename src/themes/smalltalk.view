@@ -83,13 +83,13 @@
 		}
 		else {
 		  if(typeof($data.cmd) != 'undefined' && $data.cmd != 'onblur') {
-			if(!$data.user && !$user) {
-		      $("#modal").modal();
-		      return false;
-			}
-		      $user = $data.user;
+					if(!$user || !$data.user) {
+				      $("#modal").modal();
+				      return false;
+					}
+		      $_user = $data.user;
 		      timer.setAction(function() {    
-		    	  document.title = $user + " is typing" + dotted;
+		    	  document.title = $_user + " is typing" + dotted;
 		    	  dotted += '.';
 		    	  if(dotted.length>3) this.complete();
 	
@@ -186,6 +186,7 @@
 				url: "[%LINK:talk/start%]/"+ $("#nickname").val()
 			}).done(function( msg ) {
 				$("#modal").modal('hide');
+				$user = $("#nickname").val();
 			});
 		});
 		
@@ -267,7 +268,7 @@
 	</div>
     <footer class="footer">
       <div class="container">
-        <p class="text-muted"> © 2015 tinystruct.org</p>
+        <p class="text-muted"> © 2015 </p>
       </div>
     </footer>
 
