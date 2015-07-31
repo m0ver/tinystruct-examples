@@ -28,7 +28,7 @@
     <style type="text/css">
 	#list {
 		overflow-x:hidden;
-		max-height:300px;
+		max-height:320px;
 		padding:10px 0;
 	}
 	#list ul {
@@ -83,20 +83,20 @@
 		}
 		else {
 		  if(typeof($data.cmd) != 'undefined' && $data.cmd != 'onblur') {
-			if(!$data.user && !$user) {
-		      $("#modal").modal();
-		      return false;
-			}
-		      $user = $data.user;
-		      timer.setAction(function() {    
-		    	  document.title = $user + " is typing" + dotted;
-		    	  dotted += '.';
-		    	  if(dotted.length>3) this.complete();
-	
-		    	  this.start();
-		      });
-		      
-		      timer.start().complete(function(){ dotted = ''; });//.stop(4);
+				if(!$user || !$data.user) {
+				     $("#modal").modal();
+				     return false;
+				}
+				$_user = $data.user;
+				timer.setAction(function() {    
+				 document.title = $_user + " is typing" + dotted;
+				 dotted += '.';
+				 if(dotted.length>3) this.complete();
+				
+				 this.start();
+				});
+				
+				timer.start().complete(function(){ dotted = ''; });//.stop(4);
 			}
 			else {
 			    document.title = old_title;
@@ -128,6 +128,7 @@
 	
 	var is_running = false;
 	var connection_timer = new Timer(5, function(){ autoupdate()});
+	var blur_timer = new Timer(5);
 	function autoupdate(){
 		if(!is_running) {
 			is_running = true;
@@ -163,8 +164,11 @@
 		});
 		
 		$("#text").blur(function(event){
-			command("onblur");
-			document.title = old_title;
+			blur_timer.setAction(function(){
+				command("onblur");
+				document.title = old_title;
+			});
+			blur_timer.start();
 		});
 		 
 		$("#sender").submit(function(event){
@@ -186,6 +190,7 @@
 				url: "[%LINK:talk/start%]/"+ $("#nickname").val()
 			}).done(function( msg ) {
 				$("#modal").modal('hide');
+				$user = $("#nickname").val();
 			});
 		});
 		
@@ -267,7 +272,7 @@
 	</div>
     <footer class="footer">
       <div class="container">
-        <p class="text-muted"> © 2015 tinystruct.org</p>
+        <p class="text-muted"> © 2015 </p>
       </div>
     </footer>
 

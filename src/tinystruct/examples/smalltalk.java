@@ -15,7 +15,6 @@ import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.data.component.Builder;
 import org.tinystruct.handle.Reforward;
-import org.tinystruct.system.util.StringUtilities;
 
 public class smalltalk extends AbstractApplication {
 
@@ -73,7 +72,7 @@ public class smalltalk extends AbstractApplication {
 		return "Please start the conversation with your name: " + this.config.get("default.base_url") + "talk/start/YOUR NAME";
 	}
 	
-	public smalltalk start(String name) throws ApplicationException{
+	public String start(String name) throws ApplicationException{
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 		HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
 
@@ -87,7 +86,7 @@ public class smalltalk extends AbstractApplication {
 		}
 		request.getSession(true).setAttribute("user", name);
 
-		return this;
+		return name;
 	}
 	
 	public String update() throws ApplicationException {
@@ -105,7 +104,7 @@ public class smalltalk extends AbstractApplication {
 				if(!this.list.isEmpty()) {
 					String message = this.list.peek().toString();
 					System.out.println("[" + request.getSession(true).getAttribute("meeting_code") + "]:"+message);
-					return new StringUtilities(message.trim()).replace('\n', "").replaceAll("<br><br>", "<br />");
+					return message.trim();
 				}
 				
 			}
