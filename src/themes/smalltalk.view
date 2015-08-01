@@ -115,7 +115,7 @@
 		  if(msg=="false" && confirm("The conversation is expired, Do you want to reload the conversation?")){
 			$.ajax({
 				type: "POST",
-				url: $('#link').val();,
+				url: $('#link').val()
 			}).done(function( msg ) {});
 		  }
 		});
