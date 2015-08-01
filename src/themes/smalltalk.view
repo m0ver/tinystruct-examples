@@ -112,7 +112,12 @@
 		  url: "[%LINK:talk/command%]",
 		  data: { cmd: cmd }
 		}).done(function( msg ) {
-
+		  if(msg=="false" && confirm("The conversation is expired, Do you want to reload the conversation?")){
+			$.ajax({
+				type: "POST",
+				url: $('#link').val();,
+			}).done(function( msg ) {});
+		  }
 		});
 	}
 	
@@ -240,7 +245,7 @@
 			<ul id="messages"></ul>
 		</div>
 		<form id="sender">
-			<div class="note">Share the link to invite others join this conversation: <a class="link" href="javascript:void(0)">[%LINK:talk/join%]/{%meeting_code%}</a></div>
+			<div class="note">Share the link to invite others join this conversation: <a id="link" href="javascript:void(0)">[%LINK:talk/join%]/{%meeting_code%}</a></div>
 			<div class="pad">
 			    <div contenteditable="true" class="text" id="text"></div>
 			    <span class="arrowbox">
