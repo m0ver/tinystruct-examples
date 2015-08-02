@@ -112,10 +112,10 @@
 		  url: "[%LINK:talk/command%]",
 		  data: { cmd: cmd }
 		}).done(function( msg ) {
-		  if(msg=="false" && confirm("The conversation is expired, Do you want to reload the conversation?")){
+		  if(msg.trim()=="false" && confirm("The conversation is expired, Do you want to reload the conversation?")){
 			$.ajax({
 				type: "POST",
-				url: $('#link').val()
+				url: $('#link').text()
 			}).done(function( msg ) {});
 		  }
 		});
@@ -199,6 +199,18 @@
 			});
 		});
 		
+		$("#nickname").keyup(function(event){
+			if(event.which == 13) {
+				$("#dialog_submit").click();
+			}
+		});
+		
+		$("#messages").click(function(event){
+			target = event.target;
+			if(target.tagName == 'li') {
+				console.log(target.html());
+			};
+		});
 	});
 	//]]>
 	</script>
