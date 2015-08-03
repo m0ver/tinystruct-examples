@@ -29,24 +29,33 @@ public class smalltalk extends AbstractApplication {
 		this.setAction("talk/update", "update");
 		this.setAction("talk/save", "save");
 		this.setAction("talk/command", "command");
+		this.setAction("talk/topic", "topic");
 		this.setAction("talk/version", "version");
 		
 		this.setVariable("message","");
+		this.setVariable("topic", "");
 	}
 	
-	public smalltalk index(){
+	public smalltalk index() {
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-		if(request.getSession().getAttribute("meeting_code")==null) {
-			request.getSession(true).setAttribute("meeting_code", java.util.UUID.randomUUID());
+		Object code=request.getSession().getAttribute("meeting_code");
+
+		if(code==null) {
+			String key = java.util.UUID.randomUUID().toString();
+			request.getSession(true).setAttribute("meeting_code", key);
 			
-			String key = request.getSession(true).getAttribute("meeting_code").toString();
 			this.list = new ConcurrentLinkedQueue<Builder>();
 			this.map.put(key, this.list); 
-			
+			this.setVariable("meeting_code", key);
+
 			System.out.println("New meeting generated:" + key);
 		}
-
-		this.setVariable("meeting_code", request.getSession(true).getAttribute("meeting_code").toString());
+		else {
+			this.setVariable("meeting_code", code.toString());
+			if(this.getVariable(code.toString())!=null) {
+				this.setVariable("topic", this.getVariable(code.toString()).getValue().toString(), true);
+			}
+		}
 		
 		return this;
 	}
@@ -160,8 +169,21 @@ public class smalltalk extends AbstractApplication {
 		
 		return false;
 	}
+	
+	public boolean topic() {
+		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
+		if(request.getSession().getAttribute("meeting_code")!=null) {
+			String key = request.getSession(true).getAttribute("meeting_code").toString();
+			System.out.println(key);
 
-	public smalltalk exit(String meeting_code){
+			this.setVariable(key, request.getParameter("topic"));
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public smalltalk exit(String meeting_code) {
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 		request.getSession(true).removeAttribute("meeting_code");
 		
