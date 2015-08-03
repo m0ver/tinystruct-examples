@@ -82,21 +82,31 @@
 		  }
 		}
 		else {
-		  if(typeof($data.cmd) != 'undefined' && $data.cmd != 'onblur') {
+		  	if(typeof($data.cmd) != 'undefined' && $data.cmd != 'onblur') {
 				if(!$user || !$data.user) {
 				     $("#modal").modal();
 				     return false;
 				}
+
 				$_user = $data.user;
-				timer.setAction(function() {    
-				 document.title = $_user + " is typing" + dotted;
-				 dotted += '.';
-				 if(dotted.length>3) this.complete();
-				
-				 this.start();
-				});
-				
-				timer.start().complete(function(){ dotted = ''; });//.stop(4);
+		  		switch($data.cmd) {
+		  			case 'greeting':
+		  			  $li = $("<li />");
+		  			  $li.html("System Notification:\t" + $data.user + " joined this conversation.");
+		  			  $('#messages').append($li);
+		  			  $('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
+		  			break;
+		  			default:
+					timer.setAction(function() {    
+					 document.title = $_user + " is typing" + dotted;
+					 dotted += '.';
+					 if(dotted.length>3) this.complete();
+					
+					 this.start();
+					});
+					
+					timer.start().complete(function(){ dotted = ''; });//.stop(4);
+		  		}
 			}
 			else {
 			    document.title = old_title;
@@ -196,6 +206,17 @@
 			}).done(function( msg ) {
 				$("#modal").modal('hide');
 				$user = $("#nickname").val();
+				command("greeting");
+			});
+		});
+		
+		$("#topic_submit").click(function(){
+			$.ajax({
+				type: "POST",
+				url: "[%LINK:talk/topic%]/",
+				data: {topic: $("#brief").val()}
+			}).done(function( msg ) {
+				$("#topic_modal").modal('hide');
 			});
 		});
 		
@@ -205,12 +226,10 @@
 			}
 		});
 		
-		$("#messages").click(function(event){
-			target = event.target;
-			if(target.tagName == 'li') {
-				console.log(target.html());
-			};
-		});
+		if(!$("#topic").text()) {
+	    	$("#topic_modal").modal();
+		}
+
 	});
 	//]]>
 	</script>
@@ -253,6 +272,7 @@
     	<div class="pageheader">
     	</div>
     	<p>Welcome to use smalltalk application!</p>
+    	<p id="topic">{%topic%}</p>
 		<div id="list">
 			<ul id="messages"></ul>
 		</div>
@@ -287,6 +307,25 @@
 	    </div>
 	  </div>
 	</div>
+	<!-- Modal -->
+	<div class="modal fade" id="topic_modal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+	        <h4 class="modal-title" id="ModalLabel">Dialog</h4>
+	      </div>
+	      <div class="modal-body">
+	        <label for="brief">Topics / Questions:</label><textarea class="form-control" name="brief" id="brief"></textarea>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-primary" id="topic_submit">Save changes</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
     <footer class="footer">
       <div class="container">
         <p class="text-muted"> © 2015 </p>
