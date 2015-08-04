@@ -53,7 +53,7 @@ public class smalltalk extends AbstractApplication {
 		else {
 			this.setVariable("meeting_code", code.toString());
 			if(this.getVariable(code.toString())!=null) {
-				this.setVariable("topic", this.getVariable(code.toString()).getValue().toString(), true);
+				this.setVariable("topic", this.getVariable(code.toString()).getValue().toString().replaceAll("[\r\n]", "<br />"), true);
 			}
 		}
 		
