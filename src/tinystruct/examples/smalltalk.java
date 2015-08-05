@@ -1,5 +1,6 @@
 package tinystruct.examples;
 
+import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -15,6 +16,7 @@ import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.data.component.Builder;
 import org.tinystruct.handle.Reforward;
+import org.tinystruct.system.util.Matrix;
 
 public class smalltalk extends AbstractApplication {
 
@@ -30,6 +32,7 @@ public class smalltalk extends AbstractApplication {
 		this.setAction("talk/save", "save");
 		this.setAction("talk/command", "command");
 		this.setAction("talk/topic", "topic");
+		this.setAction("talk/matrix", "matrix");
 		this.setAction("talk/version", "version");
 		
 		this.setVariable("message","");
@@ -58,6 +61,18 @@ public class smalltalk extends AbstractApplication {
 		}
 		
 		return this;
+	}
+	
+	public String matrix() throws ApplicationException {
+		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
+
+		if(request.getParameter("meeting_code")!=null) {
+			BufferedImage qrImage = Matrix.toQRImage(this.getLink("talk/join") +"/" + request.getParameter("meeting_code"), 100, 100);
+			
+			return "data:image/png;base64," + Matrix.getBase64Image(qrImage);
+		}
+
+		return "";
 	}
 	
 	public String join(String meeting_code) throws ApplicationException{

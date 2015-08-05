@@ -51,6 +51,8 @@
 			padding-top: 75px;
 		}
 		
+		#matrix { position: absolute; right:0;bottom:0; width:70px; height:70px;}
+		.note { position: relative }
 		.pad { margin: 10px 0;position:relative; }
 		.text { min-height:60px; _height:60px; padding:10px; font-size:12px; color:#777; border:1px solid #d9d9d9; outline:0; background:#fff; }
 		.text:hover, .hover .text { border-color:#337ab7; }
@@ -229,6 +231,25 @@
 		if(!$("#topic").text()) {
 	    	$("#topic_modal").modal();
 		}
+		
+		$("#link").click(function(){
+			$.ajax({
+				type: "POST",
+				url: "[%LINK:talk/matrix%]/",
+				data: {meeting_code: "{%meeting_code%}"}
+			}).done(function( msg ) {
+				$("#matrix").css({"background":"url("+msg+") transparent center center"});
+				$("#matrix").show();
+			});
+		});
+		
+		$("#link").mouseover(function(){
+			$("#matrix").show();
+		});
+		
+		$("#link").mouseout(function(){
+			$("#matrix").hide();
+		});
 
 	});
 	//]]>
@@ -277,7 +298,7 @@
 			<ul id="messages"></ul>
 		</div>
 		<form id="sender">
-			<div class="note">Share the link to invite others join this conversation: <a id="link" href="javascript:void(0)">[%LINK:talk/join%]/{%meeting_code%}</a></div>
+			<div class="note">Share the link to invite others join this conversation: <a id="link" href="javascript:void(0)">[%LINK:talk/join%]/{%meeting_code%}</a>	<div id="matrix"><img /></div></div>
 			<div class="pad">
 			    <div contenteditable="true" class="text" id="text"></div>
 			    <span class="arrowbox">
