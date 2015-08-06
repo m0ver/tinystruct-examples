@@ -68,7 +68,7 @@
 	//<![CDATA[
 	var timer = new Timer(.5,function(){});
 	var old_title = document.title;
-	var dotted = '', $user;
+	var dotted = '', user=false;
 	function update($data) {
 		if(typeof($data.message)!='undefined') {
 		  $li = $("<li />");
@@ -84,35 +84,37 @@
 		  }
 		}
 		else {
-		  	if(typeof($data.cmd) != 'undefined' && $data.cmd != 'onblur') {
-				if(!$user || !$data.user) {
+		  	if(typeof($data.cmd) != 'undefined') 
+		  	{
+				if(!user) {
 				     $("#modal").modal();
 				     return false;
 				}
-
+				
 				$_user = $data.user;
-		  		switch($data.cmd) {
-		  			case 'greeting':
-		  			  $li = $("<li />");
-		  			  $li.html("System Notification:\t" + $data.user + " joined this conversation.");
-		  			  $('#messages').append($li);
-		  			  $('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
-		  			break;
-		  			default:
-					timer.setAction(function() {    
-					 document.title = $_user + " is typing" + dotted;
-					 dotted += '.';
-					 if(dotted.length>3) this.complete();
-					
-					 this.start();
-					});
-					
-					timer.start().complete(function(){ dotted = ''; });//.stop(4);
+				if($_user)
+		  		switch($data.cmd) 
+		  		{
+			  		case 'onblur': 			    
+			  			document.title = old_title;
+				    	timer.stop();
+				    	break;
+			  		case 'greeting':
+						$li = $("<li />");
+						$li.html("System Notification:\t" + $data.user + " joined this conversation.");
+						$('#messages').append($li);
+						$('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
+			  			break;
+			  		default:
+						timer.setAction(function() {    
+						 document.title = $_user + " is typing" + dotted;
+						 dotted += '.';
+						 if(dotted.length>3) this.complete();
+						
+						 this.start();
+						});
+						timer.start().complete(function(){ dotted = ''; });//.stop(4);
 		  		}
-			}
-			else {
-			    document.title = old_title;
-			    timer.stop();
 			}
 		}
 		
@@ -207,7 +209,7 @@
 				url: "[%LINK:talk/start%]/"+ $("#nickname").val()
 			}).done(function( msg ) {
 				$("#modal").modal('hide');
-				$user = $("#nickname").val();
+				user = $("#nickname").val();
 				command("greeting");
 			});
 		});
