@@ -152,7 +152,7 @@ public class smalltalk extends AbstractApplication {
 					Builder builder = new Builder();
 					builder.put("user", request.getSession(true).getAttribute("user"));
 					builder.put("time", format.format(new Date()));
-					builder.put("message", request.getParameter("text"));
+					builder.put("message", filter(request.getParameter("text")));
 					
 					this.list.add(builder);
 					this.list.notifyAll();
@@ -190,7 +190,7 @@ public class smalltalk extends AbstractApplication {
 		if(request.getSession().getAttribute("meeting_code")!=null) {
 			String key = request.getSession(true).getAttribute("meeting_code").toString();
 
-			this.setVariable(key, request.getParameter("topic").replaceAll("<script(.*)>(.*)<\\/script>", ""));
+			this.setVariable(key, filter(request.getParameter("topic")));
 			return true;
 		}
 		
@@ -202,6 +202,11 @@ public class smalltalk extends AbstractApplication {
 		request.getSession(true).removeAttribute("meeting_code");
 		
 		return this;
+	}
+	
+	private String filter(String text) {
+		text = text.replaceAll("<script(.*)>(.*)<\\/script>", "");
+		return text;
 	}
 	
 	@Override
