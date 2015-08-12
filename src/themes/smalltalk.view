@@ -221,6 +221,7 @@
 				data: {topic: $("#brief").val()}
 			}).done(function( msg ) {
 				$("#topic_modal").modal('hide');
+				$("#topic").html($("#brief").val());
 			});
 		});
 		

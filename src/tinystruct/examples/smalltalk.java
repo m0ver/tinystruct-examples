@@ -189,9 +189,8 @@ public class smalltalk extends AbstractApplication {
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 		if(request.getSession().getAttribute("meeting_code")!=null) {
 			String key = request.getSession(true).getAttribute("meeting_code").toString();
-			System.out.println(key);
 
-			this.setVariable(key, request.getParameter("topic"));
+			this.setVariable(key, request.getParameter("topic").replaceAll("<script(.*)>(.*)<\\/script>", ""));
 			return true;
 		}
 		
