@@ -55,7 +55,7 @@ Praise to the Lord!
 </blockquote>
 
 Please check the example in hello.java to get how does the template to be rendered?
---
+
 ```javascript
 <javascript>
 
@@ -77,6 +77,7 @@ Result:
               h
                 i
 
+Demo site: http://smalltalk.tinystruct.org
 
 Also please see this project: 
 https://github.com/m0ver/mobile1.0
