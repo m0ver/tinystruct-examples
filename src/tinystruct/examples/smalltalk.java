@@ -116,8 +116,7 @@ public class smalltalk extends AbstractApplication {
 	public String update() throws ApplicationException {
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 		if(request.getSession().getAttribute("meeting_code")!=null) {
-			this.list = map.get(request.getSession(true).getAttribute("meeting_code").toString());
-			
+			this.checkup(request);
 			synchronized(this.list) {
 				try {
 					this.list.wait();
@@ -130,7 +129,6 @@ public class smalltalk extends AbstractApplication {
 					System.out.println("[" + request.getSession(true).getAttribute("meeting_code") + "]:"+message);
 					return message.trim();
 				}
-				
 			}
 		}
 		
@@ -141,9 +139,8 @@ public class smalltalk extends AbstractApplication {
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
 		if(request.getSession().getAttribute("meeting_code")!=null) {
-			this.list = map.get(request.getSession(true).getAttribute("meeting_code").toString());
-			
 			if(!request.getParameter("text").isEmpty()) {
+				this.checkup(request);
 				synchronized(this.list){
 					String[] agent = request.getHeader("User-Agent").split(" ");
 					this.setVariable("browser", agent[agent.length-1]);
@@ -167,8 +164,7 @@ public class smalltalk extends AbstractApplication {
 	public boolean command() {
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 		if(request.getSession().getAttribute("meeting_code")!=null) {
-			this.list = map.get(request.getSession(true).getAttribute("meeting_code").toString());
-			
+			this.checkup(request);
 			synchronized(this.list){
 				this.list.poll();
 				
@@ -202,6 +198,15 @@ public class smalltalk extends AbstractApplication {
 		request.getSession(true).removeAttribute("meeting_code");
 		
 		return this;
+	}
+	
+	private void checkup(HttpServletRequest request){
+		String key = request.getSession(true).getAttribute("meeting_code").toString();
+		if((this.list = map.get(key))==null){
+			this.list = new ConcurrentLinkedQueue<Builder>();
+			this.map.put(key, this.list); 
+			this.setVariable("meeting_code", key);
+		}
 	}
 	
 	private String filter(String text) {
