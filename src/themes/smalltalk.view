@@ -12,7 +12,6 @@
 
   <!-- Bootstrap core CSS -->
   <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet" />
-
   <!-- Custom styles for this template -->
 
   <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
@@ -63,7 +62,7 @@
 		.arrowbg { top:0; border-style:dashed dashed solid; border-width:7px; border-color:transparent transparent #fff transparent; }
 	</style>
 	<script type="text/javascript" src="//jquery.com/jquery-wp-content/themes/jquery/js/jquery-1.11.2.min.js"></script>
-	<script type="text/javascript" src="//ingod.asia/themes/scripts/timer.js"></script>
+	<script type="text/javascript" src="/scripts/timer.js"></script>
 	<script type="text/javascript">
 	//<![CDATA[
 	var timer = new Timer(.5,function(){});
