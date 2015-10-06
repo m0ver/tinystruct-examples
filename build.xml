@@ -2,7 +2,7 @@
 <project name="tinystruct-example" default="test">
 	<property name="application.name" value="examples" />
 	<property name="application.version" value="1.0" />
-	<property name="webapps.dir" value="examples-1.0"></property>
+	<property name="webapps.dir" value="."></property>
 	<property name="dist.dir" value="${webapps.dir}/dist" />
 	<property name="build.sourcelevel" value="1.5" />
 
