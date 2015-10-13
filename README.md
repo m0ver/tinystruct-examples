@@ -28,10 +28,10 @@ Praise to the Lord
 Running it in a servlet container
 ---
 ```tcsh
-$ bin/dispatcher --start-server --import-applications=org.tinystruct.system.TomcatServer
+# bin/dispatcher --start-server --import-applications=org.tinystruct.system.TomcatServer
 ```
 
-You can access the below urls after deployed this code in Tomcat 6.0+ :
+You can access the below URLs after deployed the project in Tomcat 6.0+ :
 
 * <a href="http://localhost:8080/?q=say/Praise%20to%20the%20Lord!">http://localhost:8080/?q=say/Praise%20to%20the%20Lord! </a><br />
 * <a href="http://localhost:8080/?q=praise">http://localhost:8080/?q=praise </a><br />
@@ -41,8 +41,9 @@ You can access the below urls after deployed this code in Tomcat 6.0+ :
 * <a href="http://localhost:8080/?q=tinyeditor">http://localhost:8080/?q=tinyeditor</a><br />
 
 Open the below two urls in different browsers to see the demo:
-* <a href="http://localhost:8080/?q=talk/start/Abraham">http://localhost:8080/?q=talk/start/Abraham</a><br />
-* <a href="http://localhost:8080/?q=talk/start/Sarah">http://localhost:8080/?q=talk/start/Sarah</a><br />
+* <a href="http://localhost:8080/?q=talk">http://localhost:8080/?q=talk</a><br />
+
+Live demo site: http://smalltalk.tinystruct.org/
 
 You will see them in your browser.
 
@@ -66,7 +67,7 @@ for(var i=1;i<10;i++) {
 ```
 
 Result:
---
+```javascript
                 a
               b
             c
@@ -76,8 +77,8 @@ Result:
             g
               h
                 i
+```
 
-Demo site: http://smalltalk.tinystruct.org
 
 Also please see this project: 
 https://github.com/m0ver/mobile1.0
