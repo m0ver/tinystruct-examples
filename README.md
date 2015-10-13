@@ -38,12 +38,12 @@ You can access the below URLs after deployed the project in Tomcat 6.0+ :
 * <a href="http://localhost:8080/?q=say/Hello%20World">http://localhost:8080/?q=say/Hello%20World </a><br />
 * <a href="http://localhost:8080/?q=youhappy">http://localhost:8080/?q=youhappy</a><br />
 * <a href="http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F">http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F</a>
-* <a href="http://localhost:8080/?q=tinyeditor">http://localhost:8080/?q=tinyeditor</a><br />
 
-Open the below two urls in different browsers to see the demo:
+A demonstration for comet technology:
 * <a href="http://localhost:8080/?q=talk">http://localhost:8080/?q=talk</a><br />
 
-Live demo site: http://smalltalk.tinystruct.org/
+Live demo site: 
+* http://smalltalk.tinystruct.org/
 
 You will see them in your browser.
 
