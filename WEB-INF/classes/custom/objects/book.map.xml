@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mapping>
+ <class name="book" table="book">
+  <id name="Id" column="id" increment="false" generate="true" length="50" type="varchar"/>
+  <property name="name" column="name" length="255" type="varchar"/>
+  <property name="cover" column="cover" length="255" type="varchar"/>
+  <property name="author" column="author" length="20" type="varchar"/>
+  <property name="translator" column="translator" length="20" type="varchar"/>
+  <property name="publisher" column="publisher" length="20" type="varchar"/>
+  <property name="publishDate" column="publish_date" length="0" type="date"/>
+  <property name="language" column="language" length="10" type="varchar"/>
+ </class>
+</mapping>
