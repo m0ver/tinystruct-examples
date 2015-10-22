@@ -146,6 +146,7 @@ public class reading extends AbstractApplication {
 		}
 		
 		this.setVariable(new DataVariable("book",book), true);
+		this.setText("book.info", new Object[]{book.getAuthor(), book.getPublishDate(), book.getPublisher()});
 		
 		String condition = "book_id=? and chapter_id=?";
 		
@@ -190,8 +191,10 @@ public class reading extends AbstractApplication {
 				if (i == 0 && line.trim().length()>0 && line.charAt(0)!='<')
 					line = "<span class='firstletter'>" + line.substring(0, 1)
 							+ "</span>" + line.substring(1, line.length());
-		
-					line = line.replaceAll("\n\n", "<br />");
+		if(line.contains("div")){
+			System.err.println(article.getId());
+		}
+					line = line.replaceAll("<br (.+?)(/?)>", "<br />").replaceAll("\n\n", "<br />");
 					content
 							.append("<span"
 									+ (this.sectionId == article.getSectionId() ? " class=\"selected\""
@@ -579,35 +582,35 @@ public class reading extends AbstractApplication {
 		int sectionId=1;
 
 		while(p <= 47) {
-		URL url = new URL("http://www.old-gospel.net/viewthread.php?tid=446&extra=page%3D1&page="+(p++));
-		URLFileLoader file = new URLFileLoader(url);
-		file.setCharset("gbk");
-		String content = file.getContent().toString();
-		Matcher m = pattern.matcher(content);
-		article article = new article();
-		article.setBookId(book.getId());
-
-		while(m.find()){
-			content = m.group(2);
-			article.setContent(content);
-
-			article.setChapterId(chapterId);
-			if(patt.matcher(content).find())
-			{
-				sectionId = 1;
-				article.setChapterId(chapterId++);
+			URL url = new URL("http://www.old-gospel.net/viewthread.php?tid=446&extra=page%3D1&page="+(p++));
+			URLFileLoader file = new URLFileLoader(url);
+			file.setCharset("gbk");
+			String content = file.getContent().toString();
+			Matcher m = pattern.matcher(content);
+			article article = new article();
+			article.setBookId(book.getId());
+	
+			while(m.find()) {
+				content = m.group(2);
+				article.setContent(content);
+	
+				article.setChapterId(chapterId);
+				if(patt.matcher(content).find())
+				{
+					sectionId = 1;
+					article.setChapterId(chapterId++);
+				}
+				else {
+					sectionId++;
+					article.setChapterId(chapterId-1);
+				}
+				
+				article.setSectionId(sectionId);
+				article.append();
+				
+				System.out.println(content);
+	
 			}
-			else {
-				sectionId++;
-				article.setChapterId(chapterId-1);
-			}
-			
-			article.setSectionId(sectionId);
-			article.append();
-			
-			System.out.println(content);
-
-		}
 		}
 	}
 }
