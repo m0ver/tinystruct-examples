@@ -146,6 +146,7 @@ public class smalltalk extends AbstractApplication {
 					this.setVariable("browser", agent[agent.length-1]);
 					
 					Builder builder = this.list.poll();
+					if(builder==null) builder = new Builder();
 					builder.remove("cmd");
 					builder.put("user", request.getSession(true).getAttribute("user"));
 					builder.put("time", format.format(new Date()));
@@ -168,6 +169,7 @@ public class smalltalk extends AbstractApplication {
 			synchronized(this.list){
 				
 				Builder builder = this.list.poll();
+				if(builder==null) builder = new Builder();
 				builder.remove("message");
 				builder.remove("time");
 				builder.put("user", request.getSession(true).getAttribute("user"));
