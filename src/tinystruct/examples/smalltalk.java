@@ -144,9 +144,9 @@ public class smalltalk extends AbstractApplication {
 				synchronized(this.list){
 					String[] agent = request.getHeader("User-Agent").split(" ");
 					this.setVariable("browser", agent[agent.length-1]);
-					this.list.poll();
 					
-					Builder builder = new Builder();
+					Builder builder = this.list.poll();
+					builder.remove("cmd");
 					builder.put("user", request.getSession(true).getAttribute("user"));
 					builder.put("time", format.format(new Date()));
 					builder.put("message", filter(request.getParameter("text")));
@@ -166,9 +166,10 @@ public class smalltalk extends AbstractApplication {
 		if(request.getSession().getAttribute("meeting_code")!=null) {
 			this.checkup(request);
 			synchronized(this.list){
-				this.list.poll();
 				
-				Builder builder = new Builder();
+				Builder builder = this.list.poll();
+				builder.remove("message");
+				builder.remove("time");
 				builder.put("user", request.getSession(true).getAttribute("user"));
 				builder.put("cmd", request.getParameter("cmd"));
 				
