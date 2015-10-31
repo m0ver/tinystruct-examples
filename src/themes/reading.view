@@ -7,6 +7,8 @@
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
   <meta name="description" content="" />
   <meta name="author" content="" />
+  <link href="/favicon.png" rel="icon" type="image/x-icon"/>
+  <link href="/favicon.png" rel="shortcut icon" type="image/x-icon"/>
 
   <title>{%book.name%}</title>
 
@@ -103,9 +105,12 @@
     	<div class="pageheader">
     	</div>
     	<h1>{%book.name%}</h1>
+    	<div class="clear-fix">[%book.info%]</div>
+    	
+    	<div class="clear-fix">[%holy.book.forward%]：<a href="{%base_url%}book/{%book.Id%}/{%lastchapter%}#up" title="{%book.name%} | 第{%lastchapter%}章">&#8249;&#8249; [%holy.book.previous%]</a> <a href="{%base_url%}book/{%book.Id%}/{%nextchapter%}#up" title="{%book.name%} | 第{%nextchapter%}章">[%holy.book.next%] &#8250;&#8250;</a> </div>
+    	<div class="article">{%content%}</div>
     	<div class="clear-fix">[%holy.book.forward%]：<a href="{%base_url%}book/{%book.Id%}/{%lastchapter%}#up" title="{%book.name%} | 第{%lastchapter%}章">&#8249;&#8249; [%holy.book.previous%]</a> <a href="{%base_url%}book/{%book.Id%}/{%nextchapter%}#up" title="{%book.name%} | 第{%nextchapter%}章">[%holy.book.next%] &#8250;&#8250;</a> </div>
     	
-    	<div class="article">{%content%}</div>
 	</div>
 
 	<!-- Modal -->
