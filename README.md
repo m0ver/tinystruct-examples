@@ -42,10 +42,10 @@ You can access the below URLs after deployed the project in Tomcat 6.0+ :
 A demonstration for comet technology:
 * <a href="http://localhost:8080/?q=talk">http://localhost:8080/?q=talk</a><br />
 
-Live demo site: 
+Live Demo Site: 
 * http://smalltalk.tinystruct.org/
 
-You will see them in your browser.
+Results in your browser should be:
 
 <blockquote>
 <h1>Praise to the Lord!</h1>
@@ -55,34 +55,12 @@ Praise to the Lord!
 <h1>你知道全世界最畅销的书是哪一本书吗？</h1>
 </blockquote>
 
-Please check the example in hello.java to get how does the template to be rendered?
-
-```javascript
-<javascript>
-
-for(var i=1;i<10;i++) {
-	println((i>5?Array(i).join('  '): Array(10 - i).join('  ')) + String.fromCharCode(96+i));
-}
-</javascript>
-```
-
-Result:
-```javascript
-                a
-              b
-            c
-          d
-        e
-          f
-            g
-              h
-                i
-```
-
-
-Also please see this project: 
-https://github.com/m0ver/mobile1.0
-http://ingod.asia
+Explore it 
+--
+* Please read more example code in the project.
+* Also please see this project: 
+	https://github.com/m0ver/mobile1.0
+	http://ingod.asia
 
 
 License
