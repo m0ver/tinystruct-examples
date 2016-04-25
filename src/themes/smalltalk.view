@@ -58,8 +58,8 @@
 		.arrowline:hover, .hover .arrowline { border-color:transparent transparent #337ab7 transparent; }
 		.arrowbox { width:20px; height:20px; position:absolute; left:52px; top:-12px; }
 		.arrow { width:0; height:0; font-size:0; line-height:0; position:absolute; overflow:hidden; }
-		.arrowline { top:-1px; border-style:dashed dashed solid; border-width:7px; border-color:transparent transparent #d9d9d9 transparent; }
-		.arrowbg { top:0; border-style:dashed dashed solid; border-width:7px; border-color:transparent transparent #fff transparent; }
+		.arrowline { top:-1px; border-style:solid solid solid; border-width:7px; border-color:transparent transparent #d9d9d9 transparent; }
+		.arrowbg { top:0.35px; border-style:solid solid solid; border-width:7px; border-color:transparent transparent #fff transparent; }
 	</style>
 	<script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script type="text/javascript" src="//ingod.asia/themes/scripts/timer.js"></script>
