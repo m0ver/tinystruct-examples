@@ -253,6 +253,24 @@
 			$("#matrix").hide();
 		});
 
+		$("#text").on('paste', function (e) {
+		  if(e.originalEvent) {
+		    var original = e.originalEvent;
+		    for (var i = 0; i < original.clipboardData.items.length; i++) {
+		      if (original.clipboardData.items[i].kind == "file" && original.clipboardData.items[i].type == "image/png") {
+		        var file = original.clipboardData.items[i].getAsFile();
+		        var reader = new FileReader();
+		        reader.onloadend = function () {
+		        	var img = $("<img />");
+		        	img.attr('src', this.result);
+		          $('#text').html(img);
+		        }
+		        reader.readAsDataURL(file);
+		        break;
+		      }
+		    }
+		  }
+		});
 	});
 	//]]>
 	</script>
