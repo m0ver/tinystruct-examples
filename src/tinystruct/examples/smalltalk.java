@@ -25,8 +25,8 @@ import org.tinystruct.data.component.Builder;
 import org.tinystruct.handle.Reforward;
 import org.tinystruct.system.ApplicationManager;
 import org.tinystruct.system.util.Matrix;
-import org.tinystruct.transfer.http.ContentDisposition;
-import org.tinystruct.transfer.http.MultipartFormData;
+import org.tinystruct.transfer.http.upload.ContentDisposition;
+import org.tinystruct.transfer.http.upload.MultipartFormData;
 
 public class smalltalk extends AbstractApplication {
 
@@ -291,4 +291,27 @@ public class smalltalk extends AbstractApplication {
 		return "Welcome to use tinystruct 2.0";
 	}
 
+	public static void main(String[] args) throws ApplicationException {
+		long seconds = System.currentTimeMillis();
+		ApplicationManager.init();
+		System.out.println("Initialized:" + (System.currentTimeMillis() - seconds)
+		    + " ms");
+
+		seconds = System.currentTimeMillis();
+		System.out.println(ApplicationManager.call("say/Hello, James", null));
+		System.out.println(ApplicationManager.call("say/Hello, James", null));
+		System.out.println(ApplicationManager.call("say/Hello, James", null));
+		System.out.println(ApplicationManager.call("say/Hello, James", null));
+		System.out.println(ApplicationManager.call("say/Hello, James", null));
+
+		System.out.println(System.currentTimeMillis() - seconds + " ms");
+
+		seconds = System.currentTimeMillis();
+		System.out.println(ApplicationManager.call("say/Hello, James", null));
+		System.out.println(System.currentTimeMillis() - seconds + " ms");
+
+		seconds = System.currentTimeMillis();
+		System.out.println("Hello, James");
+		System.out.println(System.currentTimeMillis() - seconds + " ms");
+	}
 }
