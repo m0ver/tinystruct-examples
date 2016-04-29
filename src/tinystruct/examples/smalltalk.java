@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.data.component.Builder;
+import org.tinystruct.data.component.Builders;
 import org.tinystruct.handle.Reforward;
 import org.tinystruct.system.ApplicationManager;
 import org.tinystruct.system.util.Matrix;
@@ -249,16 +250,18 @@ public class smalltalk extends AbstractApplication {
 		response.setContentType("text/html;charset=UTF-8");
 
 		// Create path components to save the file
-		final String path = this.config.get("system.directory") != null ? this.config.get("system.directory").toString() : "/tmp";
-
+		final String path = this.config.get("system.directory") != null ? this.config.get("system.directory").toString() + "/files" : "files";
+		
+		Builders builders = new Builders();
 		try {
 			MultipartFormData iter = new MultipartFormData(request);
-			ContentDisposition e = iter.getNextPart();
-			if (e != null) {
+			ContentDisposition e = null;
+			
+			while ((e = iter.getNextPart()) != null) {
 				final String fileName = e.getFileName();
-
-				OutputStream out = null;
-				out = new FileOutputStream(new File(path + File.separator + fileName));
+				Builder builder = new Builder();
+				builder.put("file", this.context.getAttribute("HTTP_HOST") + "/files/" + fileName);
+				OutputStream out = new FileOutputStream(new File(path + File.separator + fileName));
 
 				InputStream is = new ByteArrayInputStream(e.getData());
 				int read = 0;
@@ -266,19 +269,20 @@ public class smalltalk extends AbstractApplication {
 				while ((read = is.read(bytes)) != -1) {
 					out.write(bytes, 0, read);
 				}
-
 				out.close();
 
+				builders.add(builder);
 				System.out.println("New file " + fileName + " created at " + path);
 				System.out.println(String.format("File %s being uploaded to %s", new Object[] { fileName, path }));
 			}
+			
 		} catch (IOException e) {
 			throw new ApplicationException(e.getMessage(), e);
 		} catch (ServletException e) {
 			throw new ApplicationException(e.getMessage(), e);
 		}
 
-		return "{status:success}";
+		return builders.toString();
 	}
 
 	private String filter(String text) {
@@ -289,29 +293,5 @@ public class smalltalk extends AbstractApplication {
 	@Override
 	public String version() {
 		return "Welcome to use tinystruct 2.0";
-	}
-
-	public static void main(String[] args) throws ApplicationException {
-		long seconds = System.currentTimeMillis();
-		ApplicationManager.init();
-		System.out.println("Initialized:" + (System.currentTimeMillis() - seconds)
-		    + " ms");
-
-		seconds = System.currentTimeMillis();
-		System.out.println(ApplicationManager.call("say/Hello, James", null));
-		System.out.println(ApplicationManager.call("say/Hello, James", null));
-		System.out.println(ApplicationManager.call("say/Hello, James", null));
-		System.out.println(ApplicationManager.call("say/Hello, James", null));
-		System.out.println(ApplicationManager.call("say/Hello, James", null));
-
-		System.out.println(System.currentTimeMillis() - seconds + " ms");
-
-		seconds = System.currentTimeMillis();
-		System.out.println(ApplicationManager.call("say/Hello, James", null));
-		System.out.println(System.currentTimeMillis() - seconds + " ms");
-
-		seconds = System.currentTimeMillis();
-		System.out.println("Hello, James");
-		System.out.println(System.currentTimeMillis() - seconds + " ms");
 	}
 }
