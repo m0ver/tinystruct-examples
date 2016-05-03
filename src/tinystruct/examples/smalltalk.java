@@ -24,7 +24,6 @@ import org.tinystruct.ApplicationException;
 import org.tinystruct.data.component.Builder;
 import org.tinystruct.data.component.Builders;
 import org.tinystruct.handle.Reforward;
-import org.tinystruct.system.ApplicationManager;
 import org.tinystruct.system.util.Matrix;
 import org.tinystruct.transfer.http.upload.ContentDisposition;
 import org.tinystruct.transfer.http.upload.MultipartFormData;
@@ -256,11 +255,11 @@ public class smalltalk extends AbstractApplication {
 		try {
 			MultipartFormData iter = new MultipartFormData(request);
 			ContentDisposition e = null;
-			
+
 			while ((e = iter.getNextPart()) != null) {
 				final String fileName = e.getFileName();
 				Builder builder = new Builder();
-				builder.put("file", this.context.getAttribute("HTTP_HOST") + "/files/" + fileName);
+				builder.put("file", new StringBuffer().append(this.context.getAttribute("HTTP_SCHEME")).append("://").append(this.context.getAttribute("HTTP_SERVER")).append(":"+ request.getServerPort()).append( "/files/").append(fileName).toString());
 				OutputStream out = new FileOutputStream(new File(path + File.separator + fileName));
 
 				InputStream is = new ByteArrayInputStream(e.getData());
