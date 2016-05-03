@@ -11,12 +11,12 @@
   <title>Small Talk</title>
 
   <!-- Bootstrap core CSS -->
-  <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="/scripts/bootstrap/bootstrap.min.css" rel="stylesheet" />
   <!-- Custom styles for this template -->
 
   <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
   <!--[if lt IE 9]><script src="http://getbootstrap.com/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-  <script src="http://getbootstrap.com/assets/js/ie-emulation-modes-warning.js"></script>
+  <script src="/scripts/bootstrap/ie-emulation-modes-warning.js"></script>
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -58,17 +58,7 @@
 		.arrow { width:0; height:0; font-size:0; line-height:0; position:absolute; overflow:hidden; }
 		.arrowline { top:-1px; border-style:solid solid solid; border-width:7px; border-color:transparent transparent #d9d9d9 transparent; }
 		.arrowbg { top:0.35px; border-style:solid solid solid; border-width:7px; border-color:transparent transparent #fff transparent; }
-		/*!
-		 * @copyright Copyright © Kartik Visweswaran, Krajee.com, 2014 - 2015
-		 * @package bootstrap-fileinput
-		 * @version 4.3.2
-		 *
-		 * File input styling for Bootstrap 3.0
-		 * Built for Yii Framework 2.0
-		 * Author: Kartik Visweswaran
-		 * Year: 2015
-		 * For more Yii related demos visit http://demos.krajee.com
-		 */
+
 		.file-loading {
 		    top: 0;
 		    right: 0;
@@ -77,7 +67,7 @@
 		    font-size: 999px;
 		    text-align: right;
 		    color: #fff;
-		    background: transparent url('https://github.com/kartik-v/bootstrap-fileinput/blob/master/img/loading.gif?raw=true') top left no-repeat;
+		    background: transparent url('/scripts/bootstrap/fileinput/loading.gif') top left no-repeat;
 		    border: none;
 		}
 		
@@ -89,6 +79,10 @@
 		.btn-file {
 		    position: relative;
 		    overflow: hidden;
+		    background: #fff none repeat scroll 0 0;
+		    border: 0 solid;
+		    color: #000;
+		    position: relative;
 		}
 		
 		.btn-file input[type=file] {
@@ -312,9 +306,9 @@
 		    height:100%;
 		}
 	</style>
-	<script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-	<script type="text/javascript" src="//ingod.asia/themes/scripts/timer.js"></script>
-	<script src="https://raw.githubusercontent.com/kartik-v/bootstrap-fileinput/master/js/fileinput.js?raw=true"></script>
+	<script type="text/javascript" src="/scripts/jquery-1.11.3.min.js"></script>
+	<script type="text/javascript" src="/scripts/timer.js"></script>
+	<script src="/scripts/bootstrap/fileinput/fileinput.js?raw=true"></script>
 	<script type="text/javascript">
 	//<![CDATA[
 	var timer = new Timer(.5,function(){});
@@ -537,10 +531,21 @@
             response = data.response, reader = data.reader;
         console.log(data);
 
+        $ul = $("<ul />");
         for(var i = 0; i < response.length; i++) {
-          e = $("<img />");e.attr("src", response[i].file);
-          $("#text").append(e);
+        	if(response[i].type.indexOf("image/")!=-1) {
+            	e = $("<img />");e.attr("src", response[i].file);
+        	}
+        	else {
+        		e = $("<a target='_blank' >" + response[i].file + "</a>");e.attr("href", response[i].file);
+        	}
+        	
+        	$li = $("<li />");
+        	$li.append(e);
+        	$ul.append($li);
         }
+        
+        $("#text").append($ul);
     });
 	});
 	//]]>
@@ -597,9 +602,10 @@
 			        <b class="arrow arrowbg"></b>
 			    </span>
 			</div>
-			<label class="control-label">Select File</label>
-	    <input id="attachment" name="attachment" type="file" class="file-loading" multiple="true" />
-			<input type="button" id="button" value="Send" class="btn btn-default" />
+      <label class="control-label" for="attachment">Select File</label>
+      <input id="attachment" name="attachment" type="file" class="file-loading btn-default" multiple="true" />
+      <br />
+      <input type="button" id="button" value="Send" class="btn btn-primary" />
 		</form>
 	</div>
 
@@ -649,8 +655,8 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="http://getbootstrap.com/dist/js/bootstrap.min.js"></script>
+    <script src="/scripts/bootstrap/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="http://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="/scripts/bootstrap/ie10-viewport-bug-workaround.js"></script>
   </body>
 </html>
