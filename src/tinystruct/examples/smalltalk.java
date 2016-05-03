@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import org.tinystruct.data.component.Builder;
 import org.tinystruct.data.component.Builders;
 import org.tinystruct.handle.Reforward;
 import org.tinystruct.system.util.Matrix;
+import org.tinystruct.system.util.StringUtilities;
 import org.tinystruct.transfer.http.upload.ContentDisposition;
 import org.tinystruct.transfer.http.upload.MultipartFormData;
 
@@ -250,15 +252,15 @@ public class smalltalk extends AbstractApplication {
 
 		// Create path components to save the file
 		final String path = this.config.get("system.directory") != null ? this.config.get("system.directory").toString() + "/files" : "files";
-		
+
 		Builders builders = new Builders();
 		try {
 			MultipartFormData iter = new MultipartFormData(request);
 			ContentDisposition e = null;
-
 			while ((e = iter.getNextPart()) != null) {
 				final String fileName = e.getFileName();
-				Builder builder = new Builder();
+				final Builder builder = new Builder();
+				builder.put("type", StringUtilities.implode(";", Arrays.asList(e.getContentType())));
 				builder.put("file", new StringBuffer().append(this.context.getAttribute("HTTP_SCHEME")).append("://").append(this.context.getAttribute("HTTP_SERVER")).append(":"+ request.getServerPort()).append( "/files/").append(fileName).toString());
 				OutputStream out = new FileOutputStream(new File(path + File.separator + fileName));
 
@@ -274,7 +276,7 @@ public class smalltalk extends AbstractApplication {
 				System.out.println("New file " + fileName + " created at " + path);
 				System.out.println(String.format("File %s being uploaded to %s", new Object[] { fileName, path }));
 			}
-			
+
 		} catch (IOException e) {
 			throw new ApplicationException(e.getMessage(), e);
 		} catch (ServletException e) {
