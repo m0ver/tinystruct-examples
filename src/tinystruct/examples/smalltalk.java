@@ -261,7 +261,7 @@ public class smalltalk extends AbstractApplication {
 				final String fileName = e.getFileName();
 				final Builder builder = new Builder();
 				builder.put("type", StringUtilities.implode(";", Arrays.asList(e.getContentType())));
-				builder.put("file", new StringBuffer().append(this.context.getAttribute("HTTP_SCHEME")).append("://").append(this.context.getAttribute("HTTP_SERVER")).append(":"+ request.getServerPort()).append( "/files/").append(fileName).toString());
+				builder.put("file", new StringBuffer().append(this.context.getAttribute("HTTP_SCHEME")).append("://").append(this.context.getAttribute("HTTP_SERVER")).append(":"+ request.getServerPort()).append( "/files/").append(fileName));
 				OutputStream out = new FileOutputStream(new File(path + File.separator + fileName));
 
 				InputStream is = new ByteArrayInputStream(e.getData());
