@@ -262,8 +262,14 @@ public class smalltalk extends AbstractApplication {
 				final Builder builder = new Builder();
 				builder.put("type", StringUtilities.implode(";", Arrays.asList(e.getContentType())));
 				builder.put("file", new StringBuffer().append(this.context.getAttribute("HTTP_SCHEME")).append("://").append(this.context.getAttribute("HTTP_SERVER")).append(":"+ request.getServerPort()).append( "/files/").append(fileName));
-				OutputStream out = new FileOutputStream(new File(path + File.separator + fileName));
+        File f = new File(path + File.separator + fileName);  
+        if (!f.exists()) {
+          if (!f.getParentFile().exists()) {  
+            f.getParentFile().mkdirs();  
+          }
+        }  
 
+				OutputStream out = new FileOutputStream(f);
 				InputStream is = new ByteArrayInputStream(e.getData());
 				int read = 0;
 				final byte[] bytes = new byte[1024];
