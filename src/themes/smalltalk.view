@@ -7,13 +7,10 @@
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
   <meta name="description" content="" />
   <meta name="author" content="" />
-
   <title>Small Talk</title>
-
   <!-- Bootstrap core CSS -->
   <link href="/scripts/bootstrap/bootstrap.min.css" rel="stylesheet" />
   <!-- Custom styles for this template -->
-
   <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
   <!--[if lt IE 9]><script src="http://getbootstrap.com/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
   <script src="/scripts/bootstrap/ie-emulation-modes-warning.js"></script>
@@ -308,7 +305,7 @@
 	</style>
 	<script type="text/javascript" src="/scripts/jquery-1.11.3.min.js"></script>
 	<script type="text/javascript" src="/scripts/timer.js"></script>
-	<script src="/scripts/bootstrap/fileinput/fileinput.js?raw=true"></script>
+	<script type="text/javascript" src="/scripts/bootstrap/fileinput/fileinput.js?raw=true"></script>
 	<script type="text/javascript">
 	//<![CDATA[
 	var timer = new Timer(.5,function(){});
@@ -329,40 +326,40 @@
 		  }
 		}
 		else {
-		  	if(typeof($data.cmd) != 'undefined') 
-		  	{
-				if(!user) {
-				     $("#modal").modal();
-				     return false;
+			if(typeof($data.cmd) != 'undefined') 
+			{
+				if(!user || !$data.user || $data.user == null)
+					$("#modal").modal();
+					return false;
 				}
 				
 				$_user = $data.user;
-				if($_user)
-		  		switch($data.cmd) 
-		  		{
-			  		case 'onblur': 			    
-			  			document.title = old_title;
+				if($_user) {
+					switch($data.cmd) 
+					{
+				 		case 'onblur': 			    
+				 			document.title = old_title;
 				    	timer.stop();
 				    	break;
-			  		case 'greeting':
-						$li = $("<li />");
-						$li.html("System Notification:\t" + $data.user + " joined this conversation.");
-						$('#messages').append($li);
-						$('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
-			  			break;
-			  		default:
-						timer.setAction(function() {    
-						 document.title = $_user + " is typing" + dotted;
-						 dotted += '.';
-						 if(dotted.length>3) this.complete();
-						
-						 this.start();
-						});
-						timer.start().complete(function(){ dotted = ''; });//.stop(4);
-		  		}
+				 		case 'greeting':
+							$li = $("<li />");
+							$li.html("System Notification:\t" + $data.user + " joined this conversation.");
+							$('#messages').append($li);
+							$('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
+				 			break;
+				 		default:
+							timer.setAction(function() {    
+								document.title = $_user + " is typing" + dotted;
+								dotted += '.';
+								if(dotted.length>3) this.complete();
+								
+								this.start();
+							});
+							timer.start().complete(function(){ dotted = ''; });//.stop(4);
+					}
+				}
 			}
 		}
-		
 	}
 	
 	function command(cmd){
