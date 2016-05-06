@@ -304,13 +304,14 @@
 		}
 	</style>
 	<script type="text/javascript" src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/jquery-1.11.3.min.js?raw=true"></script>
-	<script type="text/javascript" src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/timer.js?raw=true"></script>
+  <script type="text/javascript" src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/struct.js?raw=true"></script>
+  <script type="text/javascript" src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/timer.js?raw=true"></script>
 	<script type="text/javascript" src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/bootstrap/fileinput/fileinput.js?raw=true"></script>
 	<script type="text/javascript">
 	//<![CDATA[
 	var timer = new Timer(.5,function(){});
 	var old_title = document.title;
-	var dotted = '', user=false;
+	var dotted = '', user = struct.get("user")? struct.get("user"): false;
 	function update($data) {
 		if(typeof($data.message)!='undefined') {
 		  $li = $("<li />");
@@ -328,7 +329,7 @@
 		else {
 			if(typeof($data.cmd) != 'undefined') 
 			{
-				if(!user || !$data.user || $data.user == null) {
+				if(!user) {
 					$("#modal").modal();
 					return false;
 				}
@@ -369,10 +370,17 @@
 		  data: { cmd: cmd }
 		}).done(function( msg ) {
 		  if(msg.trim()=="false" && confirm("The conversation is expired, Do you want to reload the conversation?")){
-			$.ajax({
-				type: "POST",
-				url: $('#link').text()
-			}).done(function( msg ) {});
+				$.ajax({
+					type: "POST",
+					url: $('#link').text()
+				}).done(function( msg ) {
+					if (user) {
+			      $.ajax({
+		          type: "POST",
+		          url: "[%LINK:talk/start%]/"+ user
+		        }).done(function( msg ) {});
+					}
+				});
 		  }
 		});
 	}
@@ -452,6 +460,7 @@
 			}).done(function( msg ) {
 				$("#modal").modal('hide');
 				user = $("#nickname").val();
+				struct.save("user", user);
 				command("greeting");
 			});
 		});
