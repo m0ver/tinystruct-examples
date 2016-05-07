@@ -9,11 +9,11 @@
   <meta name="author" content="" />
   <title>Small Talk</title>
   <!-- Bootstrap core CSS -->
-  <link href="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/bootstrap/bootstrap.min.css?raw=true" rel="stylesheet" />
+  <link href="/scripts/bootstrap/bootstrap.min.css?raw=true" rel="stylesheet" />
   <!-- Custom styles for this template -->
   <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
   <!--[if lt IE 9]><script src="http://getbootstrap.com/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-  <script src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/bootstrap/ie-emulation-modes-warning.js?raw=true"></script>
+  <script src="/scripts/bootstrap/ie-emulation-modes-warning.js?raw=true"></script>
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -303,10 +303,10 @@
 		    height:100%;
 		}
 	</style>
-	<script type="text/javascript" src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/jquery-1.11.3.min.js?raw=true"></script>
-  <script type="text/javascript" src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/struct.js?raw=true"></script>
-  <script type="text/javascript" src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/timer.js?raw=true"></script>
-	<script type="text/javascript" src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/bootstrap/fileinput/fileinput.js?raw=true"></script>
+	<script type="text/javascript" src="/scripts/jquery-1.11.3.min.js?raw=true"></script>
+  <script type="text/javascript" src="/scripts/struct.js?raw=true"></script>
+  <script type="text/javascript" src="/scripts/timer.js?raw=true"></script>
+	<script type="text/javascript" src="/scripts/bootstrap/fileinput/fileinput.js?raw=true"></script>
 	<script type="text/javascript">
 	//<![CDATA[
 	var timer = new Timer(.5,function(){});
@@ -661,8 +661,8 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/bootstrap/bootstrap.min.js?raw=true"></script>
+    <script src="/scripts/bootstrap/bootstrap.min.js?raw=true"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="https://rawgit.com/m0ver/tinystruct2.0/master/scripts/bootstrap/ie10-viewport-bug-workaround.js?raw=true"></script>
+    <script src="/scripts/bootstrap/ie10-viewport-bug-workaround.js?raw=true"></script>
   </body>
 </html>

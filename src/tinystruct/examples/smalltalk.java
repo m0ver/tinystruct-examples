@@ -251,7 +251,7 @@ public class smalltalk extends AbstractApplication {
 		response.setContentType("text/html;charset=UTF-8");
 
 		// Create path components to save the file
-		final String path = this.config.get("system.directory") != null ? this.config.get("system.directory").toString() + "/files" : "files";
+		final String path = this.context.getAttribute("system.directory") != null ? this.context.getAttribute("system.directory").toString() + "/files" : "files";
 
 		Builders builders = new Builders();
 		try {
