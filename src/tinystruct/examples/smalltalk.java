@@ -194,7 +194,12 @@ public class smalltalk extends AbstractApplication {
 	public boolean command() {
 		HttpServletRequest request = (HttpServletRequest) this.context
 		    .getAttribute("HTTP_REQUEST");
+		
 		if (request.getSession().getAttribute("meeting_code") != null) {
+			if (request.getSession(true).getAttribute("user") == null) {
+				return false;
+			}
+			
 			this.checkup(request);
 			synchronized (this.list) {
 
