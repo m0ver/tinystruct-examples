@@ -313,54 +313,54 @@
 	var old_title = document.title;
 	var dotted = '', user = struct.get("user")? struct.get("user"): false;
 	function update($data) {
-		if(typeof($data.message)!='undefined') {
-		  $li = $("<li />");
-		  $li.html($data.time + "\t" + $data.user + ": " + $data.message);
-		  $('#messages').append($li);
-		  $('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
-		  
-		  if(document.title == old_title) {
-		  	document.title = 'New Message(s) Received!';
-		  }
-		  else {
-		  	document.title = old_title;
-		  }
+	if(typeof($data.message)!='undefined') {
+	  $li = $("<li />");
+	  $li.html($data.time + "\t" + $data.user + ": " + $data.message);
+	  $('#messages').append($li);
+	  $('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
+	  
+	  if(document.title == old_title) {
+	  	document.title = 'New Message(s) Received!';
+	  }
+	  else {
+	  	document.title = old_title;
+	  }
+	}
+	else {
+	  if(typeof($data.cmd) != 'undefined') 
+	  {
+		if(!user) {
+			$("#modal").modal();
+			return false;
 		}
-		else {
-			if(typeof($data.cmd) != 'undefined') 
+		
+		$_user = $data.user;
+		if($_user) {
+			switch($data.cmd) 
 			{
-				if(!user) {
-					$("#modal").modal();
-					return false;
-				}
-				
-				$_user = $data.user;
-				if($_user) {
-					switch($data.cmd) 
-					{
-				 		case 'onblur': 			    
-				 			document.title = old_title;
-				    	timer.stop();
-				    	break;
-				 		case 'greeting':
-							$li = $("<li />");
-							$li.html("System Notification:\t" + $data.user + " joined this conversation.");
-							$('#messages').append($li);
-							$('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
-				 			break;
-				 		default:
-							timer.setAction(function() {    
-								document.title = $_user + " is typing" + dotted;
-								dotted += '.';
-								if(dotted.length>3) this.complete();
-								
-								this.start();
-							});
-							timer.start().complete(function(){ dotted = ''; });//.stop(4);
-					}
-				}
+		 		case 'onblur': 			    
+		 			document.title = old_title;
+		    	timer.stop();
+		    	break;
+		 		case 'greeting':
+					$li = $("<li />");
+					$li.html("System Notification:\t" + $data.user + " joined this conversation.");
+					$('#messages').append($li);
+					$('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
+		 			break;
+		 		default:
+					timer.setAction(function() {    
+						document.title = $_user + " is typing" + dotted;
+						dotted += '.';
+						if(dotted.length>3) this.complete();
+						
+						this.start();
+					});
+					timer.start().complete(function(){ dotted = ''; });//.stop(4);
 			}
 		}
+	  }
+	}
 	}
 	
 	function command(cmd){
@@ -369,18 +369,23 @@
 		  url: "[%LINK:talk/command%]",
 		  data: { cmd: cmd }
 		}).done(function( msg ) {
-		  if(msg.trim()=="false" && confirm("The conversation is expired, Do you want to reload the conversation?")){
+		  if(msg.trim()=="false") {
+			if (user) {
+				$.ajax({
+		          type: "POST",
+		          url: "[%LINK:talk/start%]/"+ user
+		        }).done(function( msg ) {});
+			}
+			else {
+				$("#modal").modal();
+			}
+			
+		  	if(confirm("The conversation is expired, Do you want to reload the conversation?")) {
 				$.ajax({
 					type: "POST",
 					url: $('#link').text()
-				}).done(function( msg ) {
-					if (user) {
-					      $.ajax({
-				          type: "POST",
-				          url: "[%LINK:talk/start%]/"+ user
-				        }).done(function( msg ) {});
-					}
-				});
+				}).done(function( msg ) {});
+		  	}
 		  }
 		});
 	}

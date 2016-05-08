@@ -196,7 +196,7 @@ public class smalltalk extends AbstractApplication {
 		    .getAttribute("HTTP_REQUEST");
 		
 		if (request.getSession().getAttribute("meeting_code") != null) {
-			if (request.getSession(true).getAttribute("user") == null) {
+			if (request.getSession().getAttribute("user") == null) {
 				return false;
 			}
 			
