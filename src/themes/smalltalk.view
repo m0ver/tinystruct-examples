@@ -367,27 +367,33 @@
 		$.ajax({
 		  type: "POST",
 		  url: "[%LINK:talk/command%]",
+		  dataType: "json",
 		  data: { cmd: cmd }
 		}).done(function( msg ) {
-		  if(msg.trim()=="false") {
-			if (user) {
-				$.ajax({
-		          type: "POST",
-		          url: "[%LINK:talk/start%]/"+ user
-		        }).done(function( msg ) {});
-			}
-			else {
-				$("#modal").modal();
+			if(msg.error == "missing user") {
+			  if (user) {
+			    $.ajax({
+			      type: "POST",
+			      url: "[%LINK:talk/start%]/"+ user
+			    }).done(function( msg ) {});
+			  }
+			  else {
+			    $("#modal").modal();
+			  }
 			}
 			
-		  	if(confirm("The conversation is expired, Do you want to reload the conversation?")) {
-				$.ajax({
-					type: "POST",
-					url: $('#link').text()
-				}).done(function( msg ) {});
-		  	}
-		  }
-		});
+			if(msg.error == "expired") {
+			  if(confirm("The conversation is expired, Do you want to reload the conversation?")) {
+			    $.ajax({
+			      type: "POST",
+			      url: $('#link').text()
+			    }).done(function( msg ) {});
+			  }
+			}
+		}).fail(function( msg ) {
+			console.log('Fail.');
+			console.log(msg);
+    });
 	}
 	
 	function save(){
