@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
   <meta name="description" content="" />
-  <meta content="tinystruct 2.0 (http://tinystruct.org)" name="generator">
+  <meta content="tinystruct 2.0 (http://tinystruct.org)" name="generator" />
   <title>Small Talk</title>
   <!-- Bootstrap core CSS -->
   <link href="/scripts/bootstrap/bootstrap.min.css?raw=true" rel="stylesheet" />
