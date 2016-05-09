@@ -121,15 +121,15 @@ public class smalltalk extends AbstractApplication {
 		HttpServletResponse response = (HttpServletResponse) this.context
 		    .getAttribute("HTTP_RESPONSE");
 
-		if (request.getSession().getAttribute("meeting_code") == null) {
+		Object meeting_code = request.getSession().getAttribute("meeting_code");
+		if (meeting_code == null) {
 			Reforward reforward = new Reforward(request, response);
 			reforward.setDefault("/?q=talk");
 			reforward.forward();
 		} else {
-			this.setVariable("meeting_code",
-			    request.getSession(true).getAttribute("meeting_code").toString());
+			this.setVariable("meeting_code", meeting_code.toString());
 		}
-		request.getSession(true).setAttribute("user", name);
+		request.getSession().setAttribute("user", name);
 
 		return name;
 	}
@@ -191,18 +191,20 @@ public class smalltalk extends AbstractApplication {
 		return false;
 	}
 
-	public boolean command() {
+	public String command() {
 		HttpServletRequest request = (HttpServletRequest) this.context
 		    .getAttribute("HTTP_REQUEST");
+		HttpServletResponse response = (HttpServletResponse) this.context
+		    .getAttribute("HTTP_RESPONSE");
 		
 		if (request.getSession().getAttribute("meeting_code") != null) {
+			response.setContentType("application/json");
 			if (request.getSession().getAttribute("user") == null) {
-				return false;
+				return "{ \"error\": \"missing user\" }";
 			}
 			
 			this.checkup(request);
 			synchronized (this.list) {
-
 				Builder builder = this.list.poll();
 				if (builder == null) {
 					builder = new Builder();
@@ -216,17 +218,17 @@ public class smalltalk extends AbstractApplication {
 
 				this.list.add(builder);
 				this.list.notifyAll();
-				return true;
+				return "{}";
 			}
 		}
 
-		return false;
+		return "{ \"error\": \"expired\" }";
 	}
 
 	public boolean topic() {
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 		if (request.getSession().getAttribute("meeting_code") != null) {
-			String key = request.getSession(true).getAttribute("meeting_code").toString();
+			String key = request.getSession().getAttribute("meeting_code").toString();
 			this.setVariable(key, filter(request.getParameter("topic")));
 			return true;
 		}
@@ -236,13 +238,13 @@ public class smalltalk extends AbstractApplication {
 
 	public smalltalk exit(String meeting_code) {
 		HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-		request.getSession(true).removeAttribute("meeting_code");
+		request.getSession().removeAttribute("meeting_code");
 
 		return this;
 	}
 
 	private void checkup(HttpServletRequest request) {
-		String key = request.getSession(true).getAttribute("meeting_code").toString();
+		String key = request.getSession().getAttribute("meeting_code").toString();
 		if ((this.list = map.get(key)) == null) {
 			this.list = new ConcurrentLinkedQueue<Builder>();
 			this.map.put(key, this.list);
