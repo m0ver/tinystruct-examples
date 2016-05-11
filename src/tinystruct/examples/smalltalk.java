@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -66,6 +65,7 @@ public class smalltalk extends AbstractApplication {
 
       this.list = new PriorityQueue<Builder>();
       this.map.put(key, this.list);
+
       this.setVariable("meeting_code", key);
 
       System.out.println("New meeting generated:" + key);
@@ -155,7 +155,7 @@ public class smalltalk extends AbstractApplication {
               + request.getSession(true).getAttribute("meeting_code") + "]:"
               + message);
           return message.trim();
-        }
+          }
       }
     }
 
@@ -163,21 +163,21 @@ public class smalltalk extends AbstractApplication {
   }
 
   public boolean save() {
-    HttpServletRequest request = (HttpServletRequest) this.context
-        .getAttribute("HTTP_REQUEST");
+    HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
     if (request.getSession().getAttribute("meeting_code") != null) {
       if (!request.getParameter("text").isEmpty()) {
         this.checkup(request);
+        Builder builder;
         synchronized (this.list) {
           String[] agent = request.getHeader("User-Agent").split(" ");
           this.setVariable("browser", agent[agent.length - 1]);
 
-          Builder builder = this.list.poll();
+          builder = this.list.poll();
           if (builder == null) {
             builder = new Builder();
           } else {
-            builder.remove("cmd");
+              builder.remove("cmd");
           }
 
           builder.put("user", request.getSession(true).getAttribute("user"));
@@ -207,13 +207,17 @@ public class smalltalk extends AbstractApplication {
       }
 
       this.checkup(request);
+      Builder builder;
       synchronized (this.list) {
-        Builder builder = this.list.poll();
-        if (builder == null) {
+        if(this.list.size() > 0) {
+          builder = this.list.poll();
+          if (builder.containsKey("message")) {
+            builder.remove("message");
+            builder.remove("time");
+          }
+        }
+        else {
           builder = new Builder();
-        } else {
-          builder.remove("message");
-          builder.remove("time");
         }
 
         builder.put("user", request.getSession(true).getAttribute("user"));
@@ -221,13 +225,14 @@ public class smalltalk extends AbstractApplication {
 
         this.list.add(builder);
         this.list.notifyAll();
+
         return "{}";
       }
     }
 
     return "{ \"error\": \"expired\" }";
   }
-  
+
   public String upload() throws ApplicationException {
     HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
@@ -299,8 +304,9 @@ public class smalltalk extends AbstractApplication {
   private void checkup(HttpServletRequest request) {
     String key = request.getSession().getAttribute("meeting_code").toString();
     if ((this.list = map.get(key)) == null) {
-      this.list = new ConcurrentLinkedQueue<Builder>();
+      this.list = new PriorityQueue<Builder>();
       this.map.put(key, this.list);
+
       this.setVariable("meeting_code", key);
     }
   }
