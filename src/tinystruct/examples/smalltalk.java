@@ -9,12 +9,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Queue;
 
 import javax.servlet.ServletException;
@@ -33,8 +33,8 @@ import org.tinystruct.transfer.http.upload.MultipartFormData;
 
 public class smalltalk extends AbstractApplication {
 
-  private final Map<String, Queue<Builder>> map = Collections
-      .synchronizedMap(new HashMap<String, Queue<Builder>>());
+  private static final long TIMEOUT = 30000;
+  private final Map<String, Queue<Builder>> map = Collections.synchronizedMap(new HashMap<String, Queue<Builder>>());
   private Queue<Builder> list;
 
   @Override
@@ -63,7 +63,7 @@ public class smalltalk extends AbstractApplication {
       String key = java.util.UUID.randomUUID().toString();
       request.getSession(true).setAttribute("meeting_code", key);
 
-      this.list = new PriorityQueue<Builder>();
+      this.list = new ArrayDeque<Builder>();
       this.map.put(key, this.list);
 
       this.setVariable("meeting_code", key);
@@ -141,21 +141,20 @@ public class smalltalk extends AbstractApplication {
         .getAttribute("HTTP_REQUEST");
     if (request.getSession().getAttribute("meeting_code") != null) {
       this.checkup(request);
-      String message;
+      Builder message;
       synchronized (this.list) {
         try {
-          this.list.wait();
+          this.list.wait(TIMEOUT);
         } catch (InterruptedException e) {
           throw new ApplicationException(e.getMessage(), e);
         }
 
-        if (!this.list.isEmpty()) {
-          message = this.list.peek().toString();
+        if ((message = this.list.peek()) != null) {
           System.out.println("["
               + request.getSession(true).getAttribute("meeting_code") + "]:"
               + message);
-          return message.trim();
-          }
+          return message.toString();
+        }
       }
     }
 
@@ -166,13 +165,13 @@ public class smalltalk extends AbstractApplication {
     HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
     if (request.getSession().getAttribute("meeting_code") != null) {
-      if (!request.getParameter("text").isEmpty()) {
+      if (request.getParameter("text")!=null && !request.getParameter("text").isEmpty()) {
         this.checkup(request);
+        String[] agent = request.getHeader("User-Agent").split(" ");
+        this.setVariable("browser", agent[agent.length - 1]);
+
         Builder builder;
         synchronized (this.list) {
-          String[] agent = request.getHeader("User-Agent").split(" ");
-          this.setVariable("browser", agent[agent.length - 1]);
-
           builder = this.list.poll();
           if (builder == null) {
             builder = new Builder();
@@ -225,7 +224,6 @@ public class smalltalk extends AbstractApplication {
 
         this.list.add(builder);
         this.list.notifyAll();
-
         return "{}";
       }
     }
@@ -304,7 +302,7 @@ public class smalltalk extends AbstractApplication {
   private void checkup(HttpServletRequest request) {
     String key = request.getSession().getAttribute("meeting_code").toString();
     if ((this.list = map.get(key)) == null) {
-      this.list = new PriorityQueue<Builder>();
+      this.list = new ArrayDeque<Builder>();
       this.map.put(key, this.list);
 
       this.setVariable("meeting_code", key);
