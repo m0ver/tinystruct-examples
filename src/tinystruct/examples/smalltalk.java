@@ -14,12 +14,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
@@ -34,8 +37,8 @@ import org.tinystruct.transfer.http.upload.MultipartFormData;
 public class smalltalk extends AbstractApplication {
 
   private static final long TIMEOUT = 30000;
-  private final Map<String, Queue<Builder>> map = Collections.synchronizedMap(new HashMap<String, Queue<Builder>>());
-  private Queue<Builder> list;
+  private Map<String, Queue<Builder>> sessions;
+  private final Map<String, Map<String, Queue<Builder>>> groups = Collections.synchronizedMap(new HashMap<String, Map<String, Queue<Builder>>>());
 
   @Override
   public void init() {
@@ -57,14 +60,15 @@ public class smalltalk extends AbstractApplication {
   public smalltalk index() {
     HttpServletRequest request = (HttpServletRequest) this.context
         .getAttribute("HTTP_REQUEST");
-    Object code = request.getSession().getAttribute("meeting_code");
+    HttpSession session = request.getSession();
+    Object code = session.getAttribute("meeting_code");
 
     if (code == null) {
       String key = java.util.UUID.randomUUID().toString();
-      request.getSession(true).setAttribute("meeting_code", key);
+      session.setAttribute("meeting_code", key);
 
-      this.list = new ArrayDeque<Builder>();
-      this.map.put(key, this.list);
+      this.sessions = new HashMap<String, Queue<Builder>>();
+      this.groups.put(key, this.sessions);
 
       this.setVariable("meeting_code", key);
 
@@ -95,14 +99,14 @@ public class smalltalk extends AbstractApplication {
   }
 
   public String join(String meeting_code) throws ApplicationException {
-
-    if (map.containsKey(meeting_code)) {
+    if (groups.containsKey(meeting_code)) {
       HttpServletRequest request = (HttpServletRequest) this.context
           .getAttribute("HTTP_REQUEST");
       HttpServletResponse response = (HttpServletResponse) this.context
           .getAttribute("HTTP_RESPONSE");
 
-      request.getSession(true).setAttribute("meeting_code", meeting_code);
+      HttpSession session = request.getSession();
+      session.setAttribute("meeting_code", meeting_code);
 
       this.setVariable("meeting_code", meeting_code);
 
@@ -122,8 +126,9 @@ public class smalltalk extends AbstractApplication {
         .getAttribute("HTTP_REQUEST");
     HttpServletResponse response = (HttpServletResponse) this.context
         .getAttribute("HTTP_RESPONSE");
+    HttpSession session = request.getSession();
 
-    Object meeting_code = request.getSession().getAttribute("meeting_code");
+    Object meeting_code = session.getAttribute("meeting_code");
     if (meeting_code == null) {
       Reforward reforward = new Reforward(request, response);
       reforward.setDefault("/?q=talk");
@@ -131,7 +136,7 @@ public class smalltalk extends AbstractApplication {
     } else {
       this.setVariable("meeting_code", meeting_code.toString());
     }
-    request.getSession().setAttribute("user", name);
+    session.setAttribute("user", name);
 
     return name;
   }
@@ -139,22 +144,23 @@ public class smalltalk extends AbstractApplication {
   public String update() throws ApplicationException {
     HttpServletRequest request = (HttpServletRequest) this.context
         .getAttribute("HTTP_REQUEST");
-    if (request.getSession().getAttribute("meeting_code") != null) {
+    HttpSession session = request.getSession();
+
+    if (session.getAttribute("meeting_code") != null) {
       this.checkup(request);
       Builder message;
-      synchronized (this.list) {
-        try {
-          this.list.wait(TIMEOUT);
-        } catch (InterruptedException e) {
-          throw new ApplicationException(e.getMessage(), e);
+      String sessionId = session.getId();
+      synchronized (this.sessions) {
+        while((message = this.sessions.get(sessionId).poll()) == null) {
+          try {
+            this.sessions.wait(TIMEOUT);
+          } catch (InterruptedException e) {
+            throw new ApplicationException(e.getMessage(), e);
+          }
         }
-
-        if ((message = this.list.peek()) != null) {
-          System.out.println("["
-              + request.getSession(true).getAttribute("meeting_code") + "]:"
-              + message);
-          return message.toString();
-        }
+        
+        System.out.println("[" + session.getAttribute("meeting_code") + "]:" + message);
+        return message.toString();
       }
     }
 
@@ -164,29 +170,32 @@ public class smalltalk extends AbstractApplication {
   public boolean save() {
     HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
-    if (request.getSession().getAttribute("meeting_code") != null) {
+    HttpSession session = request.getSession();
+
+    if (session.getAttribute("meeting_code") != null) {
       if (request.getParameter("text")!=null && !request.getParameter("text").isEmpty()) {
         this.checkup(request);
         String[] agent = request.getHeader("User-Agent").split(" ");
         this.setVariable("browser", agent[agent.length - 1]);
-
-        Builder builder;
-        synchronized (this.list) {
-          builder = this.list.poll();
-          if (builder == null) {
-            builder = new Builder();
-          } else {
-              builder.remove("cmd");
+        
+        Builder builder = new Builder();
+        builder.put("user", session.getAttribute("user"));
+        builder.put("time", format.format(new Date()));
+        builder.put("message", filter(request.getParameter("text")));
+        
+        String key;
+        synchronized (this.sessions) {
+          Set<String> set = this.sessions.keySet();
+          Iterator<String> iterator = set.iterator();
+          while(iterator.hasNext()) {
+            key = iterator.next();
+            this.sessions.get(key).add(builder);
           }
-
-          builder.put("user", request.getSession(true).getAttribute("user"));
-          builder.put("time", format.format(new Date()));
-          builder.put("message", filter(request.getParameter("text")));
-
-          this.list.add(builder);
-          this.list.notifyAll();
-          return true;
+          
+          this.sessions.notifyAll();
         }
+        
+        return true;
       }
     }
 
@@ -198,34 +207,33 @@ public class smalltalk extends AbstractApplication {
         .getAttribute("HTTP_REQUEST");
     HttpServletResponse response = (HttpServletResponse) this.context
         .getAttribute("HTTP_RESPONSE");
+    HttpSession session = request.getSession();
 
-    if (request.getSession().getAttribute("meeting_code") != null) {
+    if (session.getAttribute("meeting_code") != null) {
       response.setContentType("application/json");
-      if (request.getSession().getAttribute("user") == null) {
+      if (session.getAttribute("user") == null) {
         return "{ \"error\": \"missing user\" }";
       }
 
       this.checkup(request);
-      Builder builder;
-      synchronized (this.list) {
-        if(this.list.size() > 0) {
-          builder = this.list.poll();
-          if (builder.containsKey("message")) {
-            builder.remove("message");
-            builder.remove("time");
-          }
+      
+      Builder builder = new Builder();
+      builder.put("user", session.getAttribute("user"));
+      builder.put("cmd", request.getParameter("cmd"));
+      
+      String key;
+      synchronized (this.sessions) {
+        Set<String> set = this.sessions.keySet();
+        Iterator<String> iterator = set.iterator();
+        while(iterator.hasNext()) {
+          key = iterator.next();
+          this.sessions.get(key).add(builder);
         }
-        else {
-          builder = new Builder();
-        }
-
-        builder.put("user", request.getSession(true).getAttribute("user"));
-        builder.put("cmd", request.getParameter("cmd"));
-
-        this.list.add(builder);
-        this.list.notifyAll();
-        return "{}";
+        
+        this.sessions.notifyAll();
       }
+      
+      return "{}";
     }
 
     return "{ \"error\": \"expired\" }";
@@ -283,8 +291,10 @@ public class smalltalk extends AbstractApplication {
 
   public boolean topic() {
     HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-    if (request.getSession().getAttribute("meeting_code") != null) {
-      String key = request.getSession().getAttribute("meeting_code").toString();
+    HttpSession session = request.getSession();
+
+    if (session.getAttribute("meeting_code") != null) {
+      String key = session.getAttribute("meeting_code").toString();
       this.setVariable(key, filter(request.getParameter("topic")));
       return true;
     }
@@ -294,18 +304,26 @@ public class smalltalk extends AbstractApplication {
 
   public smalltalk exit(String meeting_code) {
     HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-    request.getSession().removeAttribute("meeting_code");
+    HttpSession session = request.getSession();
+
+    session.removeAttribute("meeting_code");
 
     return this;
   }
 
   private void checkup(HttpServletRequest request) {
-    String key = request.getSession().getAttribute("meeting_code").toString();
-    if ((this.list = map.get(key)) == null) {
-      this.list = new ArrayDeque<Builder>();
-      this.map.put(key, this.list);
+    HttpSession session = request.getSession();
+
+    String key = session.getAttribute("meeting_code").toString(), sessionId = session.getId();
+    if ((this.sessions = groups.get(key)) == null) {
+      this.sessions = new HashMap<String, Queue<Builder>>();
+      this.groups.put(key, this.sessions);
 
       this.setVariable("meeting_code", key);
+    }
+    
+    if ((this.sessions.get(sessionId)) == null){
+      this.sessions.put(sessionId, new ArrayDeque<Builder>());
     }
   }
 
@@ -317,5 +335,22 @@ public class smalltalk extends AbstractApplication {
   @Override
   public String version() {
     return "Welcome to use tinystruct 2.0";
+  }
+  
+  public static void main(String[]args) {
+  	ArrayDeque<Builder> conversations = new ArrayDeque<Builder>();
+  	Map<String, Queue<Builder>> list = new HashMap<String, Queue<Builder>>();
+    list.put("A", conversations);
+    
+    Builder builder = new Builder();
+    builder.put("user", "James");
+    builder.put("cmd", "onfocus");
+    conversations.add(builder);
+    
+    builder.put("user", "Mover");
+    System.out.println(list.get("A"));
+    
+    System.out.println(list.get("A").equals(conversations));
+    
   }
 }
