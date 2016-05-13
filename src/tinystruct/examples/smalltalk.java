@@ -336,21 +336,5 @@ public class smalltalk extends AbstractApplication {
   public String version() {
     return "Welcome to use tinystruct 2.0";
   }
-  
-  public static void main(String[]args) {
-  	ArrayDeque<Builder> conversations = new ArrayDeque<Builder>();
-  	Map<String, Queue<Builder>> list = new HashMap<String, Queue<Builder>>();
-    list.put("A", conversations);
-    
-    Builder builder = new Builder();
-    builder.put("user", "James");
-    builder.put("cmd", "onfocus");
-    conversations.add(builder);
-    
-    builder.put("user", "Mover");
-    System.out.println(list.get("A"));
-    
-    System.out.println(list.get("A").equals(conversations));
-    
-  }
+
 }
