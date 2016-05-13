@@ -151,7 +151,7 @@ public class smalltalk extends AbstractApplication {
       Builder message;
       String sessionId = session.getId();
       synchronized (this.sessions) {
-        while((message = this.sessions.get(sessionId).poll()) == null) {
+        while(this.sessions.get(sessionId) == null || (message = this.sessions.get(sessionId).poll()) == null) {
           try {
             this.sessions.wait(TIMEOUT);
           } catch (InterruptedException e) {
