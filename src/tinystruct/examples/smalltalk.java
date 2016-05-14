@@ -183,13 +183,17 @@ public class smalltalk extends AbstractApplication {
         builder.put("time", format.format(new Date()));
         builder.put("message", filter(request.getParameter("text")));
         
-        String key;
+        String sessionId = session.getId();
         synchronized (this.sessions) {
+          if ((this.sessions.get(sessionId)) == null){
+            this.sessions.put(sessionId, new ArrayDeque<Builder>());
+          }
+          
           Set<String> set = this.sessions.keySet();
           Iterator<String> iterator = set.iterator();
           while(iterator.hasNext()) {
-            key = iterator.next();
-            this.sessions.get(key).add(builder);
+            sessionId = iterator.next();
+            this.sessions.get(sessionId).add(builder);
           }
           
           this.sessions.notifyAll();
@@ -221,13 +225,17 @@ public class smalltalk extends AbstractApplication {
       builder.put("user", session.getAttribute("user"));
       builder.put("cmd", request.getParameter("cmd"));
       
-      String key;
+      String sessionId = session.getId();
       synchronized (this.sessions) {
+        if ((this.sessions.get(sessionId)) == null){
+          this.sessions.put(sessionId, new ArrayDeque<Builder>());
+        }
+        
         Set<String> set = this.sessions.keySet();
         Iterator<String> iterator = set.iterator();
         while(iterator.hasNext()) {
-          key = iterator.next();
-          this.sessions.get(key).add(builder);
+          sessionId = iterator.next();
+          this.sessions.get(sessionId).add(builder);
         }
         
         this.sessions.notifyAll();
@@ -314,17 +322,14 @@ public class smalltalk extends AbstractApplication {
   private void checkup(HttpServletRequest request) {
     HttpSession session = request.getSession();
 
-    String key = session.getAttribute("meeting_code").toString(), sessionId = session.getId();
+    String key = session.getAttribute("meeting_code").toString();
     if ((this.sessions = groups.get(key)) == null) {
       this.sessions = new HashMap<String, Queue<Builder>>();
       this.groups.put(key, this.sessions);
 
       this.setVariable("meeting_code", key);
     }
-    
-    if ((this.sessions.get(sessionId)) == null){
-      this.sessions.put(sessionId, new ArrayDeque<Builder>());
-    }
+
   }
 
   private String filter(String text) {
