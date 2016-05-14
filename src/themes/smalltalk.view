@@ -317,7 +317,7 @@
       $li = $("<li />");
       $li.html($data.time + "\t" + $data.user + ": " + $data.message);
       $('#messages').append($li);
-      $('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
+      $('#list').animate({scrollTop: $('#messages').height()}, 'fast'); 
       
       if(document.title == old_title) {
         document.title = 'New Message(s) Received!';
@@ -345,7 +345,7 @@
               $li = $("<li />");
               $li.html("System Notification:\t" + $data.user + " joined this conversation.");
               $('#messages').append($li);
-              $('#list').animate({scrollTop: $('#messages').height()}, 'slow'); 
+              $('#list').animate({scrollTop: $('#messages').height()}, 'fast'); 
               break;
             default:
               timer.setAction(function(){
@@ -422,7 +422,7 @@
       });
     }
   }
-
+  var i=0;
   $(function(){
     $("#button").click(function(){
       save();
@@ -452,6 +452,20 @@
     $("#sender").submit(function(event){
       event.preventDefault();
       save();
+    });
+
+    var post_timer = new Timer(.2, function(){
+      if(i++<200){
+        $("#text").text(user+' post '+i);
+        $("#sender").submit();
+      }
+      else this.complete();
+      this.start();
+    });
+
+    $("#test").click(function(event){
+      event.preventDefault();
+      post_timer.start().complete(function(){ this.stop(); });
     });
 
     autoupdate();
@@ -615,6 +629,7 @@
       <input id="attachment" name="attachment" type="file" class="file-loading btn-default" multiple="true" />
       <br />
       <input type="button" id="button" value="Send" class="btn btn-primary" />
+      <!--<input type="button" id="test" value="Test" class="btn btn-secondary" />-->
   </form>
   </div>
   
