@@ -58,12 +58,11 @@ public class smalltalk extends AbstractApplication {
   }
 
   public smalltalk index() {
-    HttpServletRequest request = (HttpServletRequest) this.context
+    final HttpServletRequest request = (HttpServletRequest) this.context
         .getAttribute("HTTP_REQUEST");
-    HttpSession session = request.getSession();
-    Object code = session.getAttribute("meeting_code");
-
-    if (code == null) {
+    final HttpSession session = request.getSession();
+    Object code;
+    if ((code = session.getAttribute("meeting_code")) == null) {
       String key = java.util.UUID.randomUUID().toString();
       session.setAttribute("meeting_code", key);
 
@@ -85,7 +84,7 @@ public class smalltalk extends AbstractApplication {
   }
 
   public String matrix() throws ApplicationException {
-    HttpServletRequest request = (HttpServletRequest) this.context
+    final HttpServletRequest request = (HttpServletRequest) this.context
         .getAttribute("HTTP_REQUEST");
 
     if (request.getParameter("meeting_code") != null) {
@@ -100,12 +99,12 @@ public class smalltalk extends AbstractApplication {
 
   public String join(String meeting_code) throws ApplicationException {
     if (groups.containsKey(meeting_code)) {
-      HttpServletRequest request = (HttpServletRequest) this.context
+      final HttpServletRequest request = (HttpServletRequest) this.context
           .getAttribute("HTTP_REQUEST");
-      HttpServletResponse response = (HttpServletResponse) this.context
+      final HttpServletResponse response = (HttpServletResponse) this.context
           .getAttribute("HTTP_RESPONSE");
 
-      HttpSession session = request.getSession();
+      final HttpSession session = request.getSession();
       session.setAttribute("meeting_code", meeting_code);
 
       this.setVariable("meeting_code", meeting_code);
@@ -122,11 +121,11 @@ public class smalltalk extends AbstractApplication {
   }
 
   public String start(String name) throws ApplicationException {
-    HttpServletRequest request = (HttpServletRequest) this.context
+    final HttpServletRequest request = (HttpServletRequest) this.context
         .getAttribute("HTTP_REQUEST");
-    HttpServletResponse response = (HttpServletResponse) this.context
+    final HttpServletResponse response = (HttpServletResponse) this.context
         .getAttribute("HTTP_RESPONSE");
-    HttpSession session = request.getSession();
+    final HttpSession session = request.getSession();
 
     Object meeting_code = session.getAttribute("meeting_code");
     if (meeting_code == null) {
@@ -142,14 +141,14 @@ public class smalltalk extends AbstractApplication {
   }
 
   public String update() throws ApplicationException {
-    HttpServletRequest request = (HttpServletRequest) this.context
+    final HttpServletRequest request = (HttpServletRequest) this.context
         .getAttribute("HTTP_REQUEST");
-    HttpSession session = request.getSession();
+    final HttpSession session = request.getSession();
 
     if (session.getAttribute("meeting_code") != null) {
-      this.checkup(request);
+      this.checkup(session);
       Builder message;
-      String sessionId = session.getId();
+      final String sessionId = session.getId();
       synchronized (this.sessions) {
         while(this.sessions.get(sessionId) == null || (message = this.sessions.get(sessionId).poll()) == null) {
           try {
@@ -168,37 +167,36 @@ public class smalltalk extends AbstractApplication {
   }
 
   public boolean save() {
-    HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
-    HttpSession session = request.getSession();
+    final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
+    final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
+    final HttpSession session = request.getSession();
 
     if (session.getAttribute("meeting_code") != null) {
       if (request.getParameter("text")!=null && !request.getParameter("text").isEmpty()) {
-        this.checkup(request);
+        this.checkup(session);
         String[] agent = request.getHeader("User-Agent").split(" ");
         this.setVariable("browser", agent[agent.length - 1]);
-        
+
         Builder builder = new Builder();
         builder.put("user", session.getAttribute("user"));
         builder.put("time", format.format(new Date()));
         builder.put("message", filter(request.getParameter("text")));
-        
-        String sessionId = session.getId();
+
+        final String sessionId = session.getId();
         synchronized (this.sessions) {
           if ((this.sessions.get(sessionId)) == null){
             this.sessions.put(sessionId, new ArrayDeque<Builder>());
           }
-          
+
           Set<String> set = this.sessions.keySet();
           Iterator<String> iterator = set.iterator();
           while(iterator.hasNext()) {
-            sessionId = iterator.next();
-            this.sessions.get(sessionId).add(builder);
+            this.sessions.get(iterator.next()).add(builder);
           }
-          
+
           this.sessions.notifyAll();
         }
-        
+
         return true;
       }
     }
@@ -207,11 +205,9 @@ public class smalltalk extends AbstractApplication {
   }
 
   public String command() {
-    HttpServletRequest request = (HttpServletRequest) this.context
-        .getAttribute("HTTP_REQUEST");
-    HttpServletResponse response = (HttpServletResponse) this.context
-        .getAttribute("HTTP_RESPONSE");
-    HttpSession session = request.getSession();
+    final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
+    final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
+    final HttpSession session = request.getSession();
 
     if (session.getAttribute("meeting_code") != null) {
       response.setContentType("application/json");
@@ -219,28 +215,27 @@ public class smalltalk extends AbstractApplication {
         return "{ \"error\": \"missing user\" }";
       }
 
-      this.checkup(request);
-      
+      this.checkup(session);
+
       Builder builder = new Builder();
       builder.put("user", session.getAttribute("user"));
       builder.put("cmd", request.getParameter("cmd"));
-      
-      String sessionId = session.getId();
+
+      final String sessionId = session.getId();
       synchronized (this.sessions) {
         if ((this.sessions.get(sessionId)) == null){
           this.sessions.put(sessionId, new ArrayDeque<Builder>());
         }
-        
+
         Set<String> set = this.sessions.keySet();
         Iterator<String> iterator = set.iterator();
         while(iterator.hasNext()) {
-          sessionId = iterator.next();
-          this.sessions.get(sessionId).add(builder);
+          this.sessions.get(iterator.next()).add(builder);
         }
-        
+
         this.sessions.notifyAll();
       }
-      
+
       return "{}";
     }
 
@@ -248,16 +243,16 @@ public class smalltalk extends AbstractApplication {
   }
 
   public String upload() throws ApplicationException {
-    HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-    HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
+    final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
+    final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
     response.setContentType("text/html;charset=UTF-8");
 
     // Create path components to save the file
     final String path = this.context.getAttribute("system.directory") != null ? this.context.getAttribute("system.directory").toString() + "/files" : "files";
 
-    Builders builders = new Builders();
+    final Builders builders = new Builders();
     try {
-      MultipartFormData iter = new MultipartFormData(request);
+      final MultipartFormData iter = new MultipartFormData(request);
       ContentDisposition e = null;
       int read = 0;
       while ((e = iter.getNextPart()) != null) {
@@ -265,17 +260,17 @@ public class smalltalk extends AbstractApplication {
         final Builder builder = new Builder();
         builder.put("type", StringUtilities.implode(";", Arrays.asList(e.getContentType())));
         builder.put("file", new StringBuffer().append(this.context.getAttribute("HTTP_SCHEME")).append("://").append(this.context.getAttribute("HTTP_SERVER")).append(":"+ request.getServerPort()).append( "/files/").append(fileName));
-        File f = new File(path + File.separator + fileName);
+        final File f = new File(path + File.separator + fileName);
         if (!f.exists()) {
           if (!f.getParentFile().exists()) {
             f.getParentFile().mkdirs();
           }
         }
 
-        OutputStream out = new FileOutputStream(f);
-        BufferedOutputStream bout= new BufferedOutputStream(out);
-        ByteArrayInputStream is = new ByteArrayInputStream(e.getData());
-        BufferedInputStream bs = new BufferedInputStream(is);
+        final OutputStream out = new FileOutputStream(f);
+        final BufferedOutputStream bout= new BufferedOutputStream(out);
+        final ByteArrayInputStream is = new ByteArrayInputStream(e.getData());
+        final BufferedInputStream bs = new BufferedInputStream(is);
         final byte[] bytes = new byte[8192];
         while ((read = bs.read(bytes)) != -1) {
            bout.write(bytes, 0, read);
@@ -284,10 +279,8 @@ public class smalltalk extends AbstractApplication {
         bs.close();
 
         builders.add(builder);
-        System.out.println("New file " + fileName + " created at " + path);
         System.out.println(String.format("File %s being uploaded to %s", new Object[] { fileName, path }));
       }
-
     } catch (IOException e) {
       throw new ApplicationException(e.getMessage(), e);
     } catch (ServletException e) {
@@ -298,32 +291,27 @@ public class smalltalk extends AbstractApplication {
   }
 
   public boolean topic() {
-    HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-    HttpSession session = request.getSession();
+    final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
+    final HttpSession session = request.getSession();
 
-    if (session.getAttribute("meeting_code") != null) {
-      String key = session.getAttribute("meeting_code").toString();
-      this.setVariable(key, filter(request.getParameter("topic")));
+    Object key;
+    if ((key = session.getAttribute("meeting_code")) != null) {
+      this.setVariable(key.toString(), filter(request.getParameter("topic")));
       return true;
     }
 
     return false;
   }
 
-  public smalltalk exit(String meeting_code) {
-    HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-    HttpSession session = request.getSession();
-
-    session.removeAttribute("meeting_code");
-
+  public smalltalk exit() {
+    final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
+    request.getSession().removeAttribute("meeting_code");
     return this;
   }
 
-  private void checkup(HttpServletRequest request) {
-    HttpSession session = request.getSession();
-
+  private void checkup(final HttpSession session) {
     String key = session.getAttribute("meeting_code").toString();
-    if ((this.sessions = groups.get(key)) == null) {
+    if ((this.sessions = this.groups.get(key)) == null) {
       this.sessions = new HashMap<String, Queue<Builder>>();
       this.groups.put(key, this.sessions);
 
