@@ -11,13 +11,13 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -177,21 +177,21 @@ public class smalltalk extends AbstractApplication {
         String[] agent = request.getHeader("User-Agent").split(" ");
         this.setVariable("browser", agent[agent.length - 1]);
 
-        Builder builder = new Builder();
+        final Builder builder = new Builder();
         builder.put("user", session.getAttribute("user"));
         builder.put("time", format.format(new Date()));
         builder.put("message", filter(request.getParameter("text")));
 
         final String sessionId = session.getId();
         synchronized (this.sessions) {
-          if ((this.sessions.get(sessionId)) == null){
+          if ((this.sessions.get(sessionId)) == null) {
             this.sessions.put(sessionId, new ArrayDeque<Builder>());
           }
-
-          Set<String> set = this.sessions.keySet();
-          Iterator<String> iterator = set.iterator();
+          
+          final Collection<Queue<Builder>> set = this.sessions.values();
+          final Iterator<Queue<Builder>> iterator = set.iterator();
           while(iterator.hasNext()) {
-            this.sessions.get(iterator.next()).add(builder);
+            iterator.next().add(builder);
           }
 
           this.sessions.notifyAll();
@@ -223,14 +223,14 @@ public class smalltalk extends AbstractApplication {
 
       final String sessionId = session.getId();
       synchronized (this.sessions) {
-        if ((this.sessions.get(sessionId)) == null){
+        if ((this.sessions.get(sessionId)) == null) {
           this.sessions.put(sessionId, new ArrayDeque<Builder>());
         }
-
-        Set<String> set = this.sessions.keySet();
-        Iterator<String> iterator = set.iterator();
+        
+        final Collection<Queue<Builder>> set = this.sessions.values();
+        final Iterator<Queue<Builder>> iterator = set.iterator();
         while(iterator.hasNext()) {
-          this.sessions.get(iterator.next()).add(builder);
+          iterator.next().add(builder);
         }
 
         this.sessions.notifyAll();
