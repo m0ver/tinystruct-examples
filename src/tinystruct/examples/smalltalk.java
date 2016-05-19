@@ -28,6 +28,7 @@ import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.data.component.Builder;
 import org.tinystruct.data.component.Builders;
+import org.tinystruct.datatype.Variable;
 import org.tinystruct.handle.Reforward;
 import org.tinystruct.system.util.Matrix;
 import org.tinystruct.system.util.StringUtilities;
@@ -73,8 +74,11 @@ public class smalltalk extends AbstractApplication {
     }
 
     this.setVariable("meeting_code", meeting_code.toString());
-    this.setVariable("topic", this.getVariable(meeting_code.toString()).getValue().toString().replaceAll("[\r\n]", "<br />"), true);
-
+    Variable<?> topic;
+    if ((topic = this.getVariable(meeting_code.toString())) != null) {
+      this.setVariable("topic", topic.getValue().toString().replaceAll("[\r\n]", "<br />"), true);
+    }
+    
     return this;
   }
 
