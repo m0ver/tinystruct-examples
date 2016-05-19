@@ -36,7 +36,7 @@ import org.tinystruct.transfer.http.upload.MultipartFormData;
 
 public class smalltalk extends AbstractApplication {
 
-  private static final long TIMEOUT = 30000;
+  private static final long TIMEOUT = 1000;
   private volatile Map<String, Queue<Builder>> sessions;
   private final Map<String, Map<String, Queue<Builder>>> groups = Collections.synchronizedMap(new HashMap<String, Map<String, Queue<Builder>>>());
 
@@ -58,39 +58,31 @@ public class smalltalk extends AbstractApplication {
   }
 
   public smalltalk index() {
-    final HttpServletRequest request = (HttpServletRequest) this.context
-        .getAttribute("HTTP_REQUEST");
+    final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     final HttpSession session = request.getSession();
-    Object code;
-    if ((code = session.getAttribute("meeting_code")) == null) {
-      String key = java.util.UUID.randomUUID().toString();
-      session.setAttribute("meeting_code", key);
+    Object meeting_code = session.getAttribute("meeting_code");
+
+    if ( meeting_code == null ) {
+      meeting_code = java.util.UUID.randomUUID().toString();
+      session.setAttribute("meeting_code", meeting_code);
 
       this.sessions = new HashMap<String, Queue<Builder>>();
-      this.groups.put(key, this.sessions);
+      this.groups.put(meeting_code.toString(), this.sessions);
 
-      this.setVariable("meeting_code", key);
-
-      System.out.println("New meeting generated:" + key);
-    } else {
-      this.setVariable("meeting_code", code.toString());
-      if (this.getVariable(code.toString()) != null) {
-        this.setVariable("topic", this.getVariable(code.toString()).getValue()
-            .toString().replaceAll("[\r\n]", "<br />"), true);
-      }
+      System.out.println("New meeting generated:" + meeting_code);
     }
+
+    this.setVariable("meeting_code", meeting_code.toString());
+    this.setVariable("topic", this.getVariable(meeting_code.toString()).getValue().toString().replaceAll("[\r\n]", "<br />"), true);
 
     return this;
   }
 
   public String matrix() throws ApplicationException {
-    final HttpServletRequest request = (HttpServletRequest) this.context
-        .getAttribute("HTTP_REQUEST");
+    final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
 
     if (request.getParameter("meeting_code") != null) {
-      BufferedImage qrImage = Matrix.toQRImage(this.getLink("talk/join") + "/"
-          + request.getParameter("meeting_code"), 100, 100);
-
+      BufferedImage qrImage = Matrix.toQRImage(this.getLink("talk/join") + "/" + request.getParameter("meeting_code"), 100, 100);
       return "data:image/png;base64," + Matrix.getBase64Image(qrImage);
     }
 
@@ -99,13 +91,9 @@ public class smalltalk extends AbstractApplication {
 
   public String join(String meeting_code) throws ApplicationException {
     if (groups.containsKey(meeting_code)) {
-      final HttpServletRequest request = (HttpServletRequest) this.context
-          .getAttribute("HTTP_REQUEST");
-      final HttpServletResponse response = (HttpServletResponse) this.context
-          .getAttribute("HTTP_RESPONSE");
-
-      final HttpSession session = request.getSession();
-      session.setAttribute("meeting_code", meeting_code);
+      final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
+      final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
+      request.getSession().setAttribute("meeting_code", meeting_code);
 
       this.setVariable("meeting_code", meeting_code);
 
@@ -121,10 +109,8 @@ public class smalltalk extends AbstractApplication {
   }
 
   public String start(String name) throws ApplicationException {
-    final HttpServletRequest request = (HttpServletRequest) this.context
-        .getAttribute("HTTP_REQUEST");
-    final HttpServletResponse response = (HttpServletResponse) this.context
-        .getAttribute("HTTP_RESPONSE");
+    final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
+    final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
     final HttpSession session = request.getSession();
 
     Object meeting_code = session.getAttribute("meeting_code");
@@ -141,24 +127,26 @@ public class smalltalk extends AbstractApplication {
   }
 
   public String update() throws ApplicationException {
-    final HttpServletRequest request = (HttpServletRequest) this.context
-        .getAttribute("HTTP_REQUEST");
+    final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     final HttpSession session = request.getSession();
+    final Object meeting_code = session.getAttribute("meeting_code");
 
-    if (session.getAttribute("meeting_code") != null) {
-      this.checkup(session);
+    if ( meeting_code != null ) {
+      this.checkup(meeting_code);
+
       Builder message;
       final String sessionId = session.getId();
       synchronized (this.sessions) {
-        while(this.sessions.get(sessionId) == null || (message = this.sessions.get(sessionId).poll()) == null) {
+        do {
           try {
             this.sessions.wait(TIMEOUT);
           } catch (InterruptedException e) {
             throw new ApplicationException(e.getMessage(), e);
           }
-        }
+        } while(this.sessions.get(sessionId) == null || (message = this.sessions.get(sessionId).poll()) == null);
 
-        System.out.println("[" + session.getAttribute("meeting_code") + "]:" + message);
+        System.out.println("["+sessionId+"][" + session.getAttribute("meeting_code") + "]:" + message);
+        System.out.println("-------------");
         return message.toString();
       }
     }
@@ -170,18 +158,19 @@ public class smalltalk extends AbstractApplication {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
     final HttpSession session = request.getSession();
+    final Object meeting_code = session.getAttribute("meeting_code");
 
-    if (session.getAttribute("meeting_code") != null) {
-      if (request.getParameter("text")!=null && !request.getParameter("text").isEmpty()) {
+    if ( meeting_code != null ) {
+      if (request.getParameter("text") != null && !request.getParameter("text").isEmpty()) {
         String[] agent = request.getHeader("User-Agent").split(" ");
         this.setVariable("browser", agent[agent.length - 1]);
-        
+
         final Builder builder = new Builder();
         builder.put("user", session.getAttribute("user"));
         builder.put("time", format.format(new Date()));
         builder.put("message", filter(request.getParameter("text")));
 
-        this.checkup(session);
+        this.checkup(meeting_code);
 
         final String sessionId = session.getId();
         synchronized (this.sessions) {
@@ -193,9 +182,8 @@ public class smalltalk extends AbstractApplication {
           final Iterator<Queue<Builder>> iterator = set.iterator();
           while(iterator.hasNext()) {
             iterator.next().add(builder);
+            this.sessions.notifyAll();
           }
-
-          this.sessions.notifyAll();
         }
         return builder.toString();
       }
@@ -208,8 +196,9 @@ public class smalltalk extends AbstractApplication {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
     final HttpSession session = request.getSession();
+    final Object meeting_code = session.getAttribute("meeting_code");
 
-    if (session.getAttribute("meeting_code") != null) {
+    if ( meeting_code != null ) {
       response.setContentType("application/json");
       if (session.getAttribute("user") == null) {
         return "{ \"error\": \"missing user\" }";
@@ -219,7 +208,7 @@ public class smalltalk extends AbstractApplication {
       builder.put("user", session.getAttribute("user"));
       builder.put("cmd", request.getParameter("cmd"));
 
-      this.checkup(session);
+      this.checkup(meeting_code);
 
       final String sessionId = session.getId();
       synchronized (this.sessions) {
@@ -231,9 +220,8 @@ public class smalltalk extends AbstractApplication {
         final Iterator<Queue<Builder>> iterator = set.iterator();
         while(iterator.hasNext()) {
           iterator.next().add(builder);
+          this.sessions.notifyAll();
         }
-
-        this.sessions.notifyAll();
       }
 
       return "{}";
@@ -293,33 +281,32 @@ public class smalltalk extends AbstractApplication {
   public boolean topic() {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     final HttpSession session = request.getSession();
+    final Object meeting_code = session.getAttribute("meeting_code");
 
-    Object key;
-    if ((key = session.getAttribute("meeting_code")) != null) {
-      this.setVariable(key.toString(), filter(request.getParameter("topic")));
+    if ( meeting_code != null ) {
+      this.setVariable(meeting_code.toString(), filter(request.getParameter("topic")));
       return true;
     }
 
     return false;
   }
 
-  public smalltalk exit() {
+  protected smalltalk exit() {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     request.getSession().removeAttribute("meeting_code");
     return this;
   }
 
-  private void checkup(final HttpSession session) {
-    final String key = session.getAttribute("meeting_code").toString();
-    if ((this.sessions = this.groups.get(key)) == null) {
+  private void checkup(final Object meeting_code) {
+    if ((this.sessions = this.groups.get(meeting_code)) == null) {
       this.sessions = new HashMap<String, Queue<Builder>>();
-      this.groups.put(key, this.sessions);
+      this.groups.put(meeting_code.toString(), this.sessions);
 
-      this.setVariable("meeting_code", key);
+      this.setVariable("meeting_code", meeting_code.toString());
     }
   }
 
-  private String filter(String text) {
+  protected String filter(String text) {
     text = text.replaceAll("<script(.*)>(.*)<\\/script>", "");
     return text;
   }
