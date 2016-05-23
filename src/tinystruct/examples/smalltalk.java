@@ -38,7 +38,6 @@ import org.tinystruct.transfer.http.upload.MultipartFormData;
 public class smalltalk extends AbstractApplication {
 
   private static final long TIMEOUT = 1000;
-  private volatile Map<String, Queue<Builder>> sessions;
   private final Map<String, Map<String, Queue<Builder>>> groups = Collections.synchronizedMap(new HashMap<String, Map<String, Queue<Builder>>>());
 
   @Override
@@ -67,8 +66,9 @@ public class smalltalk extends AbstractApplication {
       meeting_code = java.util.UUID.randomUUID().toString();
       session.setAttribute("meeting_code", meeting_code);
 
-      this.sessions = new HashMap<String, Queue<Builder>>();
-      this.groups.put(meeting_code.toString(), this.sessions);
+      final Map<String, Queue<Builder>> sessions = new HashMap<String, Queue<Builder>>();
+      sessions.put(session.getId(), new ArrayDeque<Builder>());
+      this.groups.put(meeting_code.toString(), sessions);
 
       System.out.println("New meeting generated:" + meeting_code);
     }
@@ -130,24 +130,36 @@ public class smalltalk extends AbstractApplication {
     return name;
   }
 
-  public String update() throws ApplicationException {
+  public String update() throws ApplicationException, IOException {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
+    final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
     final HttpSession session = request.getSession();
     final Object meeting_code = session.getAttribute("meeting_code");
 
     if ( meeting_code != null ) {
-      this.checkup(meeting_code);
-
       Builder message;
-      final String sessionId = session.getId();
-      synchronized (this.sessions) {
+      
+      Map<String, Queue<Builder>> sessions;
+      synchronized (this.groups) {
+        if ((sessions = this.groups.get(meeting_code)) == null) {
+          this.groups.put(meeting_code.toString(), new HashMap<String, Queue<Builder>>());
+          return "{}";
+        }
+
+        final String sessionId = session.getId();
         do {
           try {
-            this.sessions.wait(TIMEOUT);
+            this.groups.wait(TIMEOUT);
           } catch (InterruptedException e) {
             throw new ApplicationException(e.getMessage(), e);
           }
-        } while(this.sessions.get(sessionId) == null || (message = this.sessions.get(sessionId).poll()) == null);
+        } while(sessions.get(sessionId) == null || (message = sessions.get(sessionId).poll()) == null);
+
+        // @Todo 
+        // To review why the context is not thread-safe.
+        // Use response.getWriter() to avoid the inconformity issue.
+        response.getWriter().println(message);
+        response.getWriter().close();
 
         System.out.println("["+sessionId+"][" + session.getAttribute("meeting_code") + "]:" + message);
         System.out.println("-------------");
@@ -174,19 +186,22 @@ public class smalltalk extends AbstractApplication {
         builder.put("time", format.format(new Date()));
         builder.put("message", filter(request.getParameter("text")));
 
-        this.checkup(meeting_code);
-
-        final String sessionId = session.getId();
-        synchronized (this.sessions) {
-          if (this.sessions.get(sessionId) == null) {
-            this.sessions.put(sessionId, new ArrayDeque<Builder>());
+        Map<String, Queue<Builder>> sessions;
+        synchronized (this.groups) {
+          if ((sessions = this.groups.get(meeting_code)) == null) {
+            this.groups.put(meeting_code.toString(), new HashMap<String, Queue<Builder>>());
           }
 
-          final Collection<Queue<Builder>> set = this.sessions.values();
+          final String sessionId = session.getId();
+          if (sessions.get(sessionId) == null) {
+            sessions.put(sessionId, new ArrayDeque<Builder>());
+          }
+
+          final Collection<Queue<Builder>> set = sessions.values();
           final Iterator<Queue<Builder>> iterator = set.iterator();
           while(iterator.hasNext()) {
             iterator.next().add(builder);
-            this.sessions.notifyAll();
+            this.groups.notifyAll();
           }
         }
         return builder.toString();
@@ -212,22 +227,24 @@ public class smalltalk extends AbstractApplication {
       builder.put("user", session.getAttribute("user"));
       builder.put("cmd", request.getParameter("cmd"));
 
-      this.checkup(meeting_code);
-
-      final String sessionId = session.getId();
-      synchronized (this.sessions) {
-        if (this.sessions.get(sessionId) == null) {
-          this.sessions.put(sessionId, new ArrayDeque<Builder>());
+      Map<String, Queue<Builder>> sessions;
+      synchronized (this.groups) {
+        if ((sessions = this.groups.get(meeting_code)) == null) {
+          this.groups.put(meeting_code.toString(), new HashMap<String, Queue<Builder>>());
         }
 
-        final Collection<Queue<Builder>> set = this.sessions.values();
+        final String sessionId = session.getId();
+        if (sessions.get(sessionId) == null) {
+          sessions.put(sessionId, new ArrayDeque<Builder>());
+        }
+
+        final Collection<Queue<Builder>> set = sessions.values();
         final Iterator<Queue<Builder>> iterator = set.iterator();
         while(iterator.hasNext()) {
           iterator.next().add(builder);
-          this.sessions.notifyAll();
+          this.groups.notifyAll();
         }
       }
-
       return "{}";
     }
 
@@ -240,7 +257,7 @@ public class smalltalk extends AbstractApplication {
     response.setContentType("text/html;charset=UTF-8");
 
     // Create path components to save the file
-    final String path = this.context.getAttribute("system.directory") != null ? this.context.getAttribute("system.directory").toString() + "/files" : "files";
+    final String path = this.config.get("system.directory") != null ? this.config.get("system.directory").toString() + "/files" : "files";
 
     final Builders builders = new Builders();
     try {
@@ -299,15 +316,6 @@ public class smalltalk extends AbstractApplication {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     request.getSession().removeAttribute("meeting_code");
     return this;
-  }
-
-  private void checkup(final Object meeting_code) {
-    if ((this.sessions = this.groups.get(meeting_code)) == null) {
-      this.sessions = new HashMap<String, Queue<Builder>>();
-      this.groups.put(meeting_code.toString(), this.sessions);
-
-      this.setVariable("meeting_code", meeting_code.toString());
-    }
   }
 
   protected String filter(String text) {
