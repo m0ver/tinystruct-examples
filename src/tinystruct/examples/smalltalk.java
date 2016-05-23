@@ -66,11 +66,21 @@ public class smalltalk extends AbstractApplication {
       meeting_code = java.util.UUID.randomUUID().toString();
       session.setAttribute("meeting_code", meeting_code);
 
-      final Map<String, Queue<Builder>> sessions = new HashMap<String, Queue<Builder>>();
-      sessions.put(session.getId(), new ArrayDeque<Builder>());
-      this.groups.put(meeting_code.toString(), sessions);
-
       System.out.println("New meeting generated:" + meeting_code);
+    }
+
+    Map<String, Queue<Builder>> sessions;
+    synchronized (this.groups) {
+      if ((sessions = this.groups.get(meeting_code)) == null) {
+        this.groups.put(meeting_code.toString(), sessions = new HashMap<String, Queue<Builder>>());
+      }
+
+      final String sessionId = session.getId();
+      if (sessions.get(sessionId) == null) {
+        sessions.put(sessionId, new ArrayDeque<Builder>());
+      }
+      
+      this.groups.notifyAll();
     }
 
     this.setVariable("meeting_code", meeting_code.toString());
@@ -141,10 +151,7 @@ public class smalltalk extends AbstractApplication {
       
       Map<String, Queue<Builder>> sessions;
       synchronized (this.groups) {
-        if ((sessions = this.groups.get(meeting_code)) == null) {
-          this.groups.put(meeting_code.toString(), new HashMap<String, Queue<Builder>>());
-          return "{}";
-        }
+        sessions = this.groups.get(meeting_code);
 
         final String sessionId = session.getId();
         do {
@@ -153,7 +160,7 @@ public class smalltalk extends AbstractApplication {
           } catch (InterruptedException e) {
             throw new ApplicationException(e.getMessage(), e);
           }
-        } while(sessions.get(sessionId) == null || (message = sessions.get(sessionId).poll()) == null);
+        } while(sessions == null || sessions.get(sessionId) == null || (message = sessions.get(sessionId).poll()) == null);
 
         // @Todo 
         // To review why the context is not thread-safe.
@@ -189,7 +196,7 @@ public class smalltalk extends AbstractApplication {
         Map<String, Queue<Builder>> sessions;
         synchronized (this.groups) {
           if ((sessions = this.groups.get(meeting_code)) == null) {
-            this.groups.put(meeting_code.toString(), new HashMap<String, Queue<Builder>>());
+            this.groups.put(meeting_code.toString(), sessions = new HashMap<String, Queue<Builder>>());
           }
 
           final String sessionId = session.getId();
@@ -230,7 +237,7 @@ public class smalltalk extends AbstractApplication {
       Map<String, Queue<Builder>> sessions;
       synchronized (this.groups) {
         if ((sessions = this.groups.get(meeting_code)) == null) {
-          this.groups.put(meeting_code.toString(), new HashMap<String, Queue<Builder>>());
+          this.groups.put(meeting_code.toString(), sessions = new HashMap<String, Queue<Builder>>());
         }
 
         final String sessionId = session.getId();
