@@ -142,80 +142,83 @@ public class smalltalk extends AbstractApplication {
 
   public String update() throws ApplicationException, IOException {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-    final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
     final HttpSession session = request.getSession();
     final Object meeting_code = session.getAttribute("meeting_code");
-
+    final String sessionId = session.getId();
     if ( meeting_code != null ) {
-      Builder message;
-      
-      Map<String, Queue<Builder>> sessions;
-      synchronized (this.groups) {
-        sessions = this.groups.get(meeting_code);
-
-        final String sessionId = session.getId();
-        do {
-          try {
-            this.groups.wait(TIMEOUT);
-          } catch (InterruptedException e) {
-            throw new ApplicationException(e.getMessage(), e);
-          }
-        } while(sessions == null || sessions.get(sessionId) == null || (message = sessions.get(sessionId).poll()) == null);
-
-        // @Todo 
-        // To review why the context is not thread-safe.
-        // Use response.getWriter() to avoid the inconformity issue.
-        response.getWriter().println(message);
-        response.getWriter().close();
-
-        System.out.println("["+sessionId+"][" + session.getAttribute("meeting_code") + "]:" + message);
-        System.out.println("-------------");
-        return message.toString();
-      }
+      return update(sessionId, meeting_code);
     }
 
     return "";
   }
 
+  private String update(final String sessionId, final Object meeting_code) throws ApplicationException, IOException {
+    Builder message;
+
+    Map<String, Queue<Builder>> sessions;
+    synchronized (this.groups) {
+      sessions = this.groups.get(meeting_code);
+
+      do {
+        try {
+          this.groups.wait(TIMEOUT);
+        } catch (InterruptedException e) {
+          throw new ApplicationException(e.getMessage(), e);
+        }
+      } while(sessions == null || sessions.get(sessionId) == null || (message = sessions.get(sessionId).poll()) == null);
+
+      System.out.println("["+sessionId+"][" + meeting_code + "]:" + message);
+      System.out.println("-------------");
+      return message.toString();
+    }
+  }
+
   public String save() {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-    final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
     final HttpSession session = request.getSession();
     final Object meeting_code = session.getAttribute("meeting_code");
+    final String sessionId = session.getId();
+    String message;
 
     if ( meeting_code != null ) {
-      if (request.getParameter("text") != null && !request.getParameter("text").isEmpty()) {
+      if ((message = request.getParameter("text")) != null && !message.isEmpty()) {
         String[] agent = request.getHeader("User-Agent").split(" ");
         this.setVariable("browser", agent[agent.length - 1]);
+
+        final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
 
         final Builder builder = new Builder();
         builder.put("user", session.getAttribute("user"));
         builder.put("time", format.format(new Date()));
-        builder.put("message", filter(request.getParameter("text")));
+        builder.put("message", filter(message));
 
-        Map<String, Queue<Builder>> sessions;
-        synchronized (this.groups) {
-          if ((sessions = this.groups.get(meeting_code)) == null) {
-            this.groups.put(meeting_code.toString(), sessions = new HashMap<String, Queue<Builder>>());
-          }
-
-          final String sessionId = session.getId();
-          if (sessions.get(sessionId) == null) {
-            sessions.put(sessionId, new ArrayDeque<Builder>());
-          }
-
-          final Collection<Queue<Builder>> set = sessions.values();
-          final Iterator<Queue<Builder>> iterator = set.iterator();
-          while(iterator.hasNext()) {
-            iterator.next().add(builder);
-            this.groups.notifyAll();
-          }
-        }
-        return builder.toString();
+        return this.save(sessionId, meeting_code, builder);
       }
     }
 
     return "{}";
+  }
+
+  private String save(final String sessionId, final Object meeting_code, final Builder builder) {
+    Map<String, Queue<Builder>> sessions;
+    synchronized (this.groups) {
+      if ((sessions = this.groups.get(meeting_code)) == null) {
+        this.groups.put(meeting_code.toString(), sessions = new HashMap<String, Queue<Builder>>());
+      }
+
+      if (sessions.get(sessionId) == null) {
+        sessions.put(sessionId, new ArrayDeque<Builder>());
+      }
+
+      final Collection<Queue<Builder>> set = sessions.values();
+      final Iterator<Queue<Builder>> iterator = set.iterator();
+      while(iterator.hasNext()) {
+        iterator.next().add(builder);
+        this.groups.notifyAll();
+      }
+
+      return builder.toString();
+    }
   }
 
   public String command() {
@@ -223,6 +226,7 @@ public class smalltalk extends AbstractApplication {
     final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
     final HttpSession session = request.getSession();
     final Object meeting_code = session.getAttribute("meeting_code");
+    final String sessionId = session.getId();
 
     if ( meeting_code != null ) {
       response.setContentType("application/json");
@@ -234,25 +238,7 @@ public class smalltalk extends AbstractApplication {
       builder.put("user", session.getAttribute("user"));
       builder.put("cmd", request.getParameter("cmd"));
 
-      Map<String, Queue<Builder>> sessions;
-      synchronized (this.groups) {
-        if ((sessions = this.groups.get(meeting_code)) == null) {
-          this.groups.put(meeting_code.toString(), sessions = new HashMap<String, Queue<Builder>>());
-        }
-
-        final String sessionId = session.getId();
-        if (sessions.get(sessionId) == null) {
-          sessions.put(sessionId, new ArrayDeque<Builder>());
-        }
-
-        final Collection<Queue<Builder>> set = sessions.values();
-        final Iterator<Queue<Builder>> iterator = set.iterator();
-        while(iterator.hasNext()) {
-          iterator.next().add(builder);
-          this.groups.notifyAll();
-        }
-      }
-      return "{}";
+      return this.save(sessionId, meeting_code, builder);
     }
 
     return "{ \"error\": \"expired\" }";
