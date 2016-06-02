@@ -72,9 +72,19 @@ public class smalltalk extends talk implements HttpSessionListener {
         this.sessions.put(meetingCode.toString(), session_ids = new ArrayList<String>());
       }
 
+      if(!session_ids.contains(request.getSession().getId()))
       session_ids.add(request.getSession().getId());
 
       this.meetings.notifyAll();
+    }
+    
+    synchronized (this.list) {
+      final String sessionId = request.getSession().getId();
+      if(!this.list.containsKey(sessionId))
+      {
+        this.list.put(sessionId, new ConcurrentLinkedQueue<Builder>());
+        this.list.notifyAll();
+      }
     }
 
     this.setVariable("meeting_code", meetingCode.toString());
