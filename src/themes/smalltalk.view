@@ -410,7 +410,7 @@
   function autoupdate() {
     if(!is_running) {
       is_running = true;
-      $.getJSON( "[%LINK:talk/update%]?output=function", function(data) {
+      $.getJSON( "[%LINK:talk/update%]", function(data) {
         update(data);
         is_running = false;
       }).done(function() {
