@@ -16,5 +16,8 @@
 		<filter-name>DefaultHandler</filter-name>
 		<url-pattern>/</url-pattern>
 	</filter-mapping>
-
+	<listener>
+		<listener-class>tinystruct.examples.smalltalk
+		</listener-class>
+	</listener> 
 </web-app>
