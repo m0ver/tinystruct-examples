@@ -2,6 +2,7 @@ package tinystruct.examples;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -104,14 +105,13 @@ public class talk extends AbstractApplication {
     Builder message;
     Queue<Builder> messages;
     synchronized (this.list) {
-      messages = this.list.get(sessionId);
       do {
         try {
           this.list.wait(TIMEOUT);
         } catch (InterruptedException e) {
           throw new ApplicationException(e.getMessage(), e);
         }
-      } while(messages == null || (message = messages.poll()) == null);
+      } while((messages = this.list.get(sessionId)) == null || (message = messages.poll()) == null);
 
       return message.toString();
     }
@@ -137,7 +137,7 @@ public class talk extends AbstractApplication {
       final Iterator<Entry<String, Queue<Builder>>> iterator = set.iterator();
       while(iterator.hasNext()) {
         Entry<String, Queue<Builder>> e = iterator.next();
-        if(this.sessions.get(meetingCode).contains(e.getKey())) {
+        if(this.sessions.get(meetingCode) != null && this.sessions.get(meetingCode).contains(e.getKey())) {
           e.getValue().add(builder);
           this.list.notifyAll();
         }
@@ -153,8 +153,13 @@ public class talk extends AbstractApplication {
   public static void main(String[] args) throws ApplicationException {
     talk talk = new talk();
     talk.meetings.put("[M001]", new ConcurrentLinkedQueue<Builder>());
-    talk.list.put("[A]", new ConcurrentLinkedQueue<Builder>());
-    talk.list.put("[B]", new ConcurrentLinkedQueue<Builder>());
+    talk.list.put("{A}", new ConcurrentLinkedQueue<Builder>());
+    talk.list.put("{B}", new ConcurrentLinkedQueue<Builder>());
+    
+    List<String> sess = new ArrayList<String>();
+    sess.add("{A}");
+    sess.add("{B}");
+    talk.sessions.put("[M001]", sess);
     ApplicationManager.install(talk);
 
     new Thread(new Runnable(){
@@ -200,7 +205,7 @@ public class talk extends AbstractApplication {
         System.out.println("[A] is started...");
         while(true)
         try {
-          System.out.println("**A**:"+ApplicationManager.call("talk/update/[A]", null));
+          System.out.println("**A**:"+ApplicationManager.call("talk/update/{A}", null));
           Thread.sleep(1);
         } catch (ApplicationException e) {
           // TODO Auto-generated catch block
@@ -219,7 +224,7 @@ public class talk extends AbstractApplication {
         System.out.println("[B] is started...");
         while(true)
         try {
-          System.out.println("**B**:"+ApplicationManager.call("talk/update/[B]", null));
+          System.out.println("**B**:"+ApplicationManager.call("talk/update/{B}", null));
           Thread.sleep(1);
         } catch (ApplicationException e) {
           // TODO Auto-generated catch block
