@@ -88,6 +88,8 @@ public class smalltalk extends talk implements HttpSessionListener {
     }
 
     this.setVariable("meeting_code", meetingCode.toString());
+    this.setVariable("session_id", request.getSession().getId());
+
     Variable<?> topic;
     if ((topic = this.getVariable(meetingCode.toString())) != null) {
       this.setVariable("topic", topic.getValue().toString().replaceAll("[\r\n]", "<br />"), true);
@@ -171,7 +173,7 @@ public class smalltalk extends talk implements HttpSessionListener {
 
     final Object meetingCode = request.getSession().getAttribute("meeting_code");
     final String sessionId = request.getSession().getId();
-    if ( meetingCode != null && sessions.get(meetingCode).contains(sessionId)) {
+    if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
       String message;
       if ((message = request.getParameter("text")) != null && !message.isEmpty()) {
         String[] agent = request.getHeader("User-Agent").split(" ");
@@ -195,12 +197,19 @@ public class smalltalk extends talk implements HttpSessionListener {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     final Object meetingCode = request.getSession().getAttribute("meeting_code");
     final String sessionId = request.getSession().getId();
-    if ( meetingCode != null && sessions.get(meetingCode).contains(sessionId)) {
+    if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
       return update(sessionId);
     }
     return "";
   }
-  
+
+  public String update(String meetingCode, String sessionId) throws ApplicationException, IOException {
+    if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
+      return update(sessionId);
+    }
+    return "";
+  }
+
   public String upload() throws ApplicationException {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
@@ -304,12 +313,12 @@ public class smalltalk extends talk implements HttpSessionListener {
         {
           session_ids.remove(arg0.getSession().getId());
         }
-        
         if ((messages = meetings.get(meetingCode)) != null) {
           messages.remove(meetingCode);
           meetings.notifyAll();
         }
       }
+
       synchronized (this.list) {
         final String sessionId = arg0.getSession().getId();
         if(this.list.containsKey(sessionId))
