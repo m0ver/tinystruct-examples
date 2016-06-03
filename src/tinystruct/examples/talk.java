@@ -105,13 +105,14 @@ public class talk extends AbstractApplication {
     Builder message;
     Queue<Builder> messages;
     synchronized (this.list) {
-      do {
+      messages = this.list.get(sessionId);
+      while((message = messages.poll()) == null) {
         try {
           this.list.wait(TIMEOUT);
         } catch (InterruptedException e) {
           throw new ApplicationException(e.getMessage(), e);
         }
-      } while((messages = this.list.get(sessionId)) == null || (message = messages.poll()) == null);
+      }
 
       return message.toString();
     }
@@ -144,12 +145,12 @@ public class talk extends AbstractApplication {
       }
     }
   }
-  
+
   @Override
   public String version() {
     return "Welcome to use tinystruct 2.0";
   }
-  
+
   public static void main(String[] args) throws ApplicationException {
     talk talk = new talk();
     talk.meetings.put("[M001]", new ConcurrentLinkedQueue<Builder>());
@@ -161,12 +162,12 @@ public class talk extends AbstractApplication {
     sess.add("{B}");
     talk.sessions.put("[M001]", sess);
     ApplicationManager.install(talk);
-
+    final int n = 1000;
     new Thread(new Runnable(){
       @Override
       public void run() {
         int i=0;
-        while(i++<200)
+        while(i++<n)
         try {
           ApplicationManager.call("talk/save/[M001]/{A}/A post "+i, null);
           Thread.sleep(1);
@@ -184,7 +185,7 @@ public class talk extends AbstractApplication {
       @Override
       public void run() {
         int i=0;
-        while(i++<200)
+        while(i++<n)
         try {
           ApplicationManager.call("talk/save/[M001]/{B}/B post "+i, null);
           Thread.sleep(1);
