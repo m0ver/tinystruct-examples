@@ -151,7 +151,7 @@ public class smalltalk extends talk implements HttpSessionListener {
 
     final Object meetingCode = request.getSession().getAttribute("meeting_code");
     final String sessionId = request.getSession().getId();
-    if ( meetingCode != null && sessions.get(meetingCode).contains(sessionId)) {
+    if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
       if (request.getSession().getAttribute("user") == null) {
         return "{ \"error\": \"missing user\" }";
       }
