@@ -154,12 +154,13 @@ public class talk extends AbstractApplication {
 
   /**
    * This is a testing. It can be executed with the command:
-   * $ bin/dispatcher --import-applications=tinystruct.examples.talk talk/testing
+   * $ bin/dispatcher --import-applications=tinystruct.examples.talk talk/testing/100
    * 
-   * @return boolean
+   * @param n
+   * @return
    * @throws ApplicationException
    */
-  public boolean testing() throws ApplicationException {
+  public boolean testing(final int n) throws ApplicationException {
     this.meetings.put("[M001]", new ConcurrentLinkedQueue<Builder>());
     this.list.put("{A}", new ConcurrentLinkedQueue<Builder>());
     this.list.put("{B}", new ConcurrentLinkedQueue<Builder>());
@@ -169,7 +170,6 @@ public class talk extends AbstractApplication {
     sess.add("{B}");
     this.sessions.put("[M001]", sess);
     
-    final int n = 1000;
     new Thread(new Runnable(){
       @Override
       public void run() {
