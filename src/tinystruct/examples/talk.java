@@ -153,16 +153,15 @@ public class talk extends AbstractApplication {
   }
 
   public void testing() throws ApplicationException {
-    talk talk = new talk();
-    talk.meetings.put("[M001]", new ConcurrentLinkedQueue<Builder>());
-    talk.list.put("{A}", new ConcurrentLinkedQueue<Builder>());
-    talk.list.put("{B}", new ConcurrentLinkedQueue<Builder>());
+    this.meetings.put("[M001]", new ConcurrentLinkedQueue<Builder>());
+    this.list.put("{A}", new ConcurrentLinkedQueue<Builder>());
+    this.list.put("{B}", new ConcurrentLinkedQueue<Builder>());
     
     List<String> sess = new ArrayList<String>();
     sess.add("{A}");
     sess.add("{B}");
-    talk.sessions.put("[M001]", sess);
-    ApplicationManager.install(talk);
+    this.sessions.put("[M001]", sess);
+    
     final int n = 1000;
     new Thread(new Runnable(){
       @Override
