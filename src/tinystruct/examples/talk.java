@@ -30,6 +30,7 @@ public class talk extends AbstractApplication {
     this.setAction("talk/update", "update");
     this.setAction("talk/save", "save");
     this.setAction("talk/version", "version");
+    this.setAction("talk/testing", "testing");
   }
 
   /**
@@ -151,7 +152,7 @@ public class talk extends AbstractApplication {
     return "Welcome to use tinystruct 2.0";
   }
 
-  public static void main(String[] args) throws ApplicationException {
+  public void testing() throws ApplicationException {
     talk talk = new talk();
     talk.meetings.put("[M001]", new ConcurrentLinkedQueue<Builder>());
     talk.list.put("{A}", new ConcurrentLinkedQueue<Builder>());
