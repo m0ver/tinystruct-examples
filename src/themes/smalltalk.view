@@ -419,6 +419,7 @@
       }).fail(function( msg ) {
         connection_timer.start();
         is_running = false;
+        console.log(msg);
       });
     }
   }
