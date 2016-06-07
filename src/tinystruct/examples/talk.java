@@ -152,7 +152,14 @@ public class talk extends AbstractApplication {
     return "Welcome to use tinystruct 2.0";
   }
 
-  public void testing() throws ApplicationException {
+  /**
+   * This is a testing. It can be executed with the command:
+   * $ bin/dispatcher --import-applications=tinystruct.examples.talk talk/testing
+   * 
+   * @return boolean
+   * @throws ApplicationException
+   */
+  public boolean testing() throws ApplicationException {
     this.meetings.put("[M001]", new ConcurrentLinkedQueue<Builder>());
     this.list.put("{A}", new ConcurrentLinkedQueue<Builder>());
     this.list.put("{B}", new ConcurrentLinkedQueue<Builder>());
@@ -236,6 +243,8 @@ public class talk extends AbstractApplication {
         }
       }
     }).start();
+    
+    return true;
   }
 
 }
