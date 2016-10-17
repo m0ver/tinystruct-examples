@@ -39,7 +39,7 @@ public class redirectChecker extends AbstractApplication {
     Expires:[Mon, 27 Jun 2016 08:24:11 GMT]
     Content-Length:[217]
     X-Cache-Hits:[168]
-    Location:[http://networks.*****.com/portfolio/industries/railways]
+    Location:[http://domain.com/path]
     Content-Type:[text/html; charset=iso-8859-1]
    * @throws ApplicationException
    */
