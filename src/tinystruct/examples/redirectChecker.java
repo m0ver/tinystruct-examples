@@ -21,7 +21,7 @@ public class redirectChecker extends AbstractApplication {
   @Override
   public void init() {
     // TODO Auto-generated method stub
-    this.setAction("testing", "testing");
+    this.setAction("check", "start");
   }
 
   /**
@@ -43,7 +43,7 @@ public class redirectChecker extends AbstractApplication {
     Content-Type:[text/html; charset=iso-8859-1]
    * @throws ApplicationException
    */
-  public void testing() throws ApplicationException{
+  public void start() throws ApplicationException{
     try 
     {
       FileInputStream fileInput = new FileInputStream("url-rules.txt");
