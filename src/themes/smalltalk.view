@@ -457,7 +457,7 @@
 
     var post_timer = new Timer(.2, function(){
       if(i++<200){
-        $("#text").text(user+' post '+i);
+        $("#text").text(user+' posts '+i);
         $("#sender").submit();
       }
       else this.complete();
