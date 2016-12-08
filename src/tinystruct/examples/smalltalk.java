@@ -62,6 +62,7 @@ public class smalltalk extends talk implements HttpSessionListener {
 
     List<String> session_ids;
     synchronized (this.meetings) {
+      final String sessionId = request.getSession().getId();
       if (this.meetings.get(meetingCode) == null) {
         this.meetings.put(meetingCode.toString(), new ConcurrentLinkedQueue<Builder>());
       }
@@ -72,8 +73,8 @@ public class smalltalk extends talk implements HttpSessionListener {
         this.sessions.put(meetingCode.toString(), session_ids = new ArrayList<String>());
       }
 
-      if(!session_ids.contains(request.getSession().getId()))
-      session_ids.add(request.getSession().getId());
+      if(!session_ids.contains(sessionId))
+      session_ids.add(sessionId);
 
       this.meetings.notifyAll();
     }
@@ -83,8 +84,8 @@ public class smalltalk extends talk implements HttpSessionListener {
       if(!this.list.containsKey(sessionId))
       {
         this.list.put(sessionId, new ConcurrentLinkedQueue<Builder>());
-        this.list.notifyAll();
       }
+      this.list.notifyAll();
     }
 
     this.setVariable("meeting_code", meetingCode.toString());
@@ -130,7 +131,8 @@ public class smalltalk extends talk implements HttpSessionListener {
   public String start(String name) throws ApplicationException {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
-
+    request.getSession().setAttribute("user", name);
+    
     Object meetingCode = request.getSession().getAttribute("meeting_code");
     if (meetingCode == null) {
       Reforward reforward = new Reforward(request, response);
@@ -139,7 +141,6 @@ public class smalltalk extends talk implements HttpSessionListener {
     } else {
       this.setVariable("meeting_code", meetingCode.toString());
     }
-    request.getSession().setAttribute("user", name);
 
     return name;
   }
@@ -197,15 +198,15 @@ public class smalltalk extends talk implements HttpSessionListener {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     final Object meetingCode = request.getSession().getAttribute("meeting_code");
     final String sessionId = request.getSession().getId();
-    if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
-      return update(sessionId);
+    if (meetingCode != null) {
+      return this.update(meetingCode.toString(), sessionId);
     }
     return "";
   }
 
   public String update(String meetingCode, String sessionId) throws ApplicationException, IOException {
-    if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
-      return update(sessionId);
+    if (sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
+      return this.update(sessionId);
     }
     return "";
   }
@@ -297,8 +298,8 @@ public class smalltalk extends talk implements HttpSessionListener {
       if(!this.list.containsKey(sessionId))
       {
         this.list.put(sessionId, new ConcurrentLinkedQueue<Builder>());
-        this.list.notifyAll();
       }
+      this.list.notifyAll();
     }
   }
 
@@ -315,8 +316,8 @@ public class smalltalk extends talk implements HttpSessionListener {
         }
         if ((messages = meetings.get(meetingCode)) != null) {
           messages.remove(meetingCode);
-          meetings.notifyAll();
         }
+        meetings.notifyAll();
       }
 
       synchronized (this.list) {
@@ -324,8 +325,8 @@ public class smalltalk extends talk implements HttpSessionListener {
         if(this.list.containsKey(sessionId))
         {
           this.list.remove(sessionId);
-          this.list.notifyAll();
         }
+        this.list.notifyAll();
       }
     }
   }
