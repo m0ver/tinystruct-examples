@@ -137,9 +137,11 @@ public class talk extends AbstractApplication {
     synchronized(this.list) {
       final Collection<Entry<String, Queue<Builder>>> set = list.entrySet();
       final Iterator<Entry<String, Queue<Builder>>> iterator = set.iterator();
+      final List<String> meeting_session;
+      if((meeting_session = this.sessions.get(meetingCode)) != null)
       while(iterator.hasNext()) {
         Entry<String, Queue<Builder>> e = iterator.next();
-        if(this.sessions.get(meetingCode) != null && this.sessions.get(meetingCode).contains(e.getKey())) {
+        if(meeting_session.contains(e.getKey())) {
           e.getValue().add(builder);
           this.list.notifyAll();
         }
