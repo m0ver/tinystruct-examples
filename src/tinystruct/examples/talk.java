@@ -12,6 +12,9 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
@@ -24,6 +27,7 @@ public class talk extends AbstractApplication {
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, Queue<Builder>> meetings = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, List<String>> sessions = new ConcurrentHashMap<String, List<String>>();
+  private final ExecutorService service = Executors.newFixedThreadPool(3);
 
   @Override
   public void init() {
@@ -31,6 +35,24 @@ public class talk extends AbstractApplication {
     this.setAction("talk/save", "save");
     this.setAction("talk/version", "version");
     this.setAction("talk/testing", "testing");
+    
+    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+        @Override
+        public void run() {
+            service.shutdown();
+            while (true) {
+                try {
+                    System.out.println("Waiting for the service to terminate...");
+                    if (service.awaitTermination(5, TimeUnit.SECONDS)) {
+                      System.out.println("Service will be terminated soon.");
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                  e.printStackTrace();
+                }
+            }
+        }
+    }));
   }
 
   /**
@@ -75,7 +97,7 @@ public class talk extends AbstractApplication {
       this.meetings.notifyAll();
     }
 
-    new Thread(new Runnable(){
+    service.execute(new Runnable(){
       @Override
       public void run() {
         synchronized(talk.this.meetings) {
@@ -91,7 +113,7 @@ public class talk extends AbstractApplication {
           talk.this.copy(meetingCode, message);
         }
       }
-    }).start();
+    });
     return builder.toString();
   }
 
@@ -172,7 +194,7 @@ public class talk extends AbstractApplication {
     sess.add("{B}");
     this.sessions.put("[M001]", sess);
     
-    new Thread(new Runnable(){
+    service.execute(new Runnable(){
       @Override
       public void run() {
         int i=0;
@@ -188,9 +210,9 @@ public class talk extends AbstractApplication {
           e.printStackTrace();
         }
       }
-    }).start();
+    });
 
-    new Thread(new Runnable(){
+    service.execute(new Runnable(){
       @Override
       public void run() {
         int i=0;
@@ -206,9 +228,9 @@ public class talk extends AbstractApplication {
           e.printStackTrace();
         }
       }
-    }).start();
+    });
 
-    new Thread(new Runnable(){
+    service.execute(new Runnable(){
       @Override
       public void run() {
         // TODO Auto-generated method stub
@@ -225,9 +247,9 @@ public class talk extends AbstractApplication {
           e.printStackTrace();
         }
       }
-    }).start();
+    });
 
-    new Thread(new Runnable(){
+    service.execute(new Runnable(){
       @Override
       public void run() {
         // TODO Auto-generated method stub
@@ -244,7 +266,7 @@ public class talk extends AbstractApplication {
           e.printStackTrace();
         }
       }
-    }).start();
+    });
     
     return true;
   }
