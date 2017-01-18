@@ -173,24 +173,25 @@ public class smalltalk extends talk implements HttpSessionListener {
     response.setContentType("application/json");
 
     final Object meetingCode = request.getSession().getAttribute("meeting_code");
-    final String sessionId = request.getSession().getId();
-    if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
-      String message;
-      if ((message = request.getParameter("text")) != null && !message.isEmpty()) {
-        String[] agent = request.getHeader("User-Agent").split(" ");
-        this.setVariable("browser", agent[agent.length - 1]);
+    if (this.meetings.containsKey(meetingCode)) {
+      final String sessionId = request.getSession().getId();
+      if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
+        String message;
+        if ((message = request.getParameter("text")) != null && !message.isEmpty()) {
+          String[] agent = request.getHeader("User-Agent").split(" ");
+          this.setVariable("browser", agent[agent.length - 1]);
 
-        final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
-        final Builder builder = new Builder();
-        builder.put("user", request.getSession().getAttribute("user"));
-        builder.put("time", format.format(new Date()));
-        builder.put("message", filter(message));
-        builder.put("session_id", sessionId);
+          final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
+          final Builder builder = new Builder();
+          builder.put("user", request.getSession().getAttribute("user"));
+          builder.put("time", format.format(new Date()));
+          builder.put("message", filter(message));
+          builder.put("session_id", sessionId);
 
-        return this.save(meetingCode, builder);
+          return this.save(meetingCode, builder);
+        }
       }
     }
-
     return "{}";
   }
 
@@ -205,7 +206,7 @@ public class smalltalk extends talk implements HttpSessionListener {
   }
 
   public String update(String meetingCode, String sessionId) throws ApplicationException, IOException {
-    if (sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
+    if (this.meetings.containsKey(meetingCode) && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
       return this.update(sessionId);
     }
     return "";
