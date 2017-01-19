@@ -163,7 +163,7 @@ public class smalltalk extends talk implements HttpSessionListener {
 
       return this.save(meetingCode, builder);
     }
-
+    response.setStatus(403);
     return "{ \"error\": \"expired\" }";
   }
 
@@ -173,25 +173,28 @@ public class smalltalk extends talk implements HttpSessionListener {
     response.setContentType("application/json");
 
     final Object meetingCode = request.getSession().getAttribute("meeting_code");
-    final String sessionId = request.getSession().getId();
-    if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
-      String message;
-      if ((message = request.getParameter("text")) != null && !message.isEmpty()) {
-        String[] agent = request.getHeader("User-Agent").split(" ");
-        this.setVariable("browser", agent[agent.length - 1]);
+    if (this.meetings.containsKey(meetingCode)) {
+      final String sessionId = request.getSession().getId();
+      if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
+        String message;
+        if ((message = request.getParameter("text")) != null && !message.isEmpty()) {
+          String[] agent = request.getHeader("User-Agent").split(" ");
+          this.setVariable("browser", agent[agent.length - 1]);
 
-        final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
-        final Builder builder = new Builder();
-        builder.put("user", request.getSession().getAttribute("user"));
-        builder.put("time", format.format(new Date()));
-        builder.put("message", filter(message));
-        builder.put("session_id", sessionId);
+          final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
+          final Builder builder = new Builder();
+          builder.put("user", request.getSession().getAttribute("user"));
+          builder.put("time", format.format(new Date()));
+          builder.put("message", filter(message));
+          builder.put("session_id", sessionId);
 
-        return this.save(meetingCode, builder);
+          return this.save(meetingCode, builder);
+        }
       }
     }
-
-    return "{}";
+    
+    response.setStatus(403);
+    return "{ \"error\": \"expired\" }";
   }
 
   public String update() throws ApplicationException, IOException {
@@ -201,14 +204,27 @@ public class smalltalk extends talk implements HttpSessionListener {
     if (meetingCode != null) {
       return this.update(meetingCode.toString(), sessionId);
     }
-    return "";
+    final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
+    response.setContentType("application/json");
+    response.setStatus(403);
+    return "{ \"error\": \"expired\" }";
   }
 
   public String update(String meetingCode, String sessionId) throws ApplicationException, IOException {
-    if (sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
-      return this.update(sessionId);
+    if (this.meetings.containsKey(meetingCode)) {
+      if(sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
+        return this.update(sessionId);
+      }
+      final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
+      response.setContentType("application/json");
+      response.setStatus(403);
+      return "{ \"error\": \"session-timeout\" }";
     }
-    return "";
+    
+    final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
+    response.setContentType("application/json");
+    response.setStatus(403);
+    return "{ \"error\": \"expired\" }";
   }
 
   public String upload() throws ApplicationException {
@@ -307,16 +323,24 @@ public class smalltalk extends talk implements HttpSessionListener {
   public void sessionDestroyed(HttpSessionEvent arg0) {
     Object meetingCode = arg0.getSession().getAttribute("meeting_code");
     if ( meetingCode != null ) {
+      final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
+      final Builder builder = new Builder();
+      builder.put("user", null);
+      builder.put("time", format.format(new Date()));
+      builder.put("cmd", "expired");
+      this.save(meetingCode, builder);
+      
       Queue<Builder> messages;
       List<String> session_ids;
-      synchronized (meetings) {
-        if((session_ids = this.sessions.get(meetingCode)) != null)
-        {
+      synchronized (meetings) {        
+        if((session_ids = this.sessions.get(meetingCode)) != null) {
           session_ids.remove(arg0.getSession().getId());
         }
+        
         if ((messages = meetings.get(meetingCode)) != null) {
           messages.remove(meetingCode);
         }
+        
         meetings.notifyAll();
       }
 
