@@ -125,11 +125,11 @@ public class talk extends AbstractApplication {
    * @throws IOException
    */
   public final String update(final String sessionId) throws ApplicationException, IOException {
-    Builder message;
+    Builder message = null;
     Queue<Builder> messages;
     synchronized (this.list) {
       messages = this.list.get(sessionId);
-      while((message = messages.poll()) == null) {
+      while(messages != null && (message = messages.poll()) == null) {
         try {
           this.list.wait(TIMEOUT);
         } catch (InterruptedException e) {
@@ -137,7 +137,7 @@ public class talk extends AbstractApplication {
         }
       }
 
-      return message.toString();
+      return message != null ? message.toString() : "";
     }
   }
 
