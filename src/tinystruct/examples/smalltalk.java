@@ -213,7 +213,8 @@ public class smalltalk extends talk implements HttpSessionListener {
   public String update(String meetingCode, String sessionId) throws ApplicationException, IOException {
     String error = "{ \"error\": \"expired\" }";
     if (this.meetings.containsKey(meetingCode)) {
-      if(sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
+      List<String> list;
+      if((list = sessions.get(meetingCode)) != null && list.contains(sessionId)) {
         return this.update(sessionId);
       }
       error = "{ \"error\": \"session-timeout\" }";
@@ -330,7 +331,7 @@ public class smalltalk extends talk implements HttpSessionListener {
 
       Queue<Builder> messages;
       List<String> session_ids;
-      synchronized (this.meetings) {        
+      synchronized (this.meetings) {
         if((session_ids = this.sessions.get(meetingCode)) != null) {
           session_ids.remove(arg0.getSession().getId());
         }
