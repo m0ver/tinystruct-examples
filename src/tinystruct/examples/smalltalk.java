@@ -211,20 +211,18 @@ public class smalltalk extends talk implements HttpSessionListener {
   }
 
   public String update(String meetingCode, String sessionId) throws ApplicationException, IOException {
+    String error = "{ \"error\": \"expired\" }";
     if (this.meetings.containsKey(meetingCode)) {
       if(sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
         return this.update(sessionId);
       }
-      final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
-      response.setContentType("application/json");
-      response.setStatus(403);
-      return "{ \"error\": \"session-timeout\" }";
+      error = "{ \"error\": \"session-timeout\" }";
     }
-    
+
     final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
     response.setContentType("application/json");
     response.setStatus(403);
-    return "{ \"error\": \"expired\" }";
+    return error;
   }
 
   public String upload() throws ApplicationException {
@@ -329,19 +327,19 @@ public class smalltalk extends talk implements HttpSessionListener {
       builder.put("time", format.format(new Date()));
       builder.put("cmd", "expired");
       this.save(meetingCode, builder);
-      
+
       Queue<Builder> messages;
       List<String> session_ids;
-      synchronized (meetings) {        
+      synchronized (this.meetings) {        
         if((session_ids = this.sessions.get(meetingCode)) != null) {
           session_ids.remove(arg0.getSession().getId());
         }
-        
-        if ((messages = meetings.get(meetingCode)) != null) {
+
+        if ((messages = this.meetings.get(meetingCode)) != null) {
           messages.remove(meetingCode);
         }
-        
-        meetings.notifyAll();
+
+        this.meetings.notifyAll();
       }
 
       synchronized (this.list) {
