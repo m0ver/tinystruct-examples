@@ -12,6 +12,9 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
@@ -24,12 +27,32 @@ public class talk extends AbstractApplication {
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, Queue<Builder>> meetings = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, List<String>> sessions = new ConcurrentHashMap<String, List<String>>();
+  private final ExecutorService service = Executors.newFixedThreadPool(3);
 
   @Override
   public void init() {
     this.setAction("talk/update", "update");
     this.setAction("talk/save", "save");
     this.setAction("talk/version", "version");
+    this.setAction("talk/testing", "testing");
+    
+    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+        @Override
+        public void run() {
+            service.shutdown();
+            while (true) {
+                try {
+                    System.out.println("Waiting for the service to terminate...");
+                    if (service.awaitTermination(5, TimeUnit.SECONDS)) {
+                      System.out.println("Service will be terminated soon.");
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                  e.printStackTrace();
+                }
+            }
+        }
+    }));
   }
 
   /**
@@ -74,7 +97,7 @@ public class talk extends AbstractApplication {
       this.meetings.notifyAll();
     }
 
-    new Thread(new Runnable(){
+    service.execute(new Runnable(){
       @Override
       public void run() {
         synchronized(talk.this.meetings) {
@@ -90,7 +113,7 @@ public class talk extends AbstractApplication {
           talk.this.copy(meetingCode, message);
         }
       }
-    }).start();
+    });
     return builder.toString();
   }
 
@@ -136,13 +159,18 @@ public class talk extends AbstractApplication {
     synchronized(this.list) {
       final Collection<Entry<String, Queue<Builder>>> set = list.entrySet();
       final Iterator<Entry<String, Queue<Builder>>> iterator = set.iterator();
-      while(iterator.hasNext()) {
-        Entry<String, Queue<Builder>> e = iterator.next();
-        if(this.sessions.get(meetingCode) != null && this.sessions.get(meetingCode).contains(e.getKey())) {
-          e.getValue().add(builder);
-          this.list.notifyAll();
+      final List<String> meeting_session;
+      if((meeting_session = this.sessions.get(meetingCode)) != null) {
+        while(iterator.hasNext()) {
+          Entry<String, Queue<Builder>> e = iterator.next();
+          if(meeting_session.contains(e.getKey())) {
+            e.getValue().add(builder);
+            this.list.notifyAll();
+          }
         }
       }
+      else
+      this.list.notifyAll();
     }
   }
 
@@ -151,19 +179,25 @@ public class talk extends AbstractApplication {
     return "Welcome to use tinystruct 2.0";
   }
 
-  public static void main(String[] args) throws ApplicationException {
-    talk talk = new talk();
-    talk.meetings.put("[M001]", new ConcurrentLinkedQueue<Builder>());
-    talk.list.put("{A}", new ConcurrentLinkedQueue<Builder>());
-    talk.list.put("{B}", new ConcurrentLinkedQueue<Builder>());
+  /**
+   * This is a testing. It can be executed with the command:
+   * $ bin/dispatcher --import-applications=tinystruct.examples.talk talk/testing/100
+   * 
+   * @param n
+   * @return
+   * @throws ApplicationException
+   */
+  public boolean testing(final int n) throws ApplicationException {
+    this.meetings.put("[M001]", new ConcurrentLinkedQueue<Builder>());
+    this.list.put("{A}", new ConcurrentLinkedQueue<Builder>());
+    this.list.put("{B}", new ConcurrentLinkedQueue<Builder>());
     
     List<String> sess = new ArrayList<String>();
     sess.add("{A}");
     sess.add("{B}");
-    talk.sessions.put("[M001]", sess);
-    ApplicationManager.install(talk);
-    final int n = 1000;
-    new Thread(new Runnable(){
+    this.sessions.put("[M001]", sess);
+    
+    service.execute(new Runnable(){
       @Override
       public void run() {
         int i=0;
@@ -179,9 +213,9 @@ public class talk extends AbstractApplication {
           e.printStackTrace();
         }
       }
-    }).start();
+    });
 
-    new Thread(new Runnable(){
+    service.execute(new Runnable(){
       @Override
       public void run() {
         int i=0;
@@ -197,9 +231,9 @@ public class talk extends AbstractApplication {
           e.printStackTrace();
         }
       }
-    }).start();
+    });
 
-    new Thread(new Runnable(){
+    service.execute(new Runnable(){
       @Override
       public void run() {
         // TODO Auto-generated method stub
@@ -216,9 +250,9 @@ public class talk extends AbstractApplication {
           e.printStackTrace();
         }
       }
-    }).start();
+    });
 
-    new Thread(new Runnable(){
+    service.execute(new Runnable(){
       @Override
       public void run() {
         // TODO Auto-generated method stub
@@ -235,7 +269,9 @@ public class talk extends AbstractApplication {
           e.printStackTrace();
         }
       }
-    }).start();
+    });
+    
+    return true;
   }
 
 }

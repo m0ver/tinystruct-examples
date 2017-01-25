@@ -62,6 +62,7 @@ public class smalltalk extends talk implements HttpSessionListener {
 
     List<String> session_ids;
     synchronized (this.meetings) {
+      final String sessionId = request.getSession().getId();
       if (this.meetings.get(meetingCode) == null) {
         this.meetings.put(meetingCode.toString(), new ConcurrentLinkedQueue<Builder>());
       }
@@ -72,8 +73,8 @@ public class smalltalk extends talk implements HttpSessionListener {
         this.sessions.put(meetingCode.toString(), session_ids = new ArrayList<String>());
       }
 
-      if(!session_ids.contains(request.getSession().getId()))
-      session_ids.add(request.getSession().getId());
+      if(!session_ids.contains(sessionId))
+      session_ids.add(sessionId);
 
       this.meetings.notifyAll();
     }
@@ -83,8 +84,8 @@ public class smalltalk extends talk implements HttpSessionListener {
       if(!this.list.containsKey(sessionId))
       {
         this.list.put(sessionId, new ConcurrentLinkedQueue<Builder>());
-        this.list.notifyAll();
       }
+      this.list.notifyAll();
     }
 
     this.setVariable("meeting_code", meetingCode.toString());
@@ -130,7 +131,8 @@ public class smalltalk extends talk implements HttpSessionListener {
   public String start(String name) throws ApplicationException {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
-
+    request.getSession().setAttribute("user", name);
+    
     Object meetingCode = request.getSession().getAttribute("meeting_code");
     if (meetingCode == null) {
       Reforward reforward = new Reforward(request, response);
@@ -139,7 +141,6 @@ public class smalltalk extends talk implements HttpSessionListener {
     } else {
       this.setVariable("meeting_code", meetingCode.toString());
     }
-    request.getSession().setAttribute("user", name);
 
     return name;
   }
@@ -162,7 +163,7 @@ public class smalltalk extends talk implements HttpSessionListener {
 
       return this.save(meetingCode, builder);
     }
-
+    response.setStatus(403);
     return "{ \"error\": \"expired\" }";
   }
 
@@ -172,42 +173,57 @@ public class smalltalk extends talk implements HttpSessionListener {
     response.setContentType("application/json");
 
     final Object meetingCode = request.getSession().getAttribute("meeting_code");
-    final String sessionId = request.getSession().getId();
-    if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
-      String message;
-      if ((message = request.getParameter("text")) != null && !message.isEmpty()) {
-        String[] agent = request.getHeader("User-Agent").split(" ");
-        this.setVariable("browser", agent[agent.length - 1]);
+    if (this.meetings.containsKey(meetingCode)) {
+      final String sessionId = request.getSession().getId();
+      if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
+        String message;
+        if ((message = request.getParameter("text")) != null && !message.isEmpty()) {
+          String[] agent = request.getHeader("User-Agent").split(" ");
+          this.setVariable("browser", agent[agent.length - 1]);
 
-        final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
-        final Builder builder = new Builder();
-        builder.put("user", request.getSession().getAttribute("user"));
-        builder.put("time", format.format(new Date()));
-        builder.put("message", filter(message));
-        builder.put("session_id", sessionId);
+          final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
+          final Builder builder = new Builder();
+          builder.put("user", request.getSession().getAttribute("user"));
+          builder.put("time", format.format(new Date()));
+          builder.put("message", filter(message));
+          builder.put("session_id", sessionId);
 
-        return this.save(meetingCode, builder);
+          return this.save(meetingCode, builder);
+        }
       }
     }
-
-    return "{}";
+    
+    response.setStatus(403);
+    return "{ \"error\": \"expired\" }";
   }
 
   public String update() throws ApplicationException, IOException {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
     final Object meetingCode = request.getSession().getAttribute("meeting_code");
     final String sessionId = request.getSession().getId();
-    if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
-      return update(sessionId);
+    if (meetingCode != null) {
+      return this.update(meetingCode.toString(), sessionId);
     }
-    return "";
+    final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
+    response.setContentType("application/json");
+    response.setStatus(403);
+    return "{ \"error\": \"expired\" }";
   }
 
   public String update(String meetingCode, String sessionId) throws ApplicationException, IOException {
-    if ( meetingCode != null && sessions.get(meetingCode) != null && sessions.get(meetingCode).contains(sessionId)) {
-      return update(sessionId);
+    String error = "{ \"error\": \"expired\" }";
+    if (this.meetings.containsKey(meetingCode)) {
+      List<String> list;
+      if((list = sessions.get(meetingCode)) != null && list.contains(sessionId)) {
+        return this.update(sessionId);
+      }
+      error = "{ \"error\": \"session-timeout\" }";
     }
-    return "";
+
+    final HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
+    response.setContentType("application/json");
+    response.setStatus(403);
+    return error;
   }
 
   public String upload() throws ApplicationException {
@@ -297,8 +313,8 @@ public class smalltalk extends talk implements HttpSessionListener {
       if(!this.list.containsKey(sessionId))
       {
         this.list.put(sessionId, new ConcurrentLinkedQueue<Builder>());
-        this.list.notifyAll();
       }
+      this.list.notifyAll();
     }
   }
 
@@ -306,17 +322,25 @@ public class smalltalk extends talk implements HttpSessionListener {
   public void sessionDestroyed(HttpSessionEvent arg0) {
     Object meetingCode = arg0.getSession().getAttribute("meeting_code");
     if ( meetingCode != null ) {
+      final SimpleDateFormat format = new SimpleDateFormat("yyyy-M-d h:m:s");
+      final Builder builder = new Builder();
+      builder.put("user", null);
+      builder.put("time", format.format(new Date()));
+      builder.put("cmd", "expired");
+      this.save(meetingCode, builder);
+
       Queue<Builder> messages;
       List<String> session_ids;
-      synchronized (meetings) {
-        if((session_ids = this.sessions.get(meetingCode)) != null)
-        {
+      synchronized (this.meetings) {
+        if((session_ids = this.sessions.get(meetingCode)) != null) {
           session_ids.remove(arg0.getSession().getId());
         }
-        if ((messages = meetings.get(meetingCode)) != null) {
+
+        if ((messages = this.meetings.get(meetingCode)) != null) {
           messages.remove(meetingCode);
-          meetings.notifyAll();
         }
+
+        this.meetings.notifyAll();
       }
 
       synchronized (this.list) {
@@ -324,8 +348,8 @@ public class smalltalk extends talk implements HttpSessionListener {
         if(this.list.containsKey(sessionId))
         {
           this.list.remove(sessionId);
-          this.list.notifyAll();
         }
+        this.list.notifyAll();
       }
     }
   }

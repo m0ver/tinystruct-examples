@@ -347,6 +347,18 @@
               $('#messages').append($li);
               $('#list').animate({scrollTop: $('#messages').height()}, 'fast'); 
               break;
+            case 'session-timeout':
+                $li = $("<li />");
+                $li.html("System Notification:\t" + $data.user + " left from this conversation.");
+                $('#messages').append($li);
+                $('#list').animate({scrollTop: $('#messages').height()}, 'fast'); 
+                break;
+            case 'expired':
+                $li = $("<li />");
+                $li.html("System Notification:\tIt's an expired conversation, you have to refresh the current page or request a new meeting code.");
+                $('#messages').append($li);
+                $('#list').animate({scrollTop: $('#messages').height()}, 'fast'); 
+                break;
             default:
               timer.setAction(function(){
                 document.title = $_user + " is typing" + dotted;
@@ -369,26 +381,40 @@
       data: { cmd: cmd }
     }).done(function( msg ) {
       if(msg.error == "missing user") {
-        if (user) {
-          $.ajax({
-            type: "POST",
-            url: "[%LINK:talk/start%]/"+ user
-          }).done(function( msg ) {});
-        }
-        else {
-          $("#modal").modal();
-        }
-      }
-
-      if(msg.error == "expired") {
-        if(confirm("The conversation is expired, Do you want to reload the conversation?")) {
-          $.ajax({
-            type: "POST",
-            url: $('#link').text()
-          }).done(function( msg ) {});
-        }
-      }
+          if (user) {
+            $.ajax({
+              type: "POST",
+              url: "[%LINK:talk/start%]/"+ user
+            }).done(function( msg ) {});
+          }
+          else {
+            $("#modal").modal();
+          }
+       }
     }).fail(function( msg ) {
+      switch(msg.responseJSON.error) {
+        case 'session-timeout':
+            $li = $("<li />");
+            $li.html("System Notification:\t" + $data.user + " left from this conversation.");
+            $('#messages').append($li);
+            $('#list').animate({scrollTop: $('#messages').height()}, 'fast'); 
+            
+            if(confirm("Your session is timed out, Do you want to reload the conversation?")) {
+               $.ajax({
+                 type: "POST",
+                 url: $('#link').text()
+               }).done(function( msg ) {});
+            }
+            break;
+          case 'expired':
+            $li = $("<li />");
+            $li.html("System Notification:\tIt's an expired conversation, you have to refresh the current page or request a new meeting code.");
+            $('#messages').append($li);
+            $('#list').animate({scrollTop: $('#messages').height()}, 'fast'); 
+            break;
+          default:break;
+      }
+      
       console.log('Fail.');
       console.log(msg);
     });
@@ -413,12 +439,22 @@
       $.getJSON( "[%LINK:talk/update%]/{%meeting_code%}/{%session_id%}", function(data) {
         update(data);
         is_running = false;
-      }).done(function() {
+      }).done(function( msg ) {
         autoupdate();
         is_running = false;
       }).fail(function( msg ) {
-        connection_timer.start();
-        is_running = false;
+        $msg = msg.responseJSON;
+        if($msg.error == "expired") {
+          command("expired");
+        }
+        else if($msg.error == "session-timeout") {
+          command("session-timeout");
+        }
+        else {
+          connection_timer.start();
+          is_running = false;
+          console.log($msg);
+        }
       });
     }
   }
@@ -456,7 +492,7 @@
 
     var post_timer = new Timer(.2, function(){
       if(i++<200){
-        $("#text").text(user+' post '+i);
+        $("#text").text(user+' posts '+i);
         $("#sender").submit();
       }
       else this.complete();
@@ -629,7 +665,7 @@
       <input id="attachment" name="attachment" type="file" class="file-loading btn-default" multiple="true" />
       <br />
       <input type="button" id="button" value="Send" class="btn btn-primary" />
-      <!--<input type="button" id="test" value="Test" class="btn btn-secondary" />-->
+      <input type="button" id="test" value="Test" class="btn btn-secondary" />
   </form>
   </div>
   
@@ -672,7 +708,7 @@
 
   <footer class="footer">
     <div class="container">
-      <p class="text-muted"> © 2016 </p>
+      <p class="text-muted"> © 2017 </p>
     </div>
   </footer>
 
