@@ -38,7 +38,7 @@ import org.tinystruct.datatype.DataVariable;
 import org.tinystruct.dom.Element;
 import org.tinystruct.system.Authentication;
 import org.tinystruct.system.util.Base64;
-import org.tinystruct.system.util.URLFileLoader;
+import org.tinystruct.system.util.URLResourceLoader;
 
 import custom.objects.User;
 import custom.objects.article;
@@ -583,7 +583,7 @@ public class reading extends AbstractApplication {
 
 		while(p <= 47) {
 			URL url = new URL("http://www.old-gospel.net/viewthread.php?tid=446&extra=page%3D1&page="+(p++));
-			URLFileLoader file = new URLFileLoader(url);
+			URLResourceLoader file = new URLResourceLoader(url);
 			file.setCharset("gbk");
 			String content = file.getContent().toString();
 			Matcher m = pattern.matcher(content);

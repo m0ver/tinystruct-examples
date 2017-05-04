@@ -24,10 +24,11 @@ import org.tinystruct.system.ApplicationManager;
 public class talk extends AbstractApplication {
 
   private static final long TIMEOUT = 200;
+  private static final int DEFAULT_POOL_SIZE = 3;
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, Queue<Builder>> meetings = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, List<String>> sessions = new ConcurrentHashMap<String, List<String>>();
-  private final ExecutorService service = Executors.newFixedThreadPool(3);
+  private ExecutorService service;
 
   @Override
   public void init() {
@@ -36,23 +37,25 @@ public class talk extends AbstractApplication {
     this.setAction("talk/version", "version");
     this.setAction("talk/testing", "testing");
     
-    Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-        @Override
-        public void run() {
-            service.shutdown();
-            while (true) {
-                try {
-                    System.out.println("Waiting for the service to terminate...");
-                    if (service.awaitTermination(5, TimeUnit.SECONDS)) {
-                      System.out.println("Service will be terminated soon.");
+    if (this.service != null) {
+      Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+          @Override
+          public void run() {
+              service.shutdown();
+              while (true) {
+                  try {
+                      System.out.println("Waiting for the service to terminate...");
+                      if (service.awaitTermination(5, TimeUnit.SECONDS)) {
+                        System.out.println("Service will be terminated soon.");
                         break;
-                    }
-                } catch (InterruptedException e) {
-                  e.printStackTrace();
-                }
-            }
-        }
-    }));
+                      }
+                  } catch (InterruptedException e) {
+                    e.printStackTrace();
+                  }
+              }
+          }
+      }));
+    }
   }
 
   /**
@@ -97,7 +100,7 @@ public class talk extends AbstractApplication {
       this.meetings.notifyAll();
     }
 
-    service.execute(new Runnable(){
+    this.getService().execute(new Runnable(){
       @Override
       public void run() {
         synchronized(talk.this.meetings) {
@@ -115,6 +118,10 @@ public class talk extends AbstractApplication {
       }
     });
     return builder.toString();
+  }
+
+  private ExecutorService getService() {
+	return this.service!=null? this.service : Executors.newFixedThreadPool(DEFAULT_POOL_SIZE);
   }
 
   /**
@@ -197,7 +204,7 @@ public class talk extends AbstractApplication {
     sess.add("{B}");
     this.sessions.put("[M001]", sess);
     
-    service.execute(new Runnable(){
+    this.getService().execute(new Runnable(){
       @Override
       public void run() {
         int i=0;
@@ -215,7 +222,7 @@ public class talk extends AbstractApplication {
       }
     });
 
-    service.execute(new Runnable(){
+    this.getService().execute(new Runnable(){
       @Override
       public void run() {
         int i=0;
@@ -233,7 +240,7 @@ public class talk extends AbstractApplication {
       }
     });
 
-    service.execute(new Runnable(){
+    this.getService().execute(new Runnable(){
       @Override
       public void run() {
         // TODO Auto-generated method stub
@@ -252,7 +259,7 @@ public class talk extends AbstractApplication {
       }
     });
 
-    service.execute(new Runnable(){
+    this.getService().execute(new Runnable(){
       @Override
       public void run() {
         // TODO Auto-generated method stub
