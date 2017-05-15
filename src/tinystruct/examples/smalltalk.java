@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.servlet.ServletException;
@@ -61,26 +62,21 @@ public class smalltalk extends talk implements HttpSessionListener {
     }
 
     List<String> session_ids;
-    synchronized (this.meetings) {
-      final String sessionId = request.getSession().getId();
-      if (this.meetings.get(meetingCode) == null) {
-        this.meetings.put(meetingCode.toString(), new ConcurrentLinkedQueue<Builder>());
-      }
-
-      // If the current user is not in the list of the sessions, we create a default session list for the meeting generated.
-      if((session_ids = this.sessions.get(meetingCode)) == null)
-      {
-        this.sessions.put(meetingCode.toString(), session_ids = new ArrayList<String>());
-      }
-
-      if(!session_ids.contains(sessionId))
-      session_ids.add(sessionId);
-
-      this.meetings.notifyAll();
+    final String sessionId = request.getSession().getId();
+    if (this.meetings.get(meetingCode) == null) {
+      this.meetings.put(meetingCode.toString(), new ArrayBlockingQueue<Builder>(DEFAULT_MESSAGE_POOL_SIZE));
     }
+
+    // If the current user is not in the list of the sessions, we create a default session list for the meeting generated.
+    if((session_ids = this.sessions.get(meetingCode)) == null)
+    {
+      this.sessions.put(meetingCode.toString(), session_ids = new ArrayList<String>());
+    }
+
+    if(!session_ids.contains(sessionId))
+    session_ids.add(sessionId);
     
     synchronized (this.list) {
-      final String sessionId = request.getSession().getId();
       if(!this.list.containsKey(sessionId))
       {
         this.list.put(sessionId, new ConcurrentLinkedQueue<Builder>());
