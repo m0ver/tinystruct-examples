@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -23,10 +25,11 @@ import org.tinystruct.system.ApplicationManager;
 
 public class talk extends AbstractApplication {
 
-  private static final long TIMEOUT = 200;
+  private static final long TIMEOUT = 10;
   private static final int DEFAULT_POOL_SIZE = 3;
+  protected static final int DEFAULT_MESSAGE_POOL_SIZE = 10;
+  protected final Map<String, BlockingQueue<Builder>> meetings = new ConcurrentHashMap<String, BlockingQueue<Builder>>();
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
-  protected final Map<String, Queue<Builder>> meetings = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, List<String>> sessions = new ConcurrentHashMap<String, List<String>>();
   private ExecutorService service;
 
@@ -89,39 +92,30 @@ public class talk extends AbstractApplication {
    * @return builder
    */
   public final String save(final Object meetingCode, final Builder builder) {
-    final Queue<Builder> messages;
-    synchronized (this.meetings) {
-      if (this.meetings.get(meetingCode) == null) {
-        this.meetings.put(meetingCode.toString(), new ConcurrentLinkedQueue<Builder>());
-      }
+    BlockingQueue<Builder> messages;
+    if ((messages = this.meetings.get(meetingCode)) == null) {
+      this.meetings.put(meetingCode.toString(), messages = new ArrayBlockingQueue<Builder>(DEFAULT_MESSAGE_POOL_SIZE));
+    }
 
-      messages = this.meetings.get(meetingCode);
-      messages.add(builder);
-      this.meetings.notifyAll();
+    try {
+      messages.put(builder);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
 
     this.getService().execute(new Runnable(){
       @Override
       public void run() {
-        synchronized(talk.this.meetings) {
           Builder message;
-          do {
-            try {
-              talk.this.meetings.wait(TIMEOUT);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-          } while(talk.this.meetings.get(meetingCode) == null || (message = talk.this.meetings.get(meetingCode).poll()) == null);
-          
+          if (talk.this.meetings.get(meetingCode) == null || (message = talk.this.meetings.get(meetingCode).poll()) == null) return;
           talk.this.copy(meetingCode, message);
-        }
       }
     });
     return builder.toString();
   }
 
   private ExecutorService getService() {
-	return this.service!=null? this.service : Executors.newFixedThreadPool(DEFAULT_POOL_SIZE);
+    return this.service!=null? this.service : Executors.newFixedThreadPool(DEFAULT_POOL_SIZE);
   }
 
   /**
@@ -133,19 +127,16 @@ public class talk extends AbstractApplication {
    */
   public final String update(final String sessionId) throws ApplicationException, IOException {
     Builder message;
-    Queue<Builder> messages;
-    synchronized (this.list) {
-      messages = this.list.get(sessionId);
-      while((message = messages.poll()) == null) {
-        try {
-          this.list.wait(TIMEOUT);
-        } catch (InterruptedException e) {
-          throw new ApplicationException(e.getMessage(), e);
-        }
+    Queue<Builder> messages = this.list.get(sessionId);
+    while((message = messages.poll()) == null) {
+      try {
+        Thread.sleep(TIMEOUT);
+      } catch (InterruptedException e) {
+        throw new ApplicationException(e.getMessage(), e);
       }
-
-      return message.toString();
     }
+
+    return message.toString();
   }
 
   /**
@@ -163,22 +154,17 @@ public class talk extends AbstractApplication {
    * @param builder
    */
   private final void copy(Object meetingCode, Builder builder) {
-    synchronized(this.list) {
-      final Collection<Entry<String, Queue<Builder>>> set = list.entrySet();
+      final Collection<Entry<String, Queue<Builder>>> set = this.list.entrySet();
       final Iterator<Entry<String, Queue<Builder>>> iterator = set.iterator();
-      final List<String> meeting_session;
-      if((meeting_session = this.sessions.get(meetingCode)) != null) {
+      final List<String> _sessions;
+      if((_sessions = this.sessions.get(meetingCode)) != null) {
         while(iterator.hasNext()) {
-          Entry<String, Queue<Builder>> e = iterator.next();
-          if(meeting_session.contains(e.getKey())) {
-            e.getValue().add(builder);
-            this.list.notifyAll();
+          Entry<String, Queue<Builder>> list = iterator.next();
+          if(_sessions.contains(list.getKey())) {
+	            list.getValue().add(builder);
           }
         }
       }
-      else
-      this.list.notifyAll();
-    }
   }
 
   @Override
@@ -195,7 +181,7 @@ public class talk extends AbstractApplication {
    * @throws ApplicationException
    */
   public boolean testing(final int n) throws ApplicationException {
-    this.meetings.put("[M001]", new ConcurrentLinkedQueue<Builder>());
+    this.meetings.put("[M001]", new ArrayBlockingQueue<Builder>(DEFAULT_MESSAGE_POOL_SIZE));
     this.list.put("{A}", new ConcurrentLinkedQueue<Builder>());
     this.list.put("{B}", new ConcurrentLinkedQueue<Builder>());
     
