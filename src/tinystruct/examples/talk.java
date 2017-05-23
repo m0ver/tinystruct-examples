@@ -25,7 +25,7 @@ import org.tinystruct.system.ApplicationManager;
 
 public class talk extends AbstractApplication {
 
-  private static final long TIMEOUT = 1;
+  private static final long TIMEOUT = 10;
   private static final int DEFAULT_POOL_SIZE = 3;
   protected static final int DEFAULT_MESSAGE_POOL_SIZE = 10;
   protected final Map<String, BlockingQueue<Builder>> meetings = new ConcurrentHashMap<String, BlockingQueue<Builder>>();
@@ -107,13 +107,7 @@ public class talk extends AbstractApplication {
       @Override
       public void run() {
           Builder message;
-          do {
-            try {
-              Thread.sleep(TIMEOUT);
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
-          } while(talk.this.meetings.get(meetingCode) == null || (message = talk.this.meetings.get(meetingCode).poll()) == null);
+          if (talk.this.meetings.get(meetingCode) == null || (message = talk.this.meetings.get(meetingCode).poll()) == null) return;
           talk.this.copy(meetingCode, message);
       }
     });
