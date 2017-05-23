@@ -26,7 +26,6 @@ import org.tinystruct.system.ApplicationManager;
 public class talk extends AbstractApplication {
 
   private static final long TIMEOUT = 10;
-  private static final int DEFAULT_POOL_SIZE = 3;
   protected static final int DEFAULT_MESSAGE_POOL_SIZE = 10;
   protected final Map<String, BlockingQueue<Builder>> meetings = new ConcurrentHashMap<String, BlockingQueue<Builder>>();
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
@@ -115,7 +114,7 @@ public class talk extends AbstractApplication {
   }
 
   private ExecutorService getService() {
-    return this.service!=null? this.service : Executors.newFixedThreadPool(DEFAULT_POOL_SIZE);
+    return this.service!=null? this.service : Executors.newSingleThreadExecutor();
   }
 
   /**
