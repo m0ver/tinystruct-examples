@@ -25,13 +25,13 @@ import org.tinystruct.system.ApplicationManager;
 
 public class talk extends AbstractApplication {
 
-  private static final long TIMEOUT = 10;
-  private static final int DEFAULT_POOL_SIZE = 3;
+  private static final long TIMEOUT = 100;
   protected static final int DEFAULT_MESSAGE_POOL_SIZE = 10;
   protected final Map<String, BlockingQueue<Builder>> meetings = new ConcurrentHashMap<String, BlockingQueue<Builder>>();
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, List<String>> sessions = new ConcurrentHashMap<String, List<String>>();
   private ExecutorService service;
+  private final Object monitor = new Object();
 
   @Override
   public void init() {
@@ -42,21 +42,21 @@ public class talk extends AbstractApplication {
     
     if (this.service != null) {
       Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-          @Override
-          public void run() {
-              service.shutdown();
-              while (true) {
-                  try {
-                      System.out.println("Waiting for the service to terminate...");
-                      if (service.awaitTermination(5, TimeUnit.SECONDS)) {
-                        System.out.println("Service will be terminated soon.");
-                        break;
-                      }
-                  } catch (InterruptedException e) {
-                    e.printStackTrace();
-                  }
-              }
+        @Override
+        public void run() {
+          service.shutdown();
+          while (true) {
+            try {
+                System.out.println("Waiting for the service to terminate...");
+                if (service.awaitTermination(5, TimeUnit.SECONDS)) {
+                  System.out.println("Service will be terminated soon.");
+                  break;
+                }
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
           }
+        }
       }));
     }
   }
@@ -115,7 +115,7 @@ public class talk extends AbstractApplication {
   }
 
   private ExecutorService getService() {
-    return this.service!=null? this.service : Executors.newFixedThreadPool(DEFAULT_POOL_SIZE);
+    return this.service!=null? this.service : Executors.newSingleThreadExecutor();
   }
 
   /**
@@ -128,15 +128,16 @@ public class talk extends AbstractApplication {
   public final String update(final String sessionId) throws ApplicationException, IOException {
     Builder message;
     Queue<Builder> messages = this.list.get(sessionId);
-    while((message = messages.poll()) == null) {
-      try {
-        Thread.sleep(TIMEOUT);
-      } catch (InterruptedException e) {
-        throw new ApplicationException(e.getMessage(), e);
+    synchronized(monitor) {
+      while((message = messages.poll()) == null) {
+        try {
+          monitor.wait(TIMEOUT);
+        } catch (InterruptedException e) {
+          throw new ApplicationException(e.getMessage(), e);
+        }
       }
+      return message.toString();
     }
-
-    return message.toString();
   }
 
   /**
@@ -154,17 +155,21 @@ public class talk extends AbstractApplication {
    * @param builder
    */
   private final void copy(Object meetingCode, Builder builder) {
-      final Collection<Entry<String, Queue<Builder>>> set = this.list.entrySet();
-      final Iterator<Entry<String, Queue<Builder>>> iterator = set.iterator();
-      final List<String> _sessions;
-      if((_sessions = this.sessions.get(meetingCode)) != null) {
-        while(iterator.hasNext()) {
-          Entry<String, Queue<Builder>> list = iterator.next();
-          if(_sessions.contains(list.getKey())) {
-	            list.getValue().add(builder);
+    final Collection<Entry<String, Queue<Builder>>> set = this.list.entrySet();
+    final Iterator<Entry<String, Queue<Builder>>> iterator = set.iterator();
+    final List<String> _sessions;
+
+    if((_sessions = this.sessions.get(meetingCode)) != null) {
+      while(iterator.hasNext()) {
+        Entry<String, Queue<Builder>> list = iterator.next();
+        if(_sessions.contains(list.getKey())) {
+          synchronized(monitor) {
+              list.getValue().add(builder);
+              monitor.notifyAll();
           }
         }
       }
+    }
   }
 
   @Override
