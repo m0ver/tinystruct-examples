@@ -99,19 +99,21 @@ public class talk extends AbstractApplication {
 
     try {
       messages.put(builder);
+      
+      this.getService().execute(new Runnable(){
+        @Override
+        public void run() {
+          Builder message;
+          if (talk.this.meetings.get(meetingCode) == null || (message = talk.this.meetings.get(meetingCode).poll()) == null) return;
+          talk.this.copy(meetingCode, message);
+        }
+      });
+      return builder.toString();
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
 
-    this.getService().execute(new Runnable(){
-      @Override
-      public void run() {
-          Builder message;
-          if (talk.this.meetings.get(meetingCode) == null || (message = talk.this.meetings.get(meetingCode).poll()) == null) return;
-          talk.this.copy(meetingCode, message);
-      }
-    });
-    return builder.toString();
+    return "{}";
   }
 
   private ExecutorService getService() {
@@ -164,8 +166,8 @@ public class talk extends AbstractApplication {
         Entry<String, Queue<Builder>> list = iterator.next();
         if(_sessions.contains(list.getKey())) {
           synchronized(monitor) {
-              list.getValue().add(builder);
-              monitor.notifyAll();
+            list.getValue().add(builder);
+            monitor.notifyAll();
           }
         }
       }
