@@ -21,7 +21,6 @@ public class ApplicationGenerator {
 				System.out.println("class:"+className+" table:"+className);
 			}
 		} catch (ApplicationException e) {
-			
 			e.printStackTrace();
 		}
 		
