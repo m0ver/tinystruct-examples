@@ -31,7 +31,6 @@ public class talk extends AbstractApplication {
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, List<String>> sessions = new ConcurrentHashMap<String, List<String>>();
   private ExecutorService service;
-  private final Object monitor = new Object();
 
   @Override
   public void init() {
@@ -130,10 +129,13 @@ public class talk extends AbstractApplication {
   public final String update(final String sessionId) throws ApplicationException, IOException {
     Builder message;
     Queue<Builder> messages = this.list.get(sessionId);
-    synchronized(monitor) {
+    // If there is a new message, then return it directly
+    if((message = messages.poll()) != null) return message.toString();
+    
+    synchronized(talk.class) {
       while((message = messages.poll()) == null) {
         try {
-          monitor.wait(TIMEOUT);
+          talk.class.wait(TIMEOUT);
         } catch (InterruptedException e) {
           throw new ApplicationException(e.getMessage(), e);
         }
@@ -165,9 +167,9 @@ public class talk extends AbstractApplication {
       while(iterator.hasNext()) {
         Entry<String, Queue<Builder>> list = iterator.next();
         if(_sessions.contains(list.getKey())) {
-          synchronized(monitor) {
+          synchronized(talk.class) {
             list.getValue().add(builder);
-            monitor.notifyAll();
+            talk.class.notifyAll();
           }
         }
       }
@@ -200,6 +202,7 @@ public class talk extends AbstractApplication {
     this.getService().execute(new Runnable(){
       @Override
       public void run() {
+        System.out.println(Thread.currentThread().getId());
         int i=0;
         while(i++<n)
         try {
@@ -218,6 +221,7 @@ public class talk extends AbstractApplication {
     this.getService().execute(new Runnable(){
       @Override
       public void run() {
+        System.out.println(Thread.currentThread().getId());
         int i=0;
         while(i++<n)
         try {
@@ -236,6 +240,7 @@ public class talk extends AbstractApplication {
     this.getService().execute(new Runnable(){
       @Override
       public void run() {
+        System.out.println(Thread.currentThread().getId());
         // TODO Auto-generated method stub
         System.out.println("[A] is started...");
         while(true)
@@ -255,6 +260,7 @@ public class talk extends AbstractApplication {
     this.getService().execute(new Runnable(){
       @Override
       public void run() {
+        System.out.println(Thread.currentThread().getId());
         // TODO Auto-generated method stub
         System.out.println("[B] is started...");
         while(true)
