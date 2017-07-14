@@ -91,20 +91,20 @@ public class talk extends AbstractApplication {
    * @return builder
    */
   public final String save(final Object meetingCode, final Builder builder) {
-    BlockingQueue<Builder> messages;
-    if ((messages = this.meetings.get(meetingCode)) == null) {
-      this.meetings.put(meetingCode.toString(), messages = new ArrayBlockingQueue<Builder>(DEFAULT_MESSAGE_POOL_SIZE));
+    if ((this.meetings.get(meetingCode)) == null) {
+      this.meetings.put(meetingCode.toString(), new ArrayBlockingQueue<Builder>(DEFAULT_MESSAGE_POOL_SIZE));
     }
 
     try {
-      messages.put(builder);
+      this.meetings.get(meetingCode).put(builder);
       
+      final BlockingQueue<Builder> messages = this.meetings.get(meetingCode);
       this.getService().execute(new Runnable(){
         @Override
         public void run() {
           Builder message;
-          if (talk.this.meetings.get(meetingCode) == null || (message = talk.this.meetings.get(meetingCode).poll()) == null) return;
-          talk.this.copy(meetingCode, message);
+          if ((message = messages.poll()) == null) return;
+          copy(meetingCode, message);
         }
       });
       return builder.toString();
@@ -159,11 +159,12 @@ public class talk extends AbstractApplication {
    * @param builder
    */
   private final void copy(Object meetingCode, Builder builder) {
-    final Collection<Entry<String, Queue<Builder>>> set = this.list.entrySet();
-    final Iterator<Entry<String, Queue<Builder>>> iterator = set.iterator();
     final List<String> _sessions;
 
     if((_sessions = this.sessions.get(meetingCode)) != null) {
+      final Collection<Entry<String, Queue<Builder>>> set = this.list.entrySet();
+      final Iterator<Entry<String, Queue<Builder>>> iterator = set.iterator();
+      
       while(iterator.hasNext()) {
         Entry<String, Queue<Builder>> list = iterator.next();
         if(_sessions.contains(list.getKey())) {
