@@ -17,9 +17,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
+import org.tinystruct.ApplicationRuntimeException;
 import org.tinystruct.data.component.Builder;
 import org.tinystruct.system.ApplicationManager;
 
@@ -31,6 +35,9 @@ public class talk extends AbstractApplication {
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, List<String>> sessions = new ConcurrentHashMap<String, List<String>>();
   private ExecutorService service;
+  private Lock lock = new ReentrantLock();
+  private Condition consumer = lock.newCondition();
+  private Condition producer = lock.newCondition();
 
   @Override
   public void init() {
@@ -38,7 +45,7 @@ public class talk extends AbstractApplication {
     this.setAction("talk/save", "save");
     this.setAction("talk/version", "version");
     this.setAction("talk/testing", "testing");
-    
+
     if (this.service != null) {
       Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
         @Override
@@ -131,17 +138,17 @@ public class talk extends AbstractApplication {
     Queue<Builder> messages = this.list.get(sessionId);
     // If there is a new message, then return it directly
     if((message = messages.poll()) != null) return message.toString();
-    
-    synchronized(talk.class) {
-      while((message = messages.poll()) == null) {
-        try {
-          talk.class.wait(TIMEOUT);
-        } catch (InterruptedException e) {
-          throw new ApplicationException(e.getMessage(), e);
-        }
+    lock.lock();
+    while((message = messages.poll()) == null) {
+      try {
+        consumer.await(TIMEOUT, TimeUnit.MICROSECONDS);
+      } catch (InterruptedException e) {
+        throw new ApplicationException(e.getMessage(), e);
       }
-      return message.toString();
     }
+    producer.signalAll();
+    lock.unlock();
+    return message.toString();
   }
 
   /**
@@ -168,10 +175,15 @@ public class talk extends AbstractApplication {
       while(iterator.hasNext()) {
         Entry<String, Queue<Builder>> list = iterator.next();
         if(_sessions.contains(list.getKey())) {
-          synchronized(talk.class) {
-            list.getValue().add(builder);
-            talk.class.notifyAll();
+          lock.lock();
+          try {
+            producer.await();
+          } catch (InterruptedException e) {
+            throw new ApplicationRuntimeException(e.getMessage(), e);
           }
+          list.getValue().add(builder);
+          consumer.signalAll();
+          lock.unlock();
         }
       }
     }
