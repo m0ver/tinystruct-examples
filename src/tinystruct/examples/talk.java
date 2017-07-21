@@ -23,7 +23,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
-import org.tinystruct.ApplicationRuntimeException;
 import org.tinystruct.data.component.Builder;
 import org.tinystruct.system.ApplicationManager;
 
@@ -35,9 +34,8 @@ public class talk extends AbstractApplication {
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, List<String>> sessions = new ConcurrentHashMap<String, List<String>>();
   private ExecutorService service;
-  private Lock lock = new ReentrantLock();
-  private Condition consumer = lock.newCondition();
-  private Condition producer = lock.newCondition();
+  private final Lock lock = new ReentrantLock();
+  private final Condition consumer = lock.newCondition();
 
   @Override
   public void init() {
@@ -146,7 +144,6 @@ public class talk extends AbstractApplication {
         throw new ApplicationException(e.getMessage(), e);
       }
     }
-    producer.signalAll();
     lock.unlock();
     return message.toString();
   }
@@ -176,11 +173,6 @@ public class talk extends AbstractApplication {
         Entry<String, Queue<Builder>> list = iterator.next();
         if(_sessions.contains(list.getKey())) {
           lock.lock();
-          try {
-            producer.await();
-          } catch (InterruptedException e) {
-            throw new ApplicationRuntimeException(e.getMessage(), e);
-          }
           list.getValue().add(builder);
           consumer.signalAll();
           lock.unlock();
