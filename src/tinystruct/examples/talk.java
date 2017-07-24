@@ -130,12 +130,13 @@ public class talk extends AbstractApplication {
     Queue<Builder> messages = this.list.get(sessionId);
     // If there is a new message, then return it directly
     if((message = messages.poll()) != null) return message.toString();
-    
+
     long startTime = System.currentTimeMillis();
     while((message = messages.poll()) == null && (System.currentTimeMillis()-startTime) <= 10000) {
       ;
     }
-    return message.toString();
+
+    return message == null ? "{}" : message.toString();
   }
 
   /**
