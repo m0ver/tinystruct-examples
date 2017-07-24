@@ -17,9 +17,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
@@ -28,14 +25,11 @@ import org.tinystruct.system.ApplicationManager;
 
 public class talk extends AbstractApplication {
 
-  private static final long TIMEOUT = 100;
   protected static final int DEFAULT_MESSAGE_POOL_SIZE = 10;
   protected final Map<String, BlockingQueue<Builder>> meetings = new ConcurrentHashMap<String, BlockingQueue<Builder>>();
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, List<String>> sessions = new ConcurrentHashMap<String, List<String>>();
   private ExecutorService service;
-  private final Lock lock = new ReentrantLock();
-  private final Condition consumer = lock.newCondition();
 
   @Override
   public void init() {
@@ -136,15 +130,9 @@ public class talk extends AbstractApplication {
     Queue<Builder> messages = this.list.get(sessionId);
     // If there is a new message, then return it directly
     if((message = messages.poll()) != null) return message.toString();
-    lock.lock();
     while((message = messages.poll()) == null) {
-      try {
-        consumer.await(TIMEOUT, TimeUnit.MICROSECONDS);
-      } catch (InterruptedException e) {
-        throw new ApplicationException(e.getMessage(), e);
-      }
+      ;
     }
-    lock.unlock();
     return message.toString();
   }
 
@@ -172,10 +160,7 @@ public class talk extends AbstractApplication {
       while(iterator.hasNext()) {
         Entry<String, Queue<Builder>> list = iterator.next();
         if(_sessions.contains(list.getKey())) {
-          lock.lock();
           list.getValue().add(builder);
-          consumer.signalAll();
-          lock.unlock();
         }
       }
     }
@@ -183,7 +168,7 @@ public class talk extends AbstractApplication {
 
   @Override
   public String version() {
-    return "Welcome to use tinystruct 2.0";
+    return "Talk core version:1.0 stable; Released on 2017-07-24";
   }
 
   /**
