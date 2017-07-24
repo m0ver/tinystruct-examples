@@ -25,8 +25,6 @@ import org.tinystruct.system.ApplicationManager;
 
 public class talk extends AbstractApplication {
 
-  private static final long TIMEOUT = 1;
-  private static final int DEFAULT_POOL_SIZE = 3;
   protected static final int DEFAULT_MESSAGE_POOL_SIZE = 10;
   protected final Map<String, BlockingQueue<Builder>> meetings = new ConcurrentHashMap<String, BlockingQueue<Builder>>();
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
@@ -39,24 +37,24 @@ public class talk extends AbstractApplication {
     this.setAction("talk/save", "save");
     this.setAction("talk/version", "version");
     this.setAction("talk/testing", "testing");
-    
+
     if (this.service != null) {
       Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-          @Override
-          public void run() {
-              service.shutdown();
-              while (true) {
-                  try {
-                      System.out.println("Waiting for the service to terminate...");
-                      if (service.awaitTermination(5, TimeUnit.SECONDS)) {
-                        System.out.println("Service will be terminated soon.");
-                        break;
-                      }
-                  } catch (InterruptedException e) {
-                    e.printStackTrace();
-                  }
-              }
+        @Override
+        public void run() {
+          service.shutdown();
+          while (true) {
+            try {
+                System.out.println("Waiting for the service to terminate...");
+                if (service.awaitTermination(5, TimeUnit.SECONDS)) {
+                  System.out.println("Service will be terminated soon.");
+                  break;
+                }
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
           }
+        }
       }));
     }
   }
@@ -92,36 +90,32 @@ public class talk extends AbstractApplication {
    * @return builder
    */
   public final String save(final Object meetingCode, final Builder builder) {
-    BlockingQueue<Builder> messages;
-    if ((messages = this.meetings.get(meetingCode)) == null) {
-      this.meetings.put(meetingCode.toString(), messages = new ArrayBlockingQueue<Builder>(DEFAULT_MESSAGE_POOL_SIZE));
+    if ((this.meetings.get(meetingCode)) == null) {
+      this.meetings.put(meetingCode.toString(), new ArrayBlockingQueue<Builder>(DEFAULT_MESSAGE_POOL_SIZE));
     }
 
     try {
-      messages.put(builder);
+      this.meetings.get(meetingCode).put(builder);
+      
+      final BlockingQueue<Builder> messages = this.meetings.get(meetingCode);
+      this.getService().execute(new Runnable(){
+        @Override
+        public void run() {
+          Builder message;
+          if ((message = messages.poll()) == null) return;
+          copy(meetingCode, message);
+        }
+      });
+      return builder.toString();
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
 
-    this.getService().execute(new Runnable(){
-      @Override
-      public void run() {
-          Builder message;
-          do {
-            try {
-              Thread.sleep(TIMEOUT);
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
-          } while(talk.this.meetings.get(meetingCode) == null || (message = talk.this.meetings.get(meetingCode).poll()) == null);
-          talk.this.copy(meetingCode, message);
-      }
-    });
-    return builder.toString();
+    return "{}";
   }
 
   private ExecutorService getService() {
-    return this.service!=null? this.service : Executors.newFixedThreadPool(DEFAULT_POOL_SIZE);
+    return this.service!=null? this.service : Executors.newSingleThreadExecutor();
   }
 
   /**
@@ -134,15 +128,15 @@ public class talk extends AbstractApplication {
   public final String update(final String sessionId) throws ApplicationException, IOException {
     Builder message;
     Queue<Builder> messages = this.list.get(sessionId);
-    while((message = messages.poll()) == null) {
-      try {
-        Thread.sleep(TIMEOUT);
-      } catch (InterruptedException e) {
-        throw new ApplicationException(e.getMessage(), e);
-      }
+    // If there is a new message, then return it directly
+    if((message = messages.poll()) != null) return message.toString();
+
+    long startTime = System.currentTimeMillis();
+    while((message = messages.poll()) == null && (System.currentTimeMillis()-startTime) <= 10000) {
+      ;
     }
 
-    return message.toString();
+    return message == null ? "{}" : message.toString();
   }
 
   /**
@@ -160,22 +154,24 @@ public class talk extends AbstractApplication {
    * @param builder
    */
   private final void copy(Object meetingCode, Builder builder) {
+    final List<String> _sessions;
+
+    if((_sessions = this.sessions.get(meetingCode)) != null) {
       final Collection<Entry<String, Queue<Builder>>> set = this.list.entrySet();
       final Iterator<Entry<String, Queue<Builder>>> iterator = set.iterator();
-      final List<String> _sessions;
-      if((_sessions = this.sessions.get(meetingCode)) != null) {
-        while(iterator.hasNext()) {
-          Entry<String, Queue<Builder>> list = iterator.next();
-          if(_sessions.contains(list.getKey())) {
-	            list.getValue().add(builder);
-          }
+      
+      while(iterator.hasNext()) {
+        Entry<String, Queue<Builder>> list = iterator.next();
+        if(_sessions.contains(list.getKey())) {
+          list.getValue().add(builder);
         }
       }
+    }
   }
 
   @Override
   public String version() {
-    return "Welcome to use tinystruct 2.0";
+    return "Talk core version:1.0 stable; Released on 2017-07-24";
   }
 
   /**
@@ -199,6 +195,7 @@ public class talk extends AbstractApplication {
     this.getService().execute(new Runnable(){
       @Override
       public void run() {
+        System.out.println(Thread.currentThread().getId());
         int i=0;
         while(i++<n)
         try {
@@ -217,6 +214,7 @@ public class talk extends AbstractApplication {
     this.getService().execute(new Runnable(){
       @Override
       public void run() {
+        System.out.println(Thread.currentThread().getId());
         int i=0;
         while(i++<n)
         try {
@@ -235,6 +233,7 @@ public class talk extends AbstractApplication {
     this.getService().execute(new Runnable(){
       @Override
       public void run() {
+        System.out.println(Thread.currentThread().getId());
         // TODO Auto-generated method stub
         System.out.println("[A] is started...");
         while(true)
@@ -254,6 +253,7 @@ public class talk extends AbstractApplication {
     this.getService().execute(new Runnable(){
       @Override
       public void run() {
+        System.out.println(Thread.currentThread().getId());
         // TODO Auto-generated method stub
         System.out.println("[B] is started...");
         while(true)
