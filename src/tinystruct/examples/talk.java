@@ -2,6 +2,7 @@ package tinystruct.examples;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -13,10 +14,12 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
@@ -25,11 +28,14 @@ import org.tinystruct.system.ApplicationManager;
 
 public class talk extends AbstractApplication {
 
+  private static final long TIMEOUT = 10;
   protected static final int DEFAULT_MESSAGE_POOL_SIZE = 10;
   protected final Map<String, BlockingQueue<Builder>> meetings = new ConcurrentHashMap<String, BlockingQueue<Builder>>();
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
   protected final Map<String, List<String>> sessions = new ConcurrentHashMap<String, List<String>>();
   private ExecutorService service;
+  private final Lock lock = new ReentrantLock();
+  private final Condition consumer = lock.newCondition();
 
   @Override
   public void init() {
@@ -130,22 +136,20 @@ public class talk extends AbstractApplication {
     Queue<Builder> messages = this.list.get(sessionId);
     // If there is a new message, then return it directly
     if((message = messages.poll()) != null) return message.toString();
-
-    long startTime = System.currentTimeMillis();
-    while((message = messages.poll()) == null && (System.currentTimeMillis()-startTime) <= 10000) {
-      ;
+    
+    while((message = messages.poll()) == null) {
+      lock.lock();
+      try {
+        consumer.await(TIMEOUT, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        throw new ApplicationException(e.getMessage(), e);
+      }
+      finally {
+        lock.unlock();
+      }
     }
-
-    return message == null ? "{}" : message.toString();
-  }
-
-  /**
-   * This function can be override.
-   * @param text
-   * @return
-   */
-  protected String filter(String text) {
-    return text;
+    
+    return message.toString();
   }
 
   /**
@@ -159,14 +163,28 @@ public class talk extends AbstractApplication {
     if((_sessions = this.sessions.get(meetingCode)) != null) {
       final Collection<Entry<String, Queue<Builder>>> set = this.list.entrySet();
       final Iterator<Entry<String, Queue<Builder>>> iterator = set.iterator();
-      
-      while(iterator.hasNext()) {
-        Entry<String, Queue<Builder>> list = iterator.next();
-        if(_sessions.contains(list.getKey())) {
-          list.getValue().add(builder);
+      lock.lock();
+      try {
+        while(iterator.hasNext()) {
+          Entry<String, Queue<Builder>> list = iterator.next();
+          if(_sessions.contains(list.getKey())) {
+            list.getValue().add(builder);
+            consumer.signalAll();
+          }
         }
+      } finally {
+        lock.unlock();
       }
     }
+  }
+
+  /**
+   * This function can be override.
+   * @param text
+   * @return
+   */
+  protected String filter(String text) {
+    return text;
   }
 
   @Override
@@ -184,8 +202,8 @@ public class talk extends AbstractApplication {
    */
   public boolean testing(final int n) throws ApplicationException {
     this.meetings.put("[M001]", new ArrayBlockingQueue<Builder>(DEFAULT_MESSAGE_POOL_SIZE));
-    this.list.put("{A}", new ConcurrentLinkedQueue<Builder>());
-    this.list.put("{B}", new ConcurrentLinkedQueue<Builder>());
+    this.list.put("{A}", new ArrayDeque<Builder>());
+    this.list.put("{B}", new ArrayDeque<Builder>());
     
     List<String> sess = new ArrayList<String>();
     sess.add("{A}");
