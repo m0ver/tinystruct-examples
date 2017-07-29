@@ -28,7 +28,7 @@ import org.tinystruct.system.ApplicationManager;
 
 public class talk extends AbstractApplication {
 
-  private static final long TIMEOUT = 10;
+  private static final long TIMEOUT = 10000;
   protected static final int DEFAULT_MESSAGE_POOL_SIZE = 10;
   protected final Map<String, BlockingQueue<Builder>> meetings = new ConcurrentHashMap<String, BlockingQueue<Builder>>();
   protected final Map<String, Queue<Builder>> list = new ConcurrentHashMap<String, Queue<Builder>>();
@@ -136,20 +136,20 @@ public class talk extends AbstractApplication {
     Queue<Builder> messages = this.list.get(sessionId);
     // If there is a new message, then return it directly
     if((message = messages.poll()) != null) return message.toString();
-    
-    while((message = messages.poll()) == null) {
+    long startTime = System.currentTimeMillis();
+    while((message = messages.poll()) == null && ( System.currentTimeMillis() - startTime) <= TIMEOUT) {
+      // If waited less than 10 seconds, then continue to wait
       lock.lock();
       try {
-        consumer.await(TIMEOUT, TimeUnit.SECONDS);
+        consumer.await(TIMEOUT, TimeUnit.MILLISECONDS);
       } catch (InterruptedException e) {
         throw new ApplicationException(e.getMessage(), e);
-      }
-      finally {
+      } finally {
         lock.unlock();
       }
     }
     
-    return message.toString();
+    return message != null ? message.toString() : "{}";
   }
 
   /**
@@ -175,6 +175,19 @@ public class talk extends AbstractApplication {
       } finally {
         lock.unlock();
       }
+    }
+  }
+  
+  /**
+   * Wake up those threads are working in message update.
+   */
+  final protected void wakeup(){
+    lock.lock();
+    try {
+      consumer.signalAll();
+    }
+    finally {
+      lock.unlock();
     }
   }
 

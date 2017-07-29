@@ -333,6 +333,7 @@ public class smalltalk extends talk implements HttpSessionListener {
       if(this.list.containsKey(sessionId))
       {
         this.list.remove(sessionId);
+        wakeup();
       }
     }
   }
