@@ -16,6 +16,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -121,7 +123,7 @@ public class talk extends AbstractApplication {
   }
 
   private ExecutorService getService() {
-    return this.service!=null? this.service : Executors.newSingleThreadExecutor();
+    return this.service!=null? this.service : new ThreadPoolExecutor(0, 10, TIMEOUT, TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>());
   }
 
   /**
