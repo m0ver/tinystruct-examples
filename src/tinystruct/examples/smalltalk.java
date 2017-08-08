@@ -9,13 +9,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -78,7 +78,7 @@ public class smalltalk extends talk implements HttpSessionListener {
     
     if(!this.list.containsKey(sessionId))
     {
-      this.list.put(sessionId, new ConcurrentLinkedQueue<Builder>());
+      this.list.put(sessionId, new ArrayDeque<Builder>());
     }
 
     this.setVariable("meeting_code", meetingCode.toString());
@@ -304,7 +304,7 @@ public class smalltalk extends talk implements HttpSessionListener {
     final String sessionId = arg0.getSession().getId();
     if(!this.list.containsKey(sessionId))
     {
-      this.list.put(sessionId, new ConcurrentLinkedQueue<Builder>());
+      this.list.put(sessionId, new ArrayDeque<Builder>());
     }
   }
 
@@ -333,6 +333,7 @@ public class smalltalk extends talk implements HttpSessionListener {
       if(this.list.containsKey(sessionId))
       {
         this.list.remove(sessionId);
+        wakeup();
       }
     }
   }
