@@ -76,25 +76,6 @@ public class hello extends AbstractApplication {
 			ApplicationManager.call("say/Merry Christmas!", null);
 		}
 		
-		String path="i/say/hi/James/How are you?";
-		int pos = -1;
-		String tpath = path;
-		StringBuffer buffer=new StringBuffer();
-		buffer.delete(0, 1);
-		while ((pos = tpath.lastIndexOf('/'))!=-1) {
-			tpath = tpath.substring(0, pos);
-			System.out.println("route:"+tpath);
-//			action = actions.getAction(tpath, method);
-			
-			if(true) {
-				String arg = path.substring(pos+1);
-				String[] _args = arg.split("/");
-
-				for(String arg1 : _args)
-				System.out.println(arg1);
-			}
-		}
-		
 	}
 	
 }
