@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 ROOT="`pwd`"
 cd "`dirname "$0"`"
 cd "../"
