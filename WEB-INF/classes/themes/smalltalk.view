@@ -442,18 +442,25 @@
       }).done(function( msg ) {
         autoupdate();
         is_running = false;
-      }).fail(function( msg ) {
-        $msg = msg.responseJSON;
-        if($msg.error == "expired") {
-          command("expired");
-        }
-        else if($msg.error == "session-timeout") {
-          command("session-timeout");
+      }).fail(function( err ) {
+        if(typeof(err.responseJSON) != 'undefined') {
+          $msg = err.responseJSON;
+          if($msg.error == "expired") {
+            command("expired");
+          }
+          else if($msg.error == "session-timeout") {
+            command("session-timeout");
+          }
+          else {
+            connection_timer.start();
+            is_running = false;
+            console.log($msg);
+          }
         }
         else {
           connection_timer.start();
           is_running = false;
-          console.log($msg);
+          console.log(err);
         }
       });
     }
