@@ -29,10 +29,19 @@ $ bin/dispatcher say/"Praise to the Lord"
 Praise to the Lord
 ```
 
-Running it in a servlet container
+Run it in a servlet container
 ---
 ```tcsh
 # bin/dispatcher --start-server --import-applications=org.tinystruct.system.TomcatServer
+```
+Run it in docker container
+---
+```tcsh
+# wget https://github.com/tinystruct/tinystruct2.0/archive/master.zip
+# unzip master.zip
+# mv tinystruct2.0-master/Dockerfile .
+# docker build -t tinystruct-based:1.0 -f Dockerfile .
+# docker run -d -p 777:777 tinystruct-based:1.0
 ```
 
 You can access the below URLs after deployed the project in Tomcat 6.0+ :
