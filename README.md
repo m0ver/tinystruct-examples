@@ -54,6 +54,8 @@ You can access the below URLs after deployed the project in Tomcat 6.0+ :
 A demonstration for comet technology, without any websocket and support any web browser:
 * <a href="http://smalltalk.tinystruct.org/?q=talk">http://smalltalk.tinystruct.org/?q=talk</a><br />
 
+<img src="example.png" title="smalltalk - tinystruct2.0" height="300"/> <br />
+
 Live Demo Site: 
 * http://smalltalk.tinystruct.org/
 * <a href="http://smalltalk.tinystruct.org/?q=say/Praise%20to%20the%20Lord!">http://smalltalk.tinystruct.org/?q=say/Praise%20to%20the%20Lord! </a><br />
