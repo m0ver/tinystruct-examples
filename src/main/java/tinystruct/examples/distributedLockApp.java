@@ -12,6 +12,7 @@ public class distributedLockApp extends AbstractApplication {
 	public void init() {
 		// TODO Auto-generated method stub
 		this.setAction("lock", "lock");
+		this.setAction("lock/true", "lock");
 		this.setAction("unlock", "unlock");
 		this.setAction("close", "close");
 	}
@@ -36,11 +37,17 @@ public class distributedLockApp extends AbstractApplication {
 		if (lock != null) {
 			System.out.println("UnLock Id:" + lock.id());
 			lock.unlock();
-		}
-		else
+		} else {
 			System.out.println("No task is locked.");
+		}
 	}
-	
+
+	public void lock(boolean autoclose) throws ApplicationException {
+		this.lock();
+		if (autoclose)
+			this.close();
+	}
+
 	public void close() {
 		Watcher.getInstance().stop();
 	}
@@ -57,11 +64,11 @@ public class distributedLockApp extends AbstractApplication {
 		System.out.println("Lock 2 started...");
 		ApplicationManager.call("lock", null);
 		System.out.println("Hello, I executed this printing after lock 2 released.");
-		
+
 		System.out.println("Lock 3 started...");
 		ApplicationManager.call("lock", null);
 		System.out.println("Hello, I executed this printing after lock 3 released.");
-		
+
 		ApplicationManager.call("close", null);
 
 	}
