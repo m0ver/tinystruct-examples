@@ -48,12 +48,34 @@ public class distributedLockApp extends AbstractApplication {
 			ApplicationManager.call("lock", null);
 			Thread.sleep(5000);
 			System.out.println("Hello, I executed this printing after lock released.");
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		finally {
+		} finally {
 			ApplicationManager.call("unlock", null);
 		}
+
+		Watcher w = Watcher.getInstance();
+		w.setListener(new org.tinystruct.valve.Watcher.EventListener() {
+
+			@Override
+			public void onCreate(String lockId) {
+				// TODO Auto-generated method stub
+				System.out.println(String.format("Created %s", lockId));
+			}
+
+			@Override
+			public void onUpdate() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onDelete(String lockId) {
+				// TODO Auto-generated method stub
+				System.out.println(String.format("Deleted %s", lockId));
+			}
+		});
+		new Thread(w).start();
 	}
 
 }
