@@ -12,9 +12,7 @@ public class distributedLockApp extends AbstractApplication {
 	public void init() {
 		// TODO Auto-generated method stub
 		this.setAction("lock", "lock");
-		this.setAction("lock/true", "lock");
 		this.setAction("unlock", "unlock");
-		this.setAction("close", "close");
 	}
 
 	@Override
@@ -42,35 +40,20 @@ public class distributedLockApp extends AbstractApplication {
 		}
 	}
 
-	public void lock(boolean autoclose) throws ApplicationException {
-		this.lock();
-		if (autoclose)
-			this.close();
-	}
-
-	public void close() {
-		Watcher.getInstance().stop();
-	}
-
 	public static void main(String[] args) throws ApplicationException, InterruptedException {
-		distributedLockApp lock = new distributedLockApp();
 		ApplicationManager.init();
-		ApplicationManager.install(lock);
-
-		System.out.println("Lock 1 started...");
-		ApplicationManager.call("lock", null);
-		System.out.println("Hello, I executed this printing after lock 1 released.");
-
-		System.out.println("Lock 2 started...");
-		ApplicationManager.call("lock", null);
-		System.out.println("Hello, I executed this printing after lock 2 released.");
-
-		System.out.println("Lock 3 started...");
-		ApplicationManager.call("lock", null);
-		System.out.println("Hello, I executed this printing after lock 3 released.");
-
-		ApplicationManager.call("close", null);
-
+		ApplicationManager.install(new distributedLockApp());
+		try {
+			System.out.println("Lock started...");
+			ApplicationManager.call("lock", null);
+			Thread.sleep(5000);
+			System.out.println("Hello, I executed this printing after lock released.");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			ApplicationManager.call("unlock", null);
+		}
 	}
 
 }
