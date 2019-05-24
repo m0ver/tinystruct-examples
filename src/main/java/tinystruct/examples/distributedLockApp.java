@@ -3,6 +3,7 @@ package tinystruct.examples;
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.system.ApplicationManager;
+import org.tinystruct.valve.DistributedLock;
 import org.tinystruct.valve.Lock;
 import org.tinystruct.valve.Watcher;
 
@@ -13,6 +14,7 @@ public class distributedLockApp extends AbstractApplication {
 		// TODO Auto-generated method stub
 		this.setAction("lock", "lock");
 		this.setAction("unlock", "unlock");
+		this.setAction("monitor", "monitor");
 	}
 
 	@Override
@@ -30,6 +32,12 @@ public class distributedLockApp extends AbstractApplication {
 		}
 	}
 
+	public void unlock(String lockId) throws ApplicationException {
+		Lock lock = new DistributedLock(lockId.getBytes());
+		System.out.println("UnLock Id:" + lock.id());
+		lock.unlock();
+	}
+	
 	public void unlock() throws ApplicationException {
 		Lock lock = Watcher.getInstance().acquire();
 		if (lock != null) {
@@ -39,24 +47,10 @@ public class distributedLockApp extends AbstractApplication {
 			System.out.println("No task is locked.");
 		}
 	}
-
-	public static void main(String[] args) throws ApplicationException, InterruptedException {
-		ApplicationManager.init();
-		ApplicationManager.install(new distributedLockApp());
-		try {
-			System.out.println("Lock started...");
-			ApplicationManager.call("lock", null);
-			Thread.sleep(5000);
-			System.out.println("Hello, I executed this printing after lock released.");
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			ApplicationManager.call("unlock", null);
-		}
-
+	
+	public void monitor() throws ApplicationException {
 		Watcher w = Watcher.getInstance();
 		w.setListener(new org.tinystruct.valve.Watcher.EventListener() {
-
 			@Override
 			public void onCreate(String lockId) {
 				// TODO Auto-generated method stub
@@ -76,6 +70,21 @@ public class distributedLockApp extends AbstractApplication {
 			}
 		});
 		new Thread(w).start();
+	}
+
+	public static void main(String[] args) throws ApplicationException, InterruptedException {
+		ApplicationManager.init();
+		ApplicationManager.install(new distributedLockApp());
+		try {
+			System.out.println("Lock started...");
+			ApplicationManager.call("lock", null);
+			Thread.sleep(5000);
+			System.out.println("Hello, I executed this printing after lock released.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			ApplicationManager.call("unlock", null);
+		}
 	}
 
 }
