@@ -8,6 +8,8 @@ import org.tinystruct.system.ClassFileLoader;
 import org.tinystruct.system.Configuration;
 import org.tinystruct.system.Settings;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class hello extends AbstractApplication {
 
 	@Override
@@ -20,15 +22,14 @@ public class hello extends AbstractApplication {
 
 	@Override
 	public String version() {
-		System.out.println("tinystruct version 2.0.1");
-		return null;
+		return "tinystruct version 2.0.1";
 	}
 	
 	public String say(String words){
 		return words;
 	}
 	
-	public String smile() throws ApplicationException{
+	public String smile() {
 		return ":)";
 	}
 	
@@ -42,15 +43,15 @@ public class hello extends AbstractApplication {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public static void main(String[] args) throws ApplicationException, InstantiationException, IllegalAccessException {
+	public static void main(String[] args) throws ApplicationException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 		// Praise to the Lord!
 		ApplicationManager.install(new hello());
 		
 		// to print 'Hello World'
 		ApplicationManager.call("say/Hello World", null); 			// Hello World
-		
+
 		// or...
-		Application app=ApplicationManager.get( hello.class.getName()); 
+		Application app=ApplicationManager.get( hello.class.getName());
 		app.invoke("say", new Object[]{"<h1>Hello, World!</h1>"});	// <h1>Hello, World!</h1>
 		app.invoke("say", new Object[]{"<h2>Bye!</h2>"});			// <h2>Bye!</h2>
 		
@@ -59,10 +60,12 @@ public class hello extends AbstractApplication {
 		
 		// to run nothing
 		ApplicationManager.call("smile", null);	// Looks nothing
-		
+
 		// What will be happened?
 		System.out.println(ApplicationManager.call("smile", null));	// Will render the default template
-		
+		ApplicationManager.call("render", null);	// Will render the default template
+
+
 		// Use ClassFileLoader to load Java class
 		ClassFileLoader loader = ClassFileLoader.getInstance();
 		
@@ -72,7 +75,7 @@ public class hello extends AbstractApplication {
 
 		Class<?> clz = loader.findClass("hello");
 		if(clz!=null && clz.getSuperclass().equals(AbstractApplication.class)) {
-			ApplicationManager.install((Application) clz.newInstance());
+			ApplicationManager.install((Application) (clz.getDeclaredConstructor().newInstance()));
 			ApplicationManager.call("say/Merry Christmas!", null);
 		}
 	}
