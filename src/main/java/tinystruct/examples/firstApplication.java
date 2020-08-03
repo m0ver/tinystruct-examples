@@ -50,7 +50,14 @@ public class firstApplication extends AbstractApplication {
 		
 		return builder.get(name);
 	}
-	
+
+	public String say() throws ApplicationException {
+		if(null != this.context.getAttribute("words"))
+			return this.context.getAttribute("words").toString();
+
+		throw new ApplicationException("Could not find the parameter <i>words</i>.");
+	}
+
 	public String say(String words){
 		return words;
 	}

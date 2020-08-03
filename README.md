@@ -46,22 +46,22 @@ Run it in docker container
 
 You can access the below URLs after deployed the project in Tomcat 6.0+ :
 
-* <a href="http://localhost:8080/?q=say/Praise%20to%20the%20Lord!">http://localhost:8080/?q=say/Praise%20to%20the%20Lord! </a><br />
-* <a href="http://localhost:8080/?q=praise">http://localhost:8080/?q=praise </a><br />
-* <a href="http://localhost:8080/?q=youhappy">http://localhost:8080/?q=youhappy</a><br />
-* <a href="http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F">http://localhost:8080/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F</a>
+* <a href="http://localhost:777/?q=say/Praise%20to%20the%20Lord!">http://localhost:777/?q=say/Praise%20to%20the%20Lord! </a><br />
+* <a href="http://localhost:777/?q=praise">http://localhost:777/?q=praise </a><br />
+* <a href="http://localhost:777/?q=youhappy">http://localhost:777/?q=youhappy</a><br />
+* <a href="http://localhost:777/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F">http://localhost:777/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F</a>
 
 A demonstration for comet technology, without any websocket and support any web browser:
-* <a href="http://smalltalk.tinystruct.org/?q=talk">http://smalltalk.tinystruct.org/?q=talk</a><br />
+* <a href="https://tinystruct.herokuapp.com/?q=talk">https://tinystruct.herokuapp.com/?q=talk</a><br />
 
 <img src="example.png" title="smalltalk - tinystruct2.0" height="300"/> <br />
 
 Live Demo Site: 
-* http://smalltalk.tinystruct.org/
-* <a href="http://smalltalk.tinystruct.org/?q=say/Praise%20to%20the%20Lord!">http://smalltalk.tinystruct.org/?q=say/Praise%20to%20the%20Lord! </a><br />
-* <a href="http://smalltalk.tinystruct.org/?q=praise">http://smalltalk.tinystruct.org/?q=praise </a><br />
-* <a href="http://smalltalk.tinystruct.org/?q=youhappy">http://smalltalk.tinystruct.org/?q=youhappy</a><br />
-* <a href="http://smalltalk.tinystruct.org/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F">http://smalltalk.tinystruct.org/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F</a>
+* https://tinystruct.herokuapp.com/
+* <a href="https://tinystruct.herokuapp.com/?q=say/Praise%20to%20the%20Lord!">https://tinystruct.herokuapp.com/?q=say/Praise%20to%20the%20Lord! </a><br />
+* <a href="https://tinystruct.herokuapp.com/?q=praise">https://tinystruct.herokuapp.com/?q=praise</a><br />
+* <a href="https://tinystruct.herokuapp.com/?q=youhappy">https://tinystruct.herokuapp.com/?q=youhappy</a><br />
+* <a href="https://tinystruct.herokuapp.com/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F">https://tinystruct.herokuapp.com/?q=say/%E4%BD%A0%E7%9F%A5%E9%81%93%E5%85%A8%E4%B8%96%E7%95%8C%E6%9C%80%E7%95%85%E9%94%80%E7%9A%84%E4%B9%A6%E6%98%AF%E5%93%AA%E4%B8%80%E6%9C%AC%E4%B9%A6%E5%90%97%EF%BC%9F</a>
 
 Results in your browser should be:
 
