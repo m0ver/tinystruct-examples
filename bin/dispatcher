@@ -1,6 +1,0 @@
-#!/bin/sh
-ROOT="`pwd`"
-cd "`dirname "$0"`"
-cd "../"
-cd "$ROOT"
-java -cp "$ROOT/lib/*:$ROOT/WEB-INF/lib/*:$ROOT/WEB-INF/classes:$HOME/.m2/repository" org.tinystruct.system.Dispatcher "$@"
