@@ -8,7 +8,8 @@ import javax.servlet.http.HttpSession;
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.dom.Element;
-import org.tinystruct.handle.Reforward;
+import org.tinystruct.handler.Reforward;
+import org.tinystruct.system.ApplicationManager;
 
 public class error extends AbstractApplication {
 
@@ -113,5 +114,7 @@ public class error extends AbstractApplication {
 		
 		return buffer;
 	}
+
+		ApplicationManager.init();
 
 }
