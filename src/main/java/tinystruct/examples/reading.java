@@ -18,11 +18,7 @@ package tinystruct.examples;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,11 +31,10 @@ import org.tinystruct.ApplicationException;
 import org.tinystruct.data.component.Field;
 import org.tinystruct.data.component.Row;
 import org.tinystruct.data.component.Table;
-import org.tinystruct.datatype.DataVariable;
 import org.tinystruct.dom.Element;
 import org.tinystruct.system.security.Authentication;
 import org.tinystruct.system.security.Credential;
-import org.tinystruct.system.util.Base64;
+import org.tinystruct.system.template.variable.DataVariable;
 import org.tinystruct.system.util.URLResourceLoader;
 
 import custom.objects.User;
@@ -496,7 +491,7 @@ public class reading extends AbstractApplication {
 					// You will need to provide your own
 					// if you are not comfortable with that.
 
-					String userPass = new String(Base64.decode(credentials));
+					String userPass = new String(Base64.getDecoder().decode(credentials));
 					// The decoded string is in the form
 					// "userID:password".
 
