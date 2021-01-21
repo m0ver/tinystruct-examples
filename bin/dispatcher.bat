@@ -5,7 +5,7 @@
 @rem you may not use this file except in compliance with the License.
 @rem You may obtain a copy of the License at
 @rem
-@rem    http://www.apache.org/licenses/LICENSE-2.0
+@rem    http:\\www.apache.org\licenses\LICENSE-2.0
 @rem
 @rem Unless required by applicable law or agreed to in writing, software
 @rem distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,6 +14,7 @@
 @rem limitations under the License.
 @rem ***************************************************************************
 @echo off
-set "ROOT=%~dp0../"
+set "ROOT=%~dp0..\"
+set "VERSION=0.1.6"
 set "classpath=%ROOT%lib\*:%ROOT%WEB-INF\lib\*:%ROOT%WEB-INF\classes":%classpath%
-@java -cp "%ROOT%lib\*;%ROOT%WEB-INF\lib\*;%ROOT%WEB-INF\classes;%HOMEPATH%\.m2\repository\org\tinystruct\struct\2.0.1\struct-2.0.1-jar-with-dependencies.jar" org.tinystruct.system.Dispatcher %*
+@java -cp "%ROOT%lib\*;%ROOT%WEB-INF\lib\*;%ROOT%WEB-INF\classes;%USERPROFILE%\.m2\repository\org\tinystruct\tinystruct\%VERSION%\tinystruct-%VERSION%-jar-with-dependencies.jar" org.tinystruct.system.Dispatcher %*
