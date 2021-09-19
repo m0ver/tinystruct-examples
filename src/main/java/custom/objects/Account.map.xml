@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mapping>
+    <class name="Account" table="Account">
+        <id name="Id" column="id" increment="false" generate="true" length="50" type="varchar"/>
+        <property name="email" column="email" length="50" type="varchar"/>
+        <property name="username" column="username" length="50" type="varchar"/>
+        <property name="password" column="password" length="15" type="varchar"/>
+    </class>
+</mapping>
