@@ -29,6 +29,7 @@ public class hello extends AbstractApplication {
 
         this.setAction("account", "createAccount");
         this.setAction("login", "login");
+
     }
 
     @Override

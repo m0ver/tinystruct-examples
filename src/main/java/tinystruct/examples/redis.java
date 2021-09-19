@@ -48,8 +48,7 @@ public class redis extends AbstractApplication {
 			URL uri = new URL("http://localhost:8000/api/redis/list/pop/languages");
 //			client.requestResource(uri, null);
 			uri = new URL("http://localhost:8000/api/redis/list/languages");
-			
-			return new String(client.requestResource(uri, null), "utf-8");
+			return new String(client.resource(uri, null), "utf-8");
 		}
 
 		return null;
