@@ -9,7 +9,8 @@
 		<dependency>
 			<groupId>org.tinystruct</groupId>
 			<artifactId>tinystruct</artifactId>
-			<version>0.1.6</version>
+			<version>0.2.7</version>
+			<classifier>jar-with-dependencies</classifier>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 		<dependency>
