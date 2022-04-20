@@ -26,8 +26,8 @@ import javax.servlet.http.HttpSessionListener;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.data.component.Builder;
 import org.tinystruct.data.component.Builders;
-import org.tinystruct.datatype.Variable;
-import org.tinystruct.handle.Reforward;
+import org.tinystruct.handler.Reforward;
+import org.tinystruct.system.template.variable.Variable;
 import org.tinystruct.system.util.Matrix;
 import org.tinystruct.system.util.StringUtilities;
 import org.tinystruct.transfer.http.upload.ContentDisposition;
@@ -94,7 +94,7 @@ public class smalltalk extends talk implements HttpSessionListener {
 
   public String matrix() throws ApplicationException {
     final HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-
+    System.out.println("this.getLink(\"talk/join\") = " + this.getLink("talk/join"));
     if (request.getParameter("meeting_code") != null) {
       BufferedImage qrImage = Matrix.toQRImage(this.getLink("talk/join") + "/" + request.getParameter("meeting_code"), 100, 100);
       return "data:image/png;base64," + Matrix.getBase64Image(qrImage);

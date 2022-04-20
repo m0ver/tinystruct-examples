@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Base64;
 
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationContext;
@@ -61,7 +62,8 @@ public class image2 extends AbstractApplication {
 			
 			data = ous.toByteArray();
 			if(data.length > 0)
-				return "<img src=\"data:image/png;base64," + org.tinystruct.system.util.Base64.encode(data) + "\" />";
+				return "<img src=\"data:image/png;base64," +
+						Base64.getEncoder().encode(data) + "\" />";
 		} catch (FileNotFoundException e) {
 			throw new ApplicationException(e.getMessage(), e);
 		} catch (IOException e) {

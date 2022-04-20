@@ -1,8 +1,10 @@
 package tinystruct.examples;
 
+import custom.objects.Account;
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.Application;
 import org.tinystruct.ApplicationException;
+import org.tinystruct.data.DatabaseOperator;
 import org.tinystruct.system.ApplicationManager;
 import org.tinystruct.system.ClassFileLoader;
 import org.tinystruct.system.Configuration;
@@ -24,7 +26,10 @@ public class hello extends AbstractApplication {
         this.setAction("say", "say");
         this.setAction("smile", "smile");
         this.setAction("render", "render");
+
+        this.setAction("account", "createAccount");
         this.setAction("login", "login");
+
     }
 
     @Override
@@ -120,6 +125,29 @@ public class hello extends AbstractApplication {
             return authHeader.substring(AUTH_HEADER_VALUE_PREFIX.length());
         }
         return null;
+    }
+
+    public void createAccount() {
+        try (DatabaseOperator operator = new DatabaseOperator()){
+            operator.createStatement(false);
+            operator.execute("DROP TABLE ACCOUNT IF EXISTS; CREATE TABLE ACCOUNT(ID VARCHAR, USERNAME VARCHAR, PASSWORD VARCHAR, EMAIL VARCHAR);");
+        } catch (ApplicationException e) {
+            e.printStackTrace();
+        }
+
+        Account account = new Account();
+        account.setUsername("James");
+        account.setPassword("******");
+        account.setEmail("your@email.com");
+        try {
+            account.append();
+            System.out.println("account = " + account);
+            account.findOneById();
+            System.out.println("account = " + account);
+        } catch (ApplicationException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

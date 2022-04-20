@@ -30,27 +30,22 @@ public class distributedUnlockTesting {
 
 		int n = 1000;
 		CyclicBarrier barrier = new CyclicBarrier(n);
-		Runnable runnable = new Runnable() {
+		Runnable runnable = () -> {
+			// TODO Auto-generated method stub
+			try {
+				barrier.await();
 
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				try {
-					barrier.await();
-
-					Lock lock = new DistributedLock();
-					lock.lock();
-					System.out.println(lock.id());
-					lock.unlock();
-				} catch (InterruptedException ex) {
-					return;
-				} catch (BrokenBarrierException ex) {
-					return;
-				} catch (ApplicationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
+				Lock lock = new DistributedLock();
+				lock.lock();
+				System.out.println(lock.id());
+				lock.unlock();
+			} catch (InterruptedException ex) {
+				return;
+			} catch (BrokenBarrierException ex) {
+				return;
+			} catch (ApplicationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 		};

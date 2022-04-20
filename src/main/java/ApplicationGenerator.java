@@ -6,6 +6,7 @@ import org.tinystruct.data.tools.MySQLGenerator;
 public class ApplicationGenerator {
 	public static void main(String[]arguments)
 	{
+
 		System.out.println("Please type the command like this:ApplicationGenerator className tableName");
 		
 		try {
