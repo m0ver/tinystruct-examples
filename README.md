@@ -14,17 +14,62 @@ To execute it in CLI mode
 $ bin/dispatcher --version
 
   _/  '         _ _/  _     _ _/
-  /  /  /) (/ _)  /  /  (/ (  /  0.3.3
+  /  /  /) (/ _)  /  /  (/ (  /  0.4.5
            /
 ```
 ```tcsh
 $ bin/dispatcher --help
-Usage:	dispatcher [--attributes] [actions[/args...]...]
-	where attributes include any custom attributes those defined in context 
-	or keypair parameters are going to be passed by context,
- 	such as: 
-	--http.proxyHost=127.0.0.1 or --http.proxyPort=3128 or --param=value
-	
+Usage: bin/dispatcher COMMAND [OPTIONS]
+Commands: 
+        account                 
+        download                Download a resource from other servers
+        error                   
+        exec                    To execute native command(s)
+        generate                
+        image2base64            
+        info                    
+        install                 Install a package
+        login                   
+        praise                  
+        read                    
+        render                  
+        say                     
+        set                     Set system property
+        smile                   
+        talk                    
+        talk/command            
+        talk/join               
+        talk/matrix             
+        talk/save               
+        talk/start              
+        talk/testing            
+        talk/topic              
+        talk/update             
+        talk/upload             
+        talk/version            
+        time                    
+        time/start              
+        time/stop               
+        time/update             
+        tinyeditor              
+        tinyeditor/save         
+        tinyeditor/update       
+        tinyeditor/version      
+        update                  Update for latest version
+        user                    
+        users                   
+        version                 
+        youhappy                
+
+Options: 
+        --help                  Help command
+        --import                Import application
+        --logo                  Print logo
+        --settings              Print settings
+        --version               Print version
+
+Run 'bin/dispatcher COMMAND --help' for more information on a command.
+
 $ bin/dispatcher say/"Praise to the Lord"
 Praise to the Lord
 ```
