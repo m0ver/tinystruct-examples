@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/tinystruct/tinystruct2.0/master/favicon.png" title="tinystruct2.0" /> 
 
-tinystruct2.0
+tinystruct0.4.9
 =========
 [![Build Status](https://travis-ci.org/m0ver/tinystruct-examples.svg?branch=master)](https://travis-ci.org/m0ver/tinystruct2.0)
 
@@ -14,7 +14,7 @@ To execute it in CLI mode
 $ bin/dispatcher --version
 
   _/  '         _ _/  _     _ _/
-  /  /  /) (/ _)  /  /  (/ (  /  0.4.5
+  /  /  /) (/ _)  /  /  (/ (  /  0.4.9
            /
 ```
 ```tcsh
@@ -77,7 +77,7 @@ Praise to the Lord
 Run it in a servlet container
 ---
 ```tcsh
-# bin/dispatcher --start --import org.tinystruct.system.TomcatServer
+# bin/dispatcher start --import org.tinystruct.system.TomcatServer
 ```
 Run it in docker container
 ---
