@@ -30,7 +30,7 @@ public class bible extends AbstractApplication {
 		try {
 			uri = new URL("http://rcuv.hkbs.org.hk/bb/info/CUNPs_1/"+pattern+"/");
 			URLResourceLoader loader = new URLResourceLoader(uri );
-			StringBuffer buffer = loader.getContent();
+			StringBuilder buffer = loader.getContent();
 			
 			return this.preprocess(buffer.toString());
 		} catch (MalformedURLException e) {
