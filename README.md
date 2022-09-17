@@ -77,7 +77,7 @@ Praise to the Lord
 Run it in a servlet container
 ---
 ```tcsh
-# bin/dispatcher --start --import org.tinystruct.system.TomcatServer
+# bin/dispatcher start --import org.tinystruct.system.TomcatServer
 ```
 Run it in docker container
 ---
