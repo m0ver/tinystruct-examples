@@ -21,48 +21,18 @@ $ bin/dispatcher --version
 $ bin/dispatcher --help
 Usage: bin/dispatcher COMMAND [OPTIONS]
 Commands: 
-        account                 
         download                Download a resource from other servers
-        error                   
         exec                    To execute native command(s)
-        generate                
-        image2base64            
-        info                    
         install                 Install a package
-        login                   
-        praise                  
-        read                    
-        render                  
-        say                     
+        say                     Output words
         set                     Set system property
-        smile                   
-        talk                    
-        talk/command            
-        talk/join               
-        talk/matrix             
-        talk/save               
-        talk/start              
-        talk/testing            
-        talk/topic              
-        talk/update             
-        talk/upload             
-        talk/version            
-        time                    
-        time/start              
-        time/stop               
-        time/update             
-        tinyeditor              
-        tinyeditor/save         
-        tinyeditor/update       
-        tinyeditor/version      
+        sql-query               SQL query needs to be executed.
         update                  Update for latest version
-        user                    
-        users                   
-        version                 
-        youhappy                
 
 Options: 
+        --allow-remote-access   Allow to be accessed remotely
         --help                  Help command
+        --host                  Host name / IP
         --import                Import application
         --logo                  Print logo
         --settings              Print settings
