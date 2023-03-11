@@ -14,7 +14,7 @@ To execute it in CLI mode
 $ bin/dispatcher --version
 
   _/  '         _ _/  _     _ _/
-  /  /  /) (/ _)  /  /  (/ (  /  0.8.3
+  /  /  /) (/ _)  /  /  (/ (  /  0.9.9
            /
 ```
 ```tcsh
@@ -23,10 +23,13 @@ Usage: bin/dispatcher COMMAND [OPTIONS]
 Commands: 
         download                Download a resource from other servers
         exec                    To execute native command(s)
+        generate                POJO object generator
         install                 Install a package
+        open                    Start a default browser to open the specific URL
         say                     Output words
         set                     Set system property
-        sql-query               SQL query needs to be executed.
+        sql-execute             Executes the given SQL statement, which may be an INSERT, UPDATE, or DELETE statement or an SQL statement that returns nothing, such as an SQL DDL statement.
+        sql-query               Executes the given SQL statement, which returns a single ResultSet object.
         update                  Update for latest version
 
 Options: 
