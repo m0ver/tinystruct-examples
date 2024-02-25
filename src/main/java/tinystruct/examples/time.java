@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletResponse;
 
 import org.tinystruct.AbstractApplication;
+import org.tinystruct.system.annotation.Action;
 
 public class time extends AbstractApplication {
 
@@ -14,20 +15,19 @@ public class time extends AbstractApplication {
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		this.setAction("time", "index");
-		this.setAction("time/update", "update");
-		this.setAction("time/start", "start");
-		this.setAction("time/stop", "stop");
 	}
 
+	@Action("time")
 	public time index() {
 		return this;
 	}
-	
+
+	@Action("time/start")
 	public void start() {
 		stop=false;
 	}
 
+	@Action("time/update")
 	public void update() throws IOException, InterruptedException {
 
 		HttpServletResponse response = (HttpServletResponse) this.context
@@ -45,6 +45,7 @@ public class time extends AbstractApplication {
 			}
 	}
 
+	@Action("time/stop")
 	public String stop() {
 		stop = true;
 		return "stopped!";

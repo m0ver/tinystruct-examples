@@ -9,6 +9,7 @@ import org.tinystruct.ApplicationException;
 import org.tinystruct.ApplicationRuntimeException;
 import org.tinystruct.system.ApplicationManager;
 import org.tinystruct.system.Dispatcher;
+import org.tinystruct.system.annotation.Action;
 import org.tinystruct.system.util.URLResourceLoader;
 
 public class bible extends AbstractApplication {
@@ -16,7 +17,6 @@ public class bible extends AbstractApplication {
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		this.setAction("bible", "open");
 	}
 
 	@Override
@@ -24,6 +24,7 @@ public class bible extends AbstractApplication {
 		return "v1.0";
 	}
 
+	@Action("bible")
 	public String open(String pattern) throws ApplicationException {
 		pattern = pattern.replace('.', '/'); // To avoid the conflict with the path query
 		URL uri;

@@ -9,10 +9,12 @@ import org.tinystruct.system.ApplicationManager;
 import org.tinystruct.system.ClassFileLoader;
 import org.tinystruct.system.Configuration;
 import org.tinystruct.system.Settings;
+import org.tinystruct.system.annotation.Action;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.PreparedStatement;
 
 public class hello extends AbstractApplication {
 
@@ -23,13 +25,6 @@ public class hello extends AbstractApplication {
     @Override
     public void init() {
         // TODO Auto-generated method stub
-        this.setAction("say", "say");
-        this.setAction("smile", "smile");
-        this.setAction("render", "render");
-
-        this.setAction("account", "createAccount");
-        this.setAction("login", "login");
-
     }
 
     @Override
@@ -38,21 +33,7 @@ public class hello extends AbstractApplication {
         return null;
     }
 
-    public String say() {
-        if(null != this.context.getAttribute("words"))
-        return this.context.getAttribute("words").toString();
-
-        return "Invalid parameters.";
-    }
-
-    public String say(String words) {
-        return words;
-    }
-
-    public String smile() throws ApplicationException {
-        return ":)";
-    }
-
+    @Action("login")
     public String login() throws ServletException {
         HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
         HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
@@ -70,6 +51,7 @@ public class hello extends AbstractApplication {
         return bearer;
     }
 
+    @Action("render")
     public hello render() {
         return this;
     }
@@ -127,10 +109,12 @@ public class hello extends AbstractApplication {
         return null;
     }
 
+    @Action("account")
     public void createAccount() {
         try (DatabaseOperator operator = new DatabaseOperator()){
-            operator.createStatement(false);
-            operator.execute("DROP TABLE ACCOUNT IF EXISTS; CREATE TABLE ACCOUNT(ID VARCHAR, USERNAME VARCHAR, PASSWORD VARCHAR, EMAIL VARCHAR);");
+            String sql = "DROP TABLE ACCOUNT IF EXISTS; CREATE TABLE ACCOUNT(ID VARCHAR, USERNAME VARCHAR, PASSWORD VARCHAR, EMAIL VARCHAR);";
+            PreparedStatement ps = operator.preparedStatement(sql, new Object[]{});
+            operator.executeUpdate(ps);
         } catch (ApplicationException e) {
             e.printStackTrace();
         }

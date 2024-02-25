@@ -10,35 +10,28 @@ import org.tinystruct.data.tools.MySQLGenerator;
 import org.tinystruct.system.ApplicationManager;
 
 import custom.objects.User;
+import org.tinystruct.system.Dispatcher;
+import org.tinystruct.system.annotation.Action;
+import org.tinystruct.system.annotation.Argument;
 
 public class firstApplication extends AbstractApplication {
 
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		this.setAction("praise", "praise");
-		this.setAction("say", "say");
-		this.setAction("youhappy", "happy");
-		
-		this.setAction("user", "findUser");
-		this.setAction("users", "findUsers");
-		
-		this.setAction("version", "version", "GET");
-		this.setAction("version", "setVersion","POST");
-		
-		this.setAction("read", "read");
-		
-		this.setAction("generate", "generate_with_user_table");
 	}
-	
+
+	@Action("praise")
 	public String praise(){
 		return "Praise to the Lord!";
 	}
-	
+
+	@Action("youhappy")
 	public boolean happy(){
 		return true;
 	}
-	
+
+	@Action("read")
 	public Object read(String json,String name){
 		Builder builder = new Builder();
 		try {
@@ -51,6 +44,7 @@ public class firstApplication extends AbstractApplication {
 		return builder.get(name);
 	}
 
+	@Action("say")
 	public String say() throws ApplicationException {
 		if(null != this.context.getAttribute("words"))
 			return this.context.getAttribute("words").toString();
@@ -58,28 +52,35 @@ public class firstApplication extends AbstractApplication {
 		throw new ApplicationException("Could not find the parameter <i>words</i>.");
 	}
 
+	@Action("say")
 	public String say(String words){
 		return words;
 	}
 
+	@Action("version")
 	@Override
 	public String version() {
 		// TODO Auto-generated method stub
 		return this.context.getAttribute("name") + this.context.getAttribute("number").toString();
 	}
-	
+
+	@Action(value = "version", options = {
+			@Argument(key = "POST", description = "POST method"),
+	})
 	public void setVersion(float number){
 		this.context.setAttribute("name", "struct");
 		this.context.setAttribute("number", number);
+		Dispatcher d;
 	}
-	
+
+	@Action("generate")
 	public void generate_with_user_table(){
 		try {
 			String[] list=new String[]{"User"};
 			Generator generator=new MySQLGenerator();
 			for(String className:list)
 			{
-				generator.setFileName("src/custom/objects/");
+				generator.setPath("src/custom/objects/");
 				generator.setPackageName("custom.objects");
 				generator.importPackages("java.util.Date");
 				generator.create(className,className);
@@ -91,7 +92,8 @@ public class firstApplication extends AbstractApplication {
 			e.printStackTrace();
 		}
 	}
-	
+
+	@Action("user")
 	public User findUser(Object userId) throws ApplicationException{
 		
 		if(userId!=null){
@@ -104,7 +106,8 @@ public class firstApplication extends AbstractApplication {
 		
 		return null;
 	}
-	
+
+	@Action("users")
 	public Table findUsers() throws ApplicationException{
 		return new User().findAll();
 	}

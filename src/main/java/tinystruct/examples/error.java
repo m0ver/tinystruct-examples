@@ -8,6 +8,7 @@ import org.tinystruct.handler.Reforward;
 import org.tinystruct.http.Request;
 import org.tinystruct.http.Response;
 import org.tinystruct.http.Session;
+import org.tinystruct.system.annotation.Action;
 
 public class error extends AbstractApplication {
 
@@ -18,7 +19,6 @@ public class error extends AbstractApplication {
     @Override
     public void init() {
         // TODO Auto-generated method stub
-        this.setAction("error", "process");
     }
 
     @Override
@@ -27,6 +27,7 @@ public class error extends AbstractApplication {
         return null;
     }
 
+    @Action("error")
     public Object process() throws ApplicationException {
         this.request = (Request) this.context.getAttribute("HTTP_REQUEST");
         this.response = (Response) this.context.getAttribute("HTTP_RESPONSE");

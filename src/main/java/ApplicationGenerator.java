@@ -15,7 +15,7 @@ public class ApplicationGenerator {
 			for(String className:list)
 			{
 				Generator generator=new MySQLGenerator();
-				generator.setFileName("src/custom/objects/");
+				generator.setPath("src/custom/objects/");
 				generator.setPackageName("custom.objects");
 				generator.importPackages("java.util.Date");
 				generator.create(className,className);
