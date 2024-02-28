@@ -3,6 +3,7 @@ package tinystruct.examples;
 import org.tinystruct.AbstractApplication;
 import org.tinystruct.ApplicationException;
 import org.tinystruct.system.ApplicationManager;
+import org.tinystruct.system.annotation.Action;
 import org.tinystruct.valve.DistributedLock;
 import org.tinystruct.valve.Lock;
 import org.tinystruct.valve.Watcher;
@@ -14,9 +15,6 @@ public class distributedLockApp extends AbstractApplication {
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		this.setAction("lock", "lock");
-		this.setAction("unlock", "unlock");
-		this.setAction("monitor", "monitor");
 	}
 
 	@Override
@@ -25,6 +23,7 @@ public class distributedLockApp extends AbstractApplication {
 		return null;
 	}
 
+	@Action("lock")
 	public void lock() throws ApplicationException {
 		Lock lock = Watcher.getInstance().acquire();
 
@@ -34,12 +33,14 @@ public class distributedLockApp extends AbstractApplication {
 		}
 	}
 
+	@Action("unlock")
 	public void unlock(String lockId) throws ApplicationException {
 		Lock lock = new DistributedLock(lockId.getBytes());
 		System.out.println("UnLock Id:" + lock.id());
 		lock.unlock();
 	}
-	
+
+	@Action("unlock")
 	public void unlock() throws ApplicationException {
 		Lock lock = Watcher.getInstance().acquire();
 		if (lock != null) {

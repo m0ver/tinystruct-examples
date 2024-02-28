@@ -8,13 +8,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.tinystruct.AbstractApplication;
+import org.tinystruct.system.annotation.Action;
+import org.tinystruct.system.annotation.Argument;
 
 public class dateConverter extends AbstractApplication {
 
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		this.setAction("convert", "convert");
 	}
 
 	@Override
@@ -23,6 +24,10 @@ public class dateConverter extends AbstractApplication {
 		return null;
 	}
 
+	@Action(value = "convert", arguments = {
+			@Argument(key = "from", description = "From date"),
+			@Argument(key = "to", description = "To date")
+	})
 	public String convert() throws IOException, ParseException {
 		String from = this.context.getAttribute("from").toString();
 		String to = this.context.getAttribute("to").toString();
@@ -38,7 +43,6 @@ public class dateConverter extends AbstractApplication {
 		01/02/2018 11:18:31
 		01/02/2018 12:38:54
 	 *	
-	 * @param date_list
 	 * @return
 	 * @throws IOException 
 	 * @throws ParseException 

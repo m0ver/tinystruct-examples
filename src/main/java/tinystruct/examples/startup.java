@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletResponse;
 
 import org.tinystruct.AbstractApplication;
+import org.tinystruct.system.annotation.Action;
 
 public class startup extends AbstractApplication {
 
@@ -14,9 +15,9 @@ public class startup extends AbstractApplication {
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		this.setAction("startup", "index");
 	}
 
+	@Action("startup")
 	public startup index() {
 		return this;
 	}
