@@ -46,8 +46,8 @@ public class firstApplication extends AbstractApplication {
 
 	@Action("say")
 	public String say() throws ApplicationException {
-		if(null != this.context.getAttribute("words"))
-			return this.context.getAttribute("words").toString();
+		if(null != getContext().getAttribute("words"))
+			return getContext().getAttribute("words").toString();
 
 		throw new ApplicationException("Could not find the parameter <i>words</i>.");
 	}
@@ -61,15 +61,15 @@ public class firstApplication extends AbstractApplication {
 	@Override
 	public String version() {
 		// TODO Auto-generated method stub
-		return this.context.getAttribute("name") + this.context.getAttribute("number").toString();
+		return getContext().getAttribute("name") + getContext().getAttribute("number").toString();
 	}
 
 	@Action(value = "version", options = {
 			@Argument(key = "POST", description = "POST method"),
 	})
 	public void setVersion(float number){
-		this.context.setAttribute("name", "struct");
-		this.context.setAttribute("number", number);
+		getContext().setAttribute("name", "struct");
+		getContext().setAttribute("number", number);
 		Dispatcher d;
 	}
 

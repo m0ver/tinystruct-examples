@@ -32,11 +32,11 @@ public class image2 extends AbstractApplication {
 	}
 	
 	public String image2base64() throws ApplicationException  {
-		if(this.context.getAttribute("--image-path")==null || this.context.getAttribute("--image-path").toString().trim().length()==0) {
+		if(getContext().getAttribute("--image-path")==null || getContext().getAttribute("--image-path").toString().trim().length()==0) {
 			throw new ApplicationException("Invalid file");
 		}
 		
-		this.imagePath = this.context.getAttribute("--image-path").toString();
+		this.imagePath = getContext().getAttribute("--image-path").toString();
 		return this.image2base64(this.imagePath);
 	}
 	
