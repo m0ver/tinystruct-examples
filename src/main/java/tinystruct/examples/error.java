@@ -29,8 +29,8 @@ public class error extends AbstractApplication {
 
     @Action("error")
     public Object process() throws ApplicationException {
-        this.request = (Request) this.context.getAttribute("HTTP_REQUEST");
-        this.response = (Response) this.context.getAttribute("HTTP_RESPONSE");
+        this.request = (Request) getContext().getAttribute("HTTP_REQUEST");
+        this.response = (Response) getContext().getAttribute("HTTP_RESPONSE");
 
         this.reforward = new Reforward(this.request, this.response);
 

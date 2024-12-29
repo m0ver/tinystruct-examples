@@ -24,8 +24,8 @@ public class example extends AbstractApplication {
     }
 
     public String say() throws ApplicationException {
-        if (null != this.context.getAttribute("--words"))
-            return this.context.getAttribute("--words").toString();
+        if (null != getContext().getAttribute("--words"))
+            return getContext().getAttribute("--words").toString();
 
         throw new ApplicationException("Could not find the parameter <i>words</i>.");
     }

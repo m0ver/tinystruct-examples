@@ -30,7 +30,7 @@ public class time extends AbstractApplication {
 	@Action("time/update")
 	public void update() throws IOException, InterruptedException {
 
-		HttpServletResponse response = (HttpServletResponse) this.context
+		HttpServletResponse response = (HttpServletResponse) getContext()
 				.getAttribute("HTTP_RESPONSE");
 		while(true)
 			if (!stop) {

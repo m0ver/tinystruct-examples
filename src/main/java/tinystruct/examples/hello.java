@@ -35,8 +35,8 @@ public class hello extends AbstractApplication {
 
     @Action("login")
     public String login() throws ServletException {
-        HttpServletRequest request = (HttpServletRequest) this.context.getAttribute("HTTP_REQUEST");
-        HttpServletResponse response = (HttpServletResponse) this.context.getAttribute("HTTP_RESPONSE");
+        HttpServletRequest request = (HttpServletRequest) getContext().getAttribute("HTTP_REQUEST");
+        HttpServletResponse response = (HttpServletResponse) getContext().getAttribute("HTTP_RESPONSE");
 
         String bearer = this.getBearerToken(request);
 

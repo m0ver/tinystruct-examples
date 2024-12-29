@@ -14,7 +14,7 @@ To execute it in CLI mode
 $ bin/dispatcher --version
 
   _/  '         _ _/  _     _ _/
-  /  /  /) (/ _)  /  /  (/ (  /  1.2.3
+  /  /  /) (/ _)  /  /  (/ (  /  1.4.5
            /
 ```
 ```tcsh

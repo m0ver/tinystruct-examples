@@ -29,8 +29,8 @@ public class dateConverter extends AbstractApplication {
 			@Argument(key = "to", description = "To date")
 	})
 	public String convert() throws IOException, ParseException {
-		String from = this.context.getAttribute("from").toString();
-		String to = this.context.getAttribute("to").toString();
+		String from = getContext().getAttribute("from").toString();
+		String to = getContext().getAttribute("to").toString();
 		return this.convert(from, to);
 	}
 	/**

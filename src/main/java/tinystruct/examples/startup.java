@@ -28,7 +28,7 @@ public class startup extends AbstractApplication {
 
 	public void update() throws IOException, InterruptedException {
 
-		HttpServletResponse response = (HttpServletResponse) this.context
+		HttpServletResponse response = (HttpServletResponse) getContext()
 				.getAttribute("HTTP_RESPONSE");
 		while(true)
 			if (!stop) {
